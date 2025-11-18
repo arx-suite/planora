@@ -1,7 +1,7 @@
 -- Add up migration script here
 
 /* === types === */
-CREATE TYPE task_status AS ENUM ('not started', 'active', 'in review', 'blocked', 'archived', 'done');
+CREATE TYPE task_status AS ENUM ('not_started', 'active', 'in_review', 'blocked', 'archived', 'done');
 CREATE TYPE task_priority AS ENUM ('eliminate', 'delegate', 'schedule', 'low', 'medium', 'high', 'critical');
 
 

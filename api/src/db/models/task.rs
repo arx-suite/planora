@@ -3,38 +3,28 @@ use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, sqlx::Type)]
-#[sqlx(type_name = "task_status", rename_all = "lowercase")]
+#[sqlx(type_name = "task_status", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum TaskStatus {
     #[default]
-    #[sqlx(rename = "not started")]
     NotStarted,
-    #[sqlx(rename = "active")]
     Active,
-    #[sqlx(rename = "in review")]
     InReview,
-    #[sqlx(rename = "archived")]
     Archived,
-    #[sqlx(rename = "done")]
     Done,
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize, sqlx::Type)]
-#[sqlx(type_name = "task_priority", rename_all = "lowercase")]
+#[sqlx(type_name = "task_priority", rename_all = "snake_case")]
+#[serde(rename_all = "snake_case")]
 pub enum TaskPriority {
-    #[sqlx(rename = "eliminate")]
     Eliminate,
-    #[sqlx(rename = "delegate")]
     Delegate,
-    #[sqlx(rename = "schedule")]
     Schedule,
-    #[sqlx(rename = "low")]
     Low,
     #[default]
-    #[sqlx(rename = "medium")]
     Medium,
-    #[sqlx(rename = "high")]
     High,
-    #[sqlx(rename = "critical")]
     Critical,
 }
 
