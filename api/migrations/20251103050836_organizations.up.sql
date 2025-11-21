@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS organizations (
     deleted_at TIMESTAMPTZ
 );
 
-CREATE TABLE IF NOT EXIST plans (
+CREATE TABLE IF NOT EXISTS plans (
     plan_name TEXT PRIMARY KEY,
     max_spaces INT,
     max_projects INT,
@@ -27,7 +27,7 @@ CREATE INDEX IF NOT EXISTS idx_organization_owner ON organizations(owner_id);
 
 /* === functions / triggers === */
 CREATE OR REPLACE FUNCTION limit_organizations_per_user()
-RETURN TRIGGER AS $$
+RETURNS TRIGGER AS $$
 DECLARE
     org_count INT;
 BEGIN
