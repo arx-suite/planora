@@ -10,9 +10,24 @@ pub struct User {
     pub email: String,
     #[serde(skip)]
     pub password: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub timezone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub avatar_url: Option<String>,
-    pub google_sub: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+#[derive(sea_query::Iden)]
+pub enum Users {
+    Table,
+    UserId,
+    UserTag,
+    Username,
+    Email,
+    Password,
+    Timezone,
+    AvatarUrl,
+    CreatedAt,
+    UpdatedAt,
 }
