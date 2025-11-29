@@ -28,7 +28,7 @@ async fn signup(
         _ => {}
     };
 
-    let inserted_user = user_repo.create_user(&user).await?;
+    let inserted_user = user_repo.create_user(user).await?;
 
     tracing::info!(%email, "user created successfuly");
 
