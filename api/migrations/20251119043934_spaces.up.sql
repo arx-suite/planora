@@ -26,7 +26,7 @@ CREATE OR REPLACE FUNCTION limit_spaces_per_org ()
 DECLARE
     org_plan text;
     space_count int;
-    max_spaces int;
+    max_spaces_count int;
 BEGIN
     SELECT
         plan INTO org_plan
@@ -35,12 +35,12 @@ BEGIN
     WHERE
         organization_id = NEW.organization_id;
     SELECT
-        max_spaces INTO max_spaces
+        max_spaces INTO max_spaces_count
     FROM
         plans
     WHERE
         plan_name = org_plan;
-    IF max_spaces IS NULL THEN
+    IF max_spaces_count IS NULL THEN
         RETURN NEW;
     END IF;
     SELECT
@@ -49,8 +49,8 @@ BEGIN
         spaces
     WHERE
         organization_id = NEW.organization_id;
-    IF space_count >= max_spaces THEN
-        RAISE EXCEPTION 'Organization % with plan % has reached the space limit (% spaces)', NEW.organization_id, org_plan, max_spaces
+    IF space_count >= max_spaces_count THEN
+        RAISE EXCEPTION 'Organization % with plan % has reached the space limit (% spaces)', NEW.organization_id, org_plan, max_spaces_count
             USING ERRCODE = 'A0001';
         END IF;
         RETURN NEW;
