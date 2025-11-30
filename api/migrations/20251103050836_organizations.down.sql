@@ -2,11 +2,15 @@
 
 /* === functions / triggers === */
 DROP TRIGGER IF EXISTS trg_limit_organizations ON organizations;
+
 DROP FUNCTION IF EXISTS limit_organizations_per_user;
+
 
 /* === indexes === */
 DROP INDEX IF EXISTS idx_organization_owner;
 
+
 /* === tables === */
 DROP TABLE IF EXISTS plans;
+
 DROP TABLE IF EXISTS organizations;

@@ -9,6 +9,6 @@ DROP INDEX IF EXISTS idx_app_users_user_tag;
 
 
 /* === tables === */
-DROP TABLE IF EXISTS users;
-
 DROP TABLE IF EXISTS user_identities;
+
+DROP TABLE IF EXISTS users;

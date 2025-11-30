@@ -30,3 +30,11 @@ CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
 CREATE INDEX IF NOT EXISTS idx_users_user_tag ON users (user_tag);
 
 CREATE INDEX IF NOT EXISTS idx_user_identities_provider ON user_identities (provider, provider_user_id);
+
+
+/* === functions / triggers === */
+SELECT
+    attach_archive_trigger ('users');
+
+SELECT
+    attach_archive_trigger ('user_identities');
