@@ -1,4 +1,4 @@
 pub mod organization;
 pub mod project;
-pub mod task;
+pub mod space;
 pub mod user;
