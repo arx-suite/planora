@@ -44,7 +44,7 @@ BEGIN
         RETURN NEW;
     END IF;
     SELECT
-        COUNT(*) INTO space_count
+        count(*) INTO space_count
     FROM
         spaces
     WHERE
@@ -70,3 +70,4 @@ ALTER TABLE spaces ENABLE ROW LEVEL SECURITY;
 CREATE POLICY space_organization_policy ON spaces
     USING (organization_id = current_setting('app.organization', TRUE)::uuid)
     WITH CHECK (organization_id = current_setting('app.organization', TRUE)::uuid);
+
