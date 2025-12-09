@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "motion/react";
-import { useRouter } from "next/navigation";
 import { scaleIn, slideUp } from "@/components/core/motions";
 import { useUser } from "@/context/user-context";
 import { config } from "@/lib/config";
@@ -14,8 +13,6 @@ interface WelcomeProps {
 export function Welcome({ name }: WelcomeProps) {
     const { setUser } = useUser();
 
-    const router = useRouter();
-
     const handleLogout = async () => {
         try {
             await fetch(`${config.api}/v1/auth/signout`, {
@@ -24,11 +21,6 @@ export function Welcome({ name }: WelcomeProps) {
             });
 
             setUser(null);
-            setTimeout(() => {
-                setTimeout(() => {
-                    router.refresh();
-                }, 400);
-            }, 400);
         } catch (_err) {}
     };
 
