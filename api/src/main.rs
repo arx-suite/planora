@@ -57,6 +57,9 @@ async fn main() -> std::io::Result<()> {
     // auth
     let auth_service = services::AuthService::from_env();
 
+    // bucket storage
+    let bucket_service = services::S3Service::from_env().await;
+
     // actix server
     tracing::info!("Starting server at http://{}", config.addr());
     HttpServer::new(move || {
@@ -84,6 +87,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(manager.clone()))
             .app_data(web::Data::new(auth_service.clone()))
+            .app_data(web::Data::new(bucket_service.clone()))
             .route("/ws", web::get().to(ws::ws))
             .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
                 public_paths().into(),
