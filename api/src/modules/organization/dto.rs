@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::db::models::OrganizationRow;
+use super::OrganizationRow;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct CreateOrg {

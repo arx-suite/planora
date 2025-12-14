@@ -1,4 +1,5 @@
-use arx_gatehouse::{common::ApiError, db::repos::OrgRepo};
+use arx_gatehouse::common::ApiError;
+use arx_gatehouse::modules::organization::OrgRepo;
 
 pub async fn validate_org(pool: &sqlx::PgPool, org_id: uuid::Uuid) -> Result<(), ApiError> {
     let repo = OrgRepo::new(pool);

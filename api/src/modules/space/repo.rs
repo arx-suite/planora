@@ -3,11 +3,9 @@ use sqlx::{self, PgPool};
 use tracing::{debug, info, trace};
 use uuid::Uuid;
 
+use super::{DeleteSpace, NewSpace, Space, Spaces, UpdateSpace};
 use crate::common::time::current_utc_timestamp;
-use crate::db::DBResult;
-use crate::db::dto::space::{DeleteSpace, NewSpace, UpdateSpace};
-use crate::db::helpers::with_org;
-use crate::db::models::{Space, Spaces};
+use crate::db::{DBResult, helpers::with_org};
 
 pub struct SpaceRepo<'a> {
     pub pool: &'a PgPool,

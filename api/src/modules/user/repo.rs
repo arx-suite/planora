@@ -2,9 +2,8 @@ use sea_query::*;
 use sqlx::PgPool;
 use tracing::info;
 
+use super::{CreateUser, UserRow, Users};
 use crate::db::DBResult;
-use crate::db::dto::user::CreateUser;
-use crate::db::models::{UserRow, Users};
 
 pub struct UserRepo<'a> {
     pub pool: &'a PgPool,

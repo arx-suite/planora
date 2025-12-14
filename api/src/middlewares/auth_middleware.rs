@@ -8,7 +8,7 @@ use std::rc::Rc;
 
 use arx_gatehouse::{
     common::{ApiError, constants::X_USER_ID_HEADER, cookie::extract_access_token},
-    db::repos::UserRepo,
+    modules::user::UserRepo,
     services::{AuthService, DbManager},
 };
 

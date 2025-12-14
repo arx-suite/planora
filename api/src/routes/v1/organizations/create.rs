@@ -1,8 +1,7 @@
 use actix_web::{HttpRequest, Responder, post, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
-use arx_gatehouse::db::dto::organization::{CreateOrg, OrgProfile};
-use arx_gatehouse::db::repos::OrgRepo;
+use arx_gatehouse::modules::organization::{CreateOrg, OrgProfile, OrgRepo};
 use arx_gatehouse::services::DbManager;
 
 #[post("")]

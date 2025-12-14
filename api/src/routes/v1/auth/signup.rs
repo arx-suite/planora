@@ -1,7 +1,7 @@
 use actix_web::{HttpResponse, Responder, post, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult};
-use arx_gatehouse::db::{dto::user::CreateUser, repos::UserRepo};
+use arx_gatehouse::modules::user::{CreateUser, UserRepo};
 use arx_gatehouse::services::{AuthService, DbManager, auth::cookie::build_cookie};
 
 #[post("/signup")]

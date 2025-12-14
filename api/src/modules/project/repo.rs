@@ -1,12 +1,8 @@
 use sea_query::*;
 use sqlx::PgPool;
 
-use crate::db::{
-    DBResult,
-    dto::project::{CreateProject, DeleteProject},
-    helpers::with_org,
-    models::Project,
-};
+use super::{CreateProject, DeleteProject, Project};
+use crate::db::{DBResult, helpers::with_org};
 
 const PG_TABLE_PROJECTS: &'static str = "projects";
 

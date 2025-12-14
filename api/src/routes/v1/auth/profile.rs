@@ -1,7 +1,7 @@
 use actix_web::{HttpRequest, Responder, get, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
-use arx_gatehouse::db::{dto::user::UserProfile, repos::UserRepo};
+use arx_gatehouse::modules::user::{UserProfile, UserRepo};
 use arx_gatehouse::services::DbManager;
 
 #[get("/profile")]

@@ -2,7 +2,7 @@ use actix_web::{HttpRequest, Responder, delete, web};
 
 use super::helper::validate_org;
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_org_id};
-use arx_gatehouse::db::{dto::space::DeleteSpace, repos::SpaceRepo};
+use arx_gatehouse::modules::space::{DeleteSpace, SpaceRepo};
 use arx_gatehouse::services::DbManager;
 
 #[delete("")]

@@ -4,7 +4,7 @@ use arx_gatehouse::common::{
     ApiError, ApiResult,
     headers::{extract_org_id, extract_user_id},
 };
-use arx_gatehouse::db::repos::OrgRepo;
+use arx_gatehouse::modules::organization::OrgRepo;
 use arx_gatehouse::services::DbManager;
 
 #[delete("")]

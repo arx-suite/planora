@@ -2,7 +2,7 @@ use actix_web::{HttpRequest, Responder, put, web};
 
 use super::helper::validate_org;
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_org_id};
-use arx_gatehouse::db::{dto::space::UpdateSpace, repos::SpaceRepo};
+use arx_gatehouse::modules::space::{SpaceRepo, UpdateSpace};
 use arx_gatehouse::services::DbManager;
 
 #[put("")]

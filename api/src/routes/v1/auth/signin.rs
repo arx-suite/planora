@@ -1,7 +1,7 @@
 use actix_web::{HttpResponse, Responder, post, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult};
-use arx_gatehouse::db::{dto::user::SigninPayload, repos::UserRepo};
+use arx_gatehouse::modules::user::{SigninPayload, UserRepo};
 use arx_gatehouse::services::{AuthService, DbManager, auth::cookie::build_cookie};
 
 #[post("/signin")]

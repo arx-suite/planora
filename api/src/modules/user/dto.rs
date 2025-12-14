@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use crate::db::models::UserRow;
+use super::UserRow;
 
 #[derive(Debug, Clone, Deserialize)]
 pub struct CreateUser {
@@ -16,7 +16,7 @@ pub struct SigninPayload {
     pub password: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UserProfile {
     user_id: Uuid,
