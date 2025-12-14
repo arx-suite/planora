@@ -10,6 +10,7 @@ pub struct CreateOrg {
 }
 
 #[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct OrgProfile {
     organization_id: Uuid,
     owner_id: Uuid,

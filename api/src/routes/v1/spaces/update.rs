@@ -2,7 +2,7 @@ use actix_web::{HttpRequest, Responder, put, web};
 
 use super::helper::validate_org;
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_org_id};
-use arx_gatehouse::modules::space::{SpaceRepo, UpdateSpace};
+use arx_gatehouse::modules::space::{SpaceInfo, SpaceRepo, UpdateSpace};
 use arx_gatehouse::services::DbManager;
 
 #[put("")]
@@ -23,5 +23,8 @@ async fn update_space(
     let updated_space = space_repo.update_space(update_space, org_id).await?;
 
     tracing::info!(%updated_space.space_id, %org_id, "space updated successfully");
-    ApiResult::to_ok_response("space details has been updated successfully", updated_space)
+    ApiResult::to_ok_response(
+        "space details has been updated successfully",
+        SpaceInfo::from(updated_space),
+    )
 }

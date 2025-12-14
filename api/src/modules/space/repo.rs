@@ -3,8 +3,7 @@ use sqlx::{self, PgPool};
 use tracing::{debug, info, trace};
 use uuid::Uuid;
 
-use super::{DeleteSpace, NewSpace, Space, Spaces, UpdateSpace};
-use crate::common::time::current_utc_timestamp;
+use super::{DeleteSpace, NewSpace, SpaceRow, Spaces, UpdateSpace};
 use crate::db::{DBResult, helpers::with_org};
 
 pub struct SpaceRepo<'a> {
@@ -17,7 +16,7 @@ impl<'a> SpaceRepo<'a> {
     }
 
     /* create */
-    pub async fn create_space(&self, new_space: NewSpace, org_id: Uuid) -> DBResult<Space> {
+    pub async fn create_space(&self, new_space: NewSpace, org_id: Uuid) -> DBResult<SpaceRow> {
         trace!(space_name = ?new_space.space_name, organization_id = ?org_id, "starting space creation");
 
         let query = Query::insert()
@@ -30,7 +29,7 @@ impl<'a> SpaceRepo<'a> {
         debug!(query = %query, "generated insert query");
 
         let inserted_space = with_org(self.pool, &org_id, |mut tx| async move {
-            let inserted = sqlx::query_as::<_, Space>(&query)
+            let inserted = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_one(&mut *tx)
                 .await?;
 
@@ -48,20 +47,23 @@ impl<'a> SpaceRepo<'a> {
     }
 
     /* read */
-    pub async fn find_by_space_id(&self, space_id: Uuid, org_id: Uuid) -> DBResult<Option<Space>> {
+    pub async fn find_by_space_id(
+        &self,
+        space_id: Uuid,
+        org_id: Uuid,
+    ) -> DBResult<Option<SpaceRow>> {
         trace!(space_id = ?space_id, organization_id = ?org_id, "find space by id");
 
         let query = Query::select()
             .column(Asterisk)
             .from(Spaces::Table)
             .and_where(Expr::col(Spaces::SpaceId).eq(space_id))
-            .and_where(Expr::col(Spaces::DeletedAt).is_not_null())
             .to_string(PostgresQueryBuilder);
 
         debug!(query = %query, "generated select query");
 
         let space = with_org(self.pool, &org_id, |mut tx| async move {
-            let spaces = sqlx::query_as::<_, Space>(&query)
+            let spaces = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_optional(&mut *tx)
                 .await?;
 
@@ -72,19 +74,18 @@ impl<'a> SpaceRepo<'a> {
         Ok(space)
     }
 
-    pub async fn find_by_org_id(&self, org_id: Uuid) -> DBResult<Vec<Space>> {
+    pub async fn find_by_org_id(&self, org_id: Uuid) -> DBResult<Vec<SpaceRow>> {
         trace!(organization_id = ?org_id, "find spaces by org_id");
 
         let query = Query::select()
             .column(Asterisk)
             .from(Spaces::Table)
-            .and_where(Expr::col(Spaces::DeletedAt).is_not_null())
             .to_string(PostgresQueryBuilder);
 
         debug!(query = %query, "generated select query");
 
         let spaces = with_org(self.pool, &org_id, |mut tx| async move {
-            let spaces = sqlx::query_as::<_, Space>(&query)
+            let spaces = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_all(&mut *tx)
                 .await?;
 
@@ -96,7 +97,11 @@ impl<'a> SpaceRepo<'a> {
     }
 
     /* update */
-    pub async fn update_space(&self, update_space: UpdateSpace, org_id: Uuid) -> DBResult<Space> {
+    pub async fn update_space(
+        &self,
+        update_space: UpdateSpace,
+        org_id: Uuid,
+    ) -> DBResult<SpaceRow> {
         trace!(space_name = ?update_space.space_name, description = ?update_space.description, "update spaces");
 
         let mut builder = Query::update();
@@ -110,15 +115,13 @@ impl<'a> SpaceRepo<'a> {
             .map(|description| builder.value(Spaces::Description, description));
 
         builder.returning_all();
-        builder
-            .and_where(Expr::col(Spaces::SpaceId).eq(update_space.space_id))
-            .and_where(Expr::col(Spaces::DeletedAt).is_not_null());
+        builder.and_where(Expr::col(Spaces::SpaceId).eq(update_space.space_id));
 
         let query = builder.to_string(PostgresQueryBuilder);
         debug!(query = %query, "generated update query");
 
         let space = with_org(self.pool, &org_id, |mut tx| async move {
-            let space = sqlx::query_as::<_, Space>(&query)
+            let space = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_one(&mut *tx)
                 .await?;
 
@@ -139,9 +142,7 @@ impl<'a> SpaceRepo<'a> {
 
         let query = Query::update()
             .table(Spaces::Table)
-            .value(Spaces::DeletedAt, current_utc_timestamp())
             .and_where(Expr::col(Spaces::SpaceId).eq(delete_space.space_id))
-            .and_where(Expr::col(Spaces::DeletedAt).is_not_null())
             .to_string(PostgresQueryBuilder);
 
         debug!(query = %query, "generated query");

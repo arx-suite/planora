@@ -2,7 +2,7 @@ use actix_web::{HttpRequest, Responder, post, web};
 
 use super::helper::validate_org;
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_org_id};
-use arx_gatehouse::modules::project::{CreateProject, ProjectRepo};
+use arx_gatehouse::modules::project::{CreateProject, ProjectInfo, ProjectRepo};
 use arx_gatehouse::services::DbManager;
 
 #[post("")]
@@ -22,7 +22,7 @@ async fn create_project(
 
     let project_repo = ProjectRepo::new(&pool);
 
-    let inserted_project = project_repo.create_project(&project, org_id).await?;
+    let inserted_project: ProjectInfo = project_repo.create_project(&project, org_id).await?.into();
 
     tracing::info!(%inserted_project.project_id, %org_id, "project created successfully");
 

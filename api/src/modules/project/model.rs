@@ -1,9 +1,8 @@
 use chrono::{DateTime, Utc};
-use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Default, Clone, Serialize, Deserialize, sqlx::FromRow)]
-pub struct Project {
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct ProjectRow {
     pub project_id: Uuid,
     pub organization_id: Uuid,
     pub space_id: Uuid,
@@ -11,4 +10,16 @@ pub struct Project {
     pub description: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+#[derive(sea_query::Iden)]
+pub enum Projects {
+    Table,
+    ProjectId,
+    OrganizationId,
+    SpaceId,
+    Name,
+    Description,
+    CreatedAt,
+    UpdatedAt,
 }

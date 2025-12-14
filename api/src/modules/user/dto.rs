@@ -23,7 +23,9 @@ pub struct UserProfile {
     user_tag: Option<String>,
     username: String,
     email: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     timezone: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     avatar_url: Option<String>,
 }
 
