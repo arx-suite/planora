@@ -4,7 +4,7 @@ use tracing::info;
 
 use crate::db::DBResult;
 use crate::db::dto::user::CreateUser;
-use crate::db::models::{User, Users};
+use crate::db::models::{UserRow, Users};
 
 pub struct UserRepo<'a> {
     pub pool: &'a PgPool,
@@ -16,7 +16,7 @@ impl<'a> UserRepo<'a> {
     }
 
     /* create */
-    pub async fn create_user(&self, user: CreateUser) -> DBResult<User> {
+    pub async fn create_user(&self, user: CreateUser) -> DBResult<UserRow> {
         info!(
             action = "user_creation",
             %user.username,
@@ -34,7 +34,7 @@ impl<'a> UserRepo<'a> {
             .returning_all()
             .to_string(PostgresQueryBuilder);
 
-        let created_user = sqlx::query_as::<_, User>(&query)
+        let created_user = sqlx::query_as::<_, UserRow>(&query)
             .fetch_one(self.pool)
             .await?;
 
@@ -48,7 +48,7 @@ impl<'a> UserRepo<'a> {
     }
 
     /* read */
-    pub async fn find_by_email(&self, email: String) -> DBResult<Option<User>> {
+    pub async fn find_by_email(&self, email: String) -> DBResult<Option<UserRow>> {
         info!(
             action = "user_lookup",
             lookup_field = "email",
@@ -62,7 +62,7 @@ impl<'a> UserRepo<'a> {
             .and_where(Expr::col(Users::Email).eq(email))
             .to_string(PostgresQueryBuilder);
 
-        let user = sqlx::query_as::<_, User>(&query)
+        let user = sqlx::query_as::<_, UserRow>(&query)
             .fetch_optional(self.pool)
             .await?;
 
@@ -75,7 +75,7 @@ impl<'a> UserRepo<'a> {
         Ok(user)
     }
 
-    pub async fn find_by_userid(&self, userid: uuid::Uuid) -> DBResult<Option<User>> {
+    pub async fn find_by_userid(&self, userid: uuid::Uuid) -> DBResult<Option<UserRow>> {
         info!(
             action = "user_lookup",
             lookup_field = "userid",
@@ -89,7 +89,7 @@ impl<'a> UserRepo<'a> {
             .and_where(Expr::col(Users::UserId).eq(userid.to_string()))
             .to_string(PostgresQueryBuilder);
 
-        let user = sqlx::query_as::<_, User>(&query)
+        let user = sqlx::query_as::<_, UserRow>(&query)
             .fetch_optional(self.pool)
             .await?;
 
@@ -102,7 +102,7 @@ impl<'a> UserRepo<'a> {
         Ok(user)
     }
 
-    pub async fn find_by_usertag(&self, usertag: String) -> DBResult<Option<User>> {
+    pub async fn find_by_usertag(&self, usertag: String) -> DBResult<Option<UserRow>> {
         info!(
             action = "user_lookup",
             lookup_field = "usertag",
@@ -116,7 +116,7 @@ impl<'a> UserRepo<'a> {
             .and_where(Expr::col(Users::UserTag).eq(usertag))
             .to_string(PostgresQueryBuilder);
 
-        let user = sqlx::query_as::<_, User>(&query)
+        let user = sqlx::query_as::<_, UserRow>(&query)
             .fetch_optional(self.pool)
             .await?;
 
@@ -153,7 +153,7 @@ impl<'a> UserRepo<'a> {
         Ok(result.rows_affected())
     }
 
-    pub async fn list_users(&self, limit: u64, offset: u64) -> DBResult<Vec<User>> {
+    pub async fn list_users(&self, limit: u64, offset: u64) -> DBResult<Vec<UserRow>> {
         info!(
             action = "user_listing",
             %limit,
@@ -169,7 +169,7 @@ impl<'a> UserRepo<'a> {
             .order_by(Users::CreatedAt, Order::Desc)
             .to_string(PostgresQueryBuilder);
 
-        let users = sqlx::query_as::<_, User>(&query)
+        let users = sqlx::query_as::<_, UserRow>(&query)
             .fetch_all(self.pool)
             .await?;
 
