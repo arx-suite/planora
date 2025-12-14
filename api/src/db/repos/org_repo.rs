@@ -1,9 +1,9 @@
 use sea_query::*;
 use sqlx::PgPool;
 
-use crate::db::{DBResult, dto::organization::CreateOrg, models::Organization};
-
-const PG_TABLE_ORGS: &'static str = "organizations";
+use crate::db::DBResult;
+use crate::db::dto::organization::CreateOrg;
+use crate::db::models::{OrganizationRow, Organizations};
 
 pub struct OrgRepo<'a> {
     pub pool: &'a PgPool,
@@ -18,10 +18,14 @@ impl<'a> OrgRepo<'a> {
         &self,
         org: &CreateOrg,
         owner_id: uuid::Uuid,
-    ) -> DBResult<Organization> {
+    ) -> DBResult<OrganizationRow> {
         let query = Query::insert()
-            .into_table(Alias::new(PG_TABLE_ORGS))
-            .columns(["owner_id", "name", "subdomain"])
+            .into_table(Organizations::Table)
+            .columns([
+                Organizations::OwnerId,
+                Organizations::Name,
+                Organizations::Subdomain,
+            ])
             .values_panic([
                 owner_id.into(),
                 org.name.to_owned().into(),
@@ -30,34 +34,34 @@ impl<'a> OrgRepo<'a> {
             .returning_all()
             .to_string(PostgresQueryBuilder);
 
-        let inserted_org = sqlx::query_as::<_, Organization>(&query)
+        let inserted_org = sqlx::query_as::<_, OrganizationRow>(&query)
             .fetch_one(self.pool)
             .await?;
 
         Ok(inserted_org)
     }
 
-    pub async fn find_by_ownerid(&self, owner_id: uuid::Uuid) -> DBResult<Vec<Organization>> {
+    pub async fn find_by_ownerid(&self, owner_id: uuid::Uuid) -> DBResult<Vec<OrganizationRow>> {
         let query = Query::select()
             .column(Asterisk)
-            .from(PG_TABLE_ORGS)
-            .and_where(Expr::col(Alias::new("owner_id")).eq(owner_id.to_string()))
+            .from(Organizations::Table)
+            .and_where(Expr::col(Organizations::OwnerId).eq(owner_id.to_string()))
             .to_string(PostgresQueryBuilder);
 
-        let org = sqlx::query_as::<_, Organization>(&query)
+        let org = sqlx::query_as::<_, OrganizationRow>(&query)
             .fetch_all(self.pool)
             .await?;
         Ok(org)
     }
 
-    pub async fn find_by_orgid(&self, org_id: uuid::Uuid) -> DBResult<Option<Organization>> {
+    pub async fn find_by_orgid(&self, org_id: uuid::Uuid) -> DBResult<Option<OrganizationRow>> {
         let query = Query::select()
             .column(Asterisk)
-            .from(PG_TABLE_ORGS)
-            .and_where(Expr::col(Alias::new("organization_id")).eq(org_id.to_string()))
+            .from(Organizations::Table)
+            .and_where(Expr::col(Organizations::OwnerId).eq(org_id.to_string()))
             .to_string(PostgresQueryBuilder);
 
-        let org = sqlx::query_as::<_, Organization>(&query)
+        let org = sqlx::query_as::<_, OrganizationRow>(&query)
             .fetch_optional(self.pool)
             .await?;
         Ok(org)
@@ -65,8 +69,8 @@ impl<'a> OrgRepo<'a> {
 
     pub async fn delete_by_orgid(&self, org_id: uuid::Uuid) -> DBResult<u64> {
         let query = Query::delete()
-            .from_table(Alias::new(PG_TABLE_ORGS))
-            .and_where(Expr::col(Alias::new("organization_id")).eq(org_id.to_string()))
+            .from_table(Organizations::Table)
+            .and_where(Expr::col(Organizations::OrganizationId).eq(org_id.to_string()))
             .to_string(PostgresQueryBuilder);
 
         let result = sqlx::query(&query).execute(self.pool).await?;
@@ -75,8 +79,8 @@ impl<'a> OrgRepo<'a> {
 
     pub async fn delete_by_subdomain(&self, subdomain: String) -> DBResult<u64> {
         let query = Query::delete()
-            .from_table(Alias::new(PG_TABLE_ORGS))
-            .and_where(Expr::col(Alias::new("subdomain")).eq(subdomain))
+            .from_table(Organizations::Table)
+            .and_where(Expr::col(Organizations::OrganizationId).eq(subdomain))
             .to_string(PostgresQueryBuilder);
 
         let result = sqlx::query(&query).execute(self.pool).await?;

@@ -1,6 +1,7 @@
 use actix_web::{HttpRequest, Responder, get, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
+use arx_gatehouse::db::dto::organization::OrgProfile;
 use arx_gatehouse::db::repos::OrgRepo;
 use arx_gatehouse::services::DbManager;
 
@@ -17,6 +18,11 @@ async fn list_organizations(
 
     let org_repo = OrgRepo::new(&pool);
     let orgs = org_repo.find_by_ownerid(user_id).await?;
+
+    let orgs = orgs
+        .into_iter()
+        .map(|org| org.into())
+        .collect::<Vec<OrgProfile>>();
 
     tracing::info!(%user_id, len = %orgs.len(), "listed organization");
 

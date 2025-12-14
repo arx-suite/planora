@@ -1,7 +1,8 @@
 use actix_web::{HttpRequest, Responder, post, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
-use arx_gatehouse::db::{dto::organization::CreateOrg, repos::OrgRepo};
+use arx_gatehouse::db::dto::organization::{CreateOrg, OrgProfile};
+use arx_gatehouse::db::repos::OrgRepo;
 use arx_gatehouse::services::DbManager;
 
 #[post("")]
@@ -18,7 +19,7 @@ async fn create_organization(
     let pool = manager.get_planora_pool().await?;
     let org_repo = OrgRepo::new(&pool);
 
-    let inserted_org = org_repo.create_org(&org, user_id).await?;
+    let inserted_org: OrgProfile = org_repo.create_org(&org, user_id).await?.into();
 
     tracing::info!(%user_id, "created organization");
 
