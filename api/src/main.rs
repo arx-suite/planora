@@ -94,7 +94,6 @@ async fn main() -> std::io::Result<()> {
                 auth_service.clone(),
                 manager.clone(),
             )))
-            .service(routes::internal::internal_routes())
             .default_service(web::to(not_found_handler))
     })
     .bind(config.addr())?
