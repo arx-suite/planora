@@ -3,7 +3,7 @@ use sqlx::PgPool;
 use tracing::info;
 
 use super::{CreateUser, UserRow, Users};
-use crate::db::DBResult;
+use crate::services::db::DBResult;
 
 pub struct UserRepo<'a> {
     pub pool: &'a PgPool,

@@ -2,7 +2,7 @@ use sea_query::*;
 use sqlx::PgPool;
 
 use super::{CreateProject, DeleteProject, ProjectRow, Projects};
-use crate::db::{DBResult, helpers::with_org};
+use crate::services::db::{DBResult, with_org};
 
 pub struct ProjectRepo<'a> {
     pub pool: &'a PgPool,

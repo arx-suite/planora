@@ -6,3 +6,5 @@ pub enum DatabaseError {
     #[error("query building failed")]
     SeaQuery(#[from] sea_query::error::Error),
 }
+
+pub type DBResult<T> = Result<T, DatabaseError>;

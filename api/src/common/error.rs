@@ -1,7 +1,8 @@
 use actix_web::{HttpResponse, ResponseError};
 
 use super::ApiResult;
-use crate::{db::DatabaseError, services::auth::AuthError};
+use crate::services::auth::AuthError;
+use crate::services::db::DatabaseError;
 
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]

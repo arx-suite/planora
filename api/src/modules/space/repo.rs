@@ -4,7 +4,7 @@ use tracing::{debug, info, trace};
 use uuid::Uuid;
 
 use super::{DeleteSpace, NewSpace, SpaceRow, Spaces, UpdateSpace};
-use crate::db::{DBResult, helpers::with_org};
+use crate::services::db::{DBResult, with_org};
 
 pub struct SpaceRepo<'a> {
     pub pool: &'a PgPool,

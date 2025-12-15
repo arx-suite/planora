@@ -2,7 +2,7 @@ use sea_query::*;
 use sqlx::PgPool;
 
 use super::{CreateOrg, OrganizationRow, Organizations};
-use crate::db::DBResult;
+use crate::services::db::DBResult;
 
 pub struct OrgRepo<'a> {
     pub pool: &'a PgPool,
