@@ -5,7 +5,7 @@ import { config } from "@/lib/config";
 const API_AUTH_PROFILE = `${config.api}/v1/auth/profile`;
 const API_REFRESH_TOKEN = `${config.api}/v1/auth/refresh`;
 
-export async function fetchUser() {
+export async function fetchUser(): Promise<User | null> {
     try {
         const cookieHeader = (await cookies())
             .getAll()
@@ -18,12 +18,11 @@ export async function fetchUser() {
             cache: "no-store",
         });
 
-        const data = await res.json();
+        const data: ApiResult<User> = await res.json();
         if (!data.success) {
             await refreshToken();
             return await fetchUser();
         }
-
         return data.payload ?? null;
     } catch (_err) {
         return null;
