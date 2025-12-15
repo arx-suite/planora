@@ -3,16 +3,16 @@
 import { useEffect } from "react";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
-import { type User, useUser } from "@/context/user-context";
+import { useProfile } from "@/context/profile-context";
 import { HeroSection } from "./hero";
 import { UserProfileSection } from "./user";
 
-export default function Home({ userIn }: { userIn: User | null }) {
-    const { user, setUser } = useUser();
+export default function Home({ profile }: { profile: Profile | null }) {
+    const { user, setProfile } = useProfile();
 
     useEffect(() => {
-        setUser(userIn);
-    }, [userIn, setUser]);
+        setProfile(profile);
+    }, [profile]);
 
     return (
         <div className="min-h-screen bg-background text-foreground">

@@ -18,6 +18,18 @@ export default async function RootLayout({
 }>) {
     const user = await fetchUser();
 
+    let profile: Profile | null;
+
+    if (user === null) {
+        profile = null;
+    } else {
+        profile = {
+            user,
+            ownedOrgs: [],
+            joinedOrgs: [],
+        };
+    }
+
     return (
         <html lang="en" suppressHydrationWarning>
             <body>
@@ -26,7 +38,7 @@ export default async function RootLayout({
                     defaultTheme="system"
                     enableSystem
                 >
-                    <AppProvider user={user}>{children}</AppProvider>
+                    <AppProvider profile={profile}>{children}</AppProvider>
                     <ToastProvider />
                 </ThemeProvider>
             </body>

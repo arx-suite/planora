@@ -1,11 +1,12 @@
 import { motion } from "motion/react";
 import Link from "next/link";
 import { Card } from "@/components/ui/card";
-import { useUser } from "@/context/user-context";
+import { useAuthenticatedProfile } from "@/context/profile-context";
 
 export function UserProfileSection() {
-    const { user } = useUser();
-    const welcomeMessage = `Welcome ${user?.username}`.toUpperCase();
+    const { user } = useAuthenticatedProfile();
+
+    const welcomeMessage = `Welcome ${user.username}`.toUpperCase();
 
     return (
         <motion.div

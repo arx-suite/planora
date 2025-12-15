@@ -4,5 +4,17 @@ import { fetchUser } from "@/lib/api/auth";
 export default async function HomePage() {
     const user = await fetchUser();
 
-    return <Home userIn={user} />;
+    let profile: Profile | null;
+
+    if (user === null) {
+        profile = null;
+    } else {
+        profile = {
+            user,
+            ownedOrgs: [],
+            joinedOrgs: [],
+        };
+    }
+
+    return <Home profile={profile} />;
 }
