@@ -5,6 +5,10 @@ use tokio::sync::RwLock;
 
 use crate::common::ApiError;
 
+const DEFAULT_INIT_POOL: &'static str = "planora";
+const DEFAULT_MAX_CONNECTIONS: u32 = 5;
+const ENV_PG_DATABASE_URL: &'static str = "PG_DATABASE_URL";
+
 #[derive(Debug, Clone)]
 pub struct DbManager {
     pools: Arc<RwLock<HashMap<String, PgPool>>>,
@@ -19,8 +23,12 @@ impl DbManager {
         }
     }
 
-    #[tracing::instrument(skip(self, url), fields(dbname = %name))]
-    pub async fn init_pool(&self, name: &str, url: &str, max_connections: u32) -> sqlx::Result<()> {
+    #[tracing::instrument(skip(self))]
+    pub async fn init_pool(&self) -> sqlx::Result<()> {
+        let url = std::env::var(ENV_PG_DATABASE_URL)
+            .expect("missing required environment variable: PG_DATABASE_URL");
+        let name = DEFAULT_INIT_POOL;
+
         let safe_url = match url.split('@').nth(1) {
             Some(host_part) => host_part,
             None => "unknown-host",
@@ -28,8 +36,8 @@ impl DbManager {
         tracing::debug!(db_name = %name, host = %safe_url, "attempting to connect to PostgreSQL");
 
         match PgPoolOptions::new()
-            .max_connections(max_connections)
-            .connect(url)
+            .max_connections(DEFAULT_MAX_CONNECTIONS)
+            .connect(&url)
             .await
         {
             Ok(pool) => {

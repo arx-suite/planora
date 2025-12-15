@@ -5,7 +5,6 @@ const KEY_APP_ENVIRONMENT: &'static str = "APP_ENV";
 const KEY_SERVER_HOST: &'static str = "SERVER_HOST";
 const KEY_SERVER_PORT: &'static str = "SERVER_PORT";
 const KEY_NEXT_BASE_URL: &'static str = "NEXT_PUBLIC_BASE_URL";
-const KEY_PG_DATABASE_URL: &'static str = "PG_DATABASE_URL";
 
 #[derive(Debug, Clone)]
 pub struct Config {
@@ -16,7 +15,6 @@ pub struct Config {
     pub port: u16,
     pub next_base_url: String,
     pub app_env: String,
-    pub pg_url: String,
 }
 
 impl Config {
@@ -56,8 +54,6 @@ impl Config {
             .expect("SERVER_PORT must be a valid number");
         let next_base_url = env::var(KEY_NEXT_BASE_URL)
             .expect("missing required environment variable: NEXT_BASE_URL");
-        let pg_url = env::var(KEY_PG_DATABASE_URL)
-            .expect("missing required environment variable: PG_DATABASE_URL");
 
         Self {
             app_name,
@@ -67,7 +63,6 @@ impl Config {
             port,
             next_base_url,
             app_env,
-            pg_url,
         }
     }
 

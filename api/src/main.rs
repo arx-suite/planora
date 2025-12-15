@@ -50,7 +50,7 @@ async fn main() -> std::io::Result<()> {
     // database
     let manager = services::DbManager::new();
     manager
-        .init_pool("planora", &config.pg_url.clone(), 5)
+        .init_pool()
         .await
         .expect("Failed to connect to Postgres");
 
