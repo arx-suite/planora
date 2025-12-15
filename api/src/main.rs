@@ -13,7 +13,6 @@ use crate::routes::v1::v1_scope;
 mod config;
 mod middlewares;
 mod routes;
-mod telemetry;
 mod ws;
 
 pub const fn public_paths() -> [&'static str; 4] {
@@ -32,7 +31,7 @@ async fn not_found_handler() -> HttpResponse {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // telemetry
-    telemetry::init();
+    config::telemetry_init();
 
     // config
     let config = config::Config::from_env();
