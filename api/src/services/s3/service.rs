@@ -1,10 +1,12 @@
 use actix_multipart::form::tempfile::TempFile;
 use aws_sdk_s3 as s3;
+use aws_sdk_s3::presigning::PresigningConfig;
 use s3::config::{Builder as S3ConfigBuilder, Credentials};
 use s3::primitives::ByteStream;
-use std::path::Path;
+use std::{path::Path, time::Duration};
 use uuid::Uuid;
 
+use super::asset::SignedUrlProvider;
 use super::{S3Error, S3Result, S3ServiceI};
 
 #[derive(Debug, Clone)]
@@ -86,5 +88,23 @@ impl S3ServiceI for S3Service {
             .await?;
 
         Ok(())
+    }
+}
+
+#[async_trait::async_trait]
+impl SignedUrlProvider for S3Service {
+    async fn sign_get(&self, bucket: &str, key: &str, expires: Duration) -> S3Result<String> {
+        let presigned = self
+            .client()
+            .get_object()
+            .bucket(bucket)
+            .key(key)
+            .presigned(
+                PresigningConfig::expires_in(expires)
+                    .map_err(|e| S3Error::Config(e.to_string()))?,
+            )
+            .await?;
+
+        Ok(presigned.uri().to_string())
     }
 }
