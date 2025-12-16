@@ -35,18 +35,18 @@ pub enum Error {
     #[error("S3 bucket already exists")]
     BucketAlreadyExists,
 
-    #[error("Unsupported content type")]
-    UnsupportedContent,
-
-    #[error("Unsupported content type")]
-    UnsupportedExtension,
-
     // Data
     #[error("failed to read object data")]
     ByteStream(ByteStreamError),
 
     #[error("invalid object data: {0}")]
     InvalidData(String),
+
+    #[error("Unsupported content type")]
+    UnsupportedContent,
+
+    #[error("Unsupported extension")]
+    UnsupportedExtension,
 
     #[error("s3 service error ({code}): {message}")]
     Service { code: String, message: String },

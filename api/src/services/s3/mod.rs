@@ -1,9 +1,11 @@
 #![allow(dead_code, unused_imports)]
 
 mod asset;
+mod avatar;
 mod error;
 mod service;
 
+pub use avatar::AvatarStorage;
 pub use error::{S3Error, S3Result};
 pub use service::S3Service;
 
