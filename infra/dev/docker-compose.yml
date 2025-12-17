@@ -1,0 +1,42 @@
+services:
+  s3:
+    image: minio/minio:latest
+    container_name: s3
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - data_minio:/data
+    networks:
+      - default
+    command: ["server", "--console-address", ":9001", "/data"]
+
+  pg-db:
+    image: postgres:17.6-alpine3.22
+    container_name: pg-db
+    environment:
+      - POSTGRES_DB=primary
+      - POSTGRES_USER=planora-admin
+      - POSTGRES_PASSWORD=planora-secret
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - pg_db_data:/var/lib/postgresql/data
+    networks:
+      - default  
+
+volumes:
+  pg_db_data:
+  data_minio:
+
+networks:
+  default:
+    driver: bridge
