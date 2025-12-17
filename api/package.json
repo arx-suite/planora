@@ -1,0 +1,7 @@
+{
+    "name": "@arx/gatehouse",
+    "private": true,
+    "scripts": {
+        "dev": "cargo run"
+    }
+}

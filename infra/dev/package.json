@@ -1,0 +1,9 @@
+{
+    "name": "@arx/infra-dev",
+    "private": true,
+    "scripts": {
+        "dev": "docker-compose -p planora up -d",
+        "down": "docker-compose -p planora down",
+        "clean": "docker-compose -p planora down -v"
+    }
+}
