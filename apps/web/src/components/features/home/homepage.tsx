@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import { Footer } from "@/components/layout/footer";
-import { Navbar } from "@/components/layout/navbar";
 import { useProfile } from "@/context/profile-context";
 import { HeroSection } from "./hero";
+import { Footer, Navbar } from "./layout";
 import { UserProfileSection } from "./user";
 
 export default function Home({ profile }: { profile: Profile | null }) {

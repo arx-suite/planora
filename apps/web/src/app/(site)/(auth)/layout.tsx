@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 
 import { slideRight } from "@/components/core/motions";
-import { Navbar } from "@/components/layout/navbar";
+import { Navbar } from "@/components/features/home/layout";
 
 export default function AuthLayout({
     children,
