@@ -1,16 +1,84 @@
 import { CreditCard, LogOut, Settings, ShieldCheck } from "lucide-react";
-import type { ReactNode } from "react";
+import { useRouter } from "next/navigation";
+import { type ReactNode, useState } from "react";
+import { toast } from "sonner";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { useAuthenticatedProfile } from "@/context/profile-context";
+import { config } from "@/lib/config";
 import type { ProfileSidebarTabProps } from ".";
+
+const API_SIGNOUT = `${config.api}/v1/auth/signout`;
+
+export function AlertDialogDemo() {
+    return (
+        <AlertDialog>
+            <AlertDialogTrigger asChild>
+                <Button variant="outline">Show Dialog</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+                <AlertDialogHeader>
+                    <AlertDialogTitle>
+                        Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                        This action cannot be undone. This will permanently
+                        delete your account and remove your data from our
+                        servers.
+                    </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction>Continue</AlertDialogAction>
+                </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+    );
+}
 
 export function ProfileSidebar({
     activeTab,
     setActiveTab,
 }: ProfileSidebarTabProps) {
     const { user } = useAuthenticatedProfile();
+
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+
+    async function signOut() {
+        if (loading) return;
+        setLoading(true);
+
+        try {
+            const res = await fetch(API_SIGNOUT, {
+                method: "POST",
+                credentials: "include",
+            });
+
+            const data: ApiResult<User> = await res.json();
+            if (!data.success) throw new Error(data.message);
+
+            toast.info(data.message);
+
+            router.replace("/");
+        } catch (_) {
+            toast.error("Failed to signout");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
         <aside className="hidden md:block sticky top-6 self-start">
@@ -55,14 +123,47 @@ export function ProfileSidebar({
                         active={activeTab === "billing"}
                         onClick={() => setActiveTab("billing")}
                     />
-
                     <div className="mt-3 pt-3 border-t border-white/6">
-                        <Button
-                            variant="ghost"
-                            className="w-full justify-start"
-                        >
-                            <LogOut className="w-4 h-4 mr-2" /> Sign out
-                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button
+                                    variant="ghost"
+                                    className="w-full justify-start"
+                                >
+                                    <LogOut className="w-4 h-4 mr-2" />
+                                    Sign out
+                                </Button>
+                            </AlertDialogTrigger>
+
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                        Sign out?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        Are you sure you want to sign out? You
+                                        will need to sign in again to access
+                                        your account.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                        Cancel
+                                    </AlertDialogCancel>
+
+                                    <AlertDialogAction
+                                        onClick={signOut}
+                                        disabled={loading}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                    >
+                                        {loading
+                                            ? "Signing out..."
+                                            : "Sign out"}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </nav>
             </div>
