@@ -8,7 +8,7 @@
 		"dev": "turbo run dev",
 		"dev:web": "turbo run dev --filter=@arx/planora-hall",
 		"dev:api": "turbo run dev --filter=@arx/gatehouse",
-		"infra:up": "turbo run up --filter=@arx/infra-dev",
+		"infra:up": "turbo run dev --filter=@arx/infra-dev",
 		"infra:down": "pnpm --filter=@arx/infra-dev run down",
 		"infra:clean": "pnpm --filter=@arx/infra-dev run clean"
 	},
