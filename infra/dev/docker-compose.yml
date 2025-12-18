@@ -9,10 +9,10 @@ services:
       - "9000:9000"
       - "9001:9001"
     volumes:
-      - data_minio:/data
+      - minio_data:/data
     networks:
       - default
-    command: ["server", "--console-address", ":9001", "/data"]
+    command: [ "server", "--console-address", ":9001", "/data" ]
 
   pg-db:
     image: postgres:17.6-alpine3.22
@@ -24,14 +24,44 @@ services:
     ports:
       - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
       - pg_db_data:/var/lib/postgresql/data
     networks:
-      - default  
+      - default
+
+  prometheus:
+    image: prom/prometheus:v3.8.1
+    container_name: prometheus
+    volumes:
+      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - pg-exporter
+    restart: unless-stopped
+    networks:
+      - default
+
+  grafana:
+    image: grafana/grafana:main
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    volumes:
+      - grafana_data:/var/lib/grafana
+    networks:
+      - default
 
   pg-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:latest
@@ -44,11 +74,14 @@ services:
       - pg-db
     restart: unless-stopped
     networks:
-      - default  
+      - default
 
 volumes:
   pg_db_data:
-  data_minio:
+  minio_data:
+  grafana_data:
+  prometheus_data:
+
 
 networks:
   default:
