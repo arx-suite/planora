@@ -33,6 +33,19 @@ services:
     networks:
       - default  
 
+  pg-exporter:
+    image: quay.io/prometheuscommunity/postgres-exporter:latest
+    container_name: pg-exporter
+    environment:
+      - DATA_SOURCE_NAME=postgresql://planora-admin:planora-secret@pg-db:5432/primary?sslmode=disable
+    ports:
+      - "9187:9187"
+    depends_on:
+      - pg-db
+    restart: unless-stopped
+    networks:
+      - default  
+
 volumes:
   pg_db_data:
   data_minio:
