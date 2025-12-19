@@ -1,3 +1,4 @@
+use actix_multipart::form::{MultipartForm, tempfile::TempFile};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
@@ -14,6 +15,17 @@ pub struct CreateUser {
 pub struct SigninPayload {
     pub email: String,
     pub password: String,
+}
+
+#[derive(Debug, MultipartForm)]
+pub struct UpdateProfileForm {
+    #[multipart(limit = "2MB")]
+    pub avatar: Option<TempFile>,
+}
+
+#[derive(Debug)]
+pub struct UpdateProfileDto {
+    pub avatar_url: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize)]

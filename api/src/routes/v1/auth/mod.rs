@@ -13,4 +13,5 @@ pub fn auth_scope() -> Scope {
         .service(signout::signout)
         .service(refresh::refresh)
         .service(profile::profile)
+        .service(profile::update_profile)
 }
