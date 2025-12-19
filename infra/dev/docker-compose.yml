@@ -63,6 +63,18 @@ services:
     networks:
       - default
 
+  loki:
+    image: grafana/loki
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - loki_data:/loki
+    restart: unless-stopped
+    networks:
+      - default
+
   pg-exporter:
     image: quay.io/prometheuscommunity/postgres-exporter:latest
     container_name: pg-exporter
@@ -81,6 +93,7 @@ volumes:
   minio_data:
   grafana_data:
   prometheus_data:
+  loki_data:
 
 
 networks:
