@@ -3,6 +3,7 @@ use actix_web::{HttpResponse, ResponseError};
 use super::ApiResult;
 use crate::services::auth::AuthError;
 use crate::services::db::DatabaseError;
+use crate::services::s3::S3Error;
 
 #[derive(Debug, thiserror::Error)]
 #[non_exhaustive]
@@ -12,6 +13,9 @@ pub enum ApiError {
 
     #[error("Authentication error: {0}")]
     AuthError(#[from] AuthError),
+
+    #[error("S3 Error: {0}")]
+    S3Error(#[from] S3Error),
 
     #[error("Invalid header value: {0}")]
     ToStrError(#[from] actix_web::http::header::ToStrError),
@@ -64,6 +68,7 @@ impl ApiError {
             ApiError::Forbidden(_) => StatusCode::FORBIDDEN,
             ApiError::NotFound(_) => StatusCode::NOT_FOUND,
             ApiError::Internal(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            ApiError::S3Error(_) => StatusCode::BAD_REQUEST,
         }
     }
 
@@ -71,6 +76,9 @@ impl ApiError {
         match self {
             ApiError::DatabaseError(err) => {
                 tracing::error!(target: "api_error", %err, "Database error")
+            }
+            ApiError::S3Error(err) => {
+                tracing::error!(target: "api_error", %err, "S3 error")
             }
             ApiError::AuthError(err) => {
                 tracing::warn!(target: "api_error", %err, "Authentication failed")

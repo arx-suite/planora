@@ -1,6 +1,6 @@
 pub mod auth;
 pub mod db;
-mod s3;
+pub mod s3;
 
 pub use auth::AuthService;
 pub use db::DbManager;
