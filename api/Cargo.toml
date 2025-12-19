@@ -52,6 +52,7 @@ tracing-subscriber = { version = "0.3.2", features = [
     "json",
 ] }
 tracing-actix-web = "0.7.19"
+tracing-loki = "0.2.6"
 
 # misc
 thiserror = "2.0.17"
@@ -59,6 +60,7 @@ dotenvy = "0.15"
 chrono = { version = "0.4.42", features = ["serde"] }
 uuid = { version = "1.18.1", features = ["serde"] }
 jsonwebtoken = { version = "10.1.0", features = ["rust_crypto"] }
+url = "2.5.7"
 
 [dev-dependencies]
 testcontainers-modules = { version = "0.13.0", features = ["postgres"] }

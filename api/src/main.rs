@@ -30,15 +30,18 @@ async fn not_found_handler() -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // telemetry
-    config::telemetry_init();
-
     // config
     let config = config::Config::from_env();
+
+    // telemetry
+    config::logs_init(&config.app_name, &config.app_version, &config.app_env)
+        .expect("failed to initialize the logs");
+
+    // initialize the application
     let is_production_env = config.is_production_env();
     let web_url = config.next_base_url.to_owned();
     tracing::info!(
-        "\n\t\t{} v{} initialized - running in {} ({}) mode",
+        "{} v{} initialized - running in {} ({}) mode",
         config.app_name,
         config.app_version,
         config.app_env,
