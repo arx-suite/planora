@@ -80,10 +80,11 @@ services:
   loki:
     image: grafana/loki
     container_name: loki
-    ports:
-      - "3100:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
+      - "-config.expand-env=true"
     volumes:
+      - ../loki/config.yml:/etc/loki/local-config.yaml
       - loki_data:/loki
     restart: unless-stopped
     networks:
