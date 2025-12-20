@@ -25,9 +25,9 @@ services:
       - "--log.level=INFO"
 
     ports:
-      - "80:80"       # HTTP
-      - "443:443"     # HTTPS
-      - "8081:8080"   # Dashboard
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "8081:8080" # Dashboard
 
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -95,7 +95,7 @@ services:
     depends_on:
       - api
     networks:
-      - default  
+      - default
 
   pg-db:
     image: postgres:17.6-alpine3.22
@@ -106,18 +106,19 @@ services:
       - POSTGRES_PASSWORD=planora-secret
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
       interval: 10s
       timeout: 5s
       retries: 5
     volumes:
       - pg-db-data:/var/lib/postgresql/data
     networks:
-      - default  
+      - default
 
 volumes:
   pg-db-data:
   traefik_letsencrypt:
+
 
 networks:
   default:

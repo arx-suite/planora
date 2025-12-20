@@ -37,7 +37,7 @@ services:
     image: prom/prometheus:v3.8.1
     container_name: prometheus
     volumes:
-      - ../prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../configs/prometheus/dev.yaml:/etc/prometheus/prometheus.yml:ro
       - prometheus_data:/prometheus
     ports:
       - "9090:9090"
@@ -66,12 +66,12 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector-contrib:latest
     container_name: otel-collector
-    command: ["--config=/etc/otel/config.yaml"]
+    command: [ "--config=/etc/otel/config.yaml" ]
     volumes:
-      - ../otel/config.yaml:/etc/otel/config.yaml
+      - ../configs/otel-collector/dev.yaml:/etc/otel/config.yaml
     ports:
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
       # - "9464:9464"   # Prometheus scrape
     restart: unless-stopped
     networks:
@@ -84,7 +84,7 @@ services:
       - "-config.file=/etc/loki/local-config.yaml"
       - "-config.expand-env=true"
     volumes:
-      - ../loki/config.yml:/etc/loki/local-config.yaml
+      - ../configs/loki/dev.yaml:/etc/loki/local-config.yaml
       - loki_data:/loki
     restart: unless-stopped
     networks:
@@ -95,7 +95,7 @@ services:
     container_name: tempo
     command: [ "-config.file=/etc/tempo.yaml" ]
     volumes:
-      - ../tempo/tempo.yaml:/etc/tempo.yaml
+      - ../configs/tempo/dev.yaml:/etc/tempo.yaml
       - tempo_data:/var/tempo
     restart: unless-stopped
     networks:
