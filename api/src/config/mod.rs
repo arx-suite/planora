@@ -1,5 +1,5 @@
 mod config;
-mod telemetry;
+mod observability;
 
 pub use config::Config;
-pub use telemetry::logs_init;
+pub use observability::*;
