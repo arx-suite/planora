@@ -63,6 +63,20 @@ services:
     networks:
       - default
 
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    command: ["--config=/etc/otel/config.yaml"]
+    volumes:
+      - ../otel/config.yaml:/etc/otel/config.yaml
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      # - "9464:9464"   # Prometheus scrape
+    restart: unless-stopped
+    networks:
+      - default
+
   loki:
     image: grafana/loki
     container_name: loki
