@@ -85,7 +85,8 @@ async fn main() -> std::io::Result<()> {
         };
 
         App::new()
-            .wrap(tracing_actix_web::TracingLogger::default())
+            .wrap(opentelemetry_instrumentation_actix_web::RequestTracing::new())
+            .wrap(opentelemetry_instrumentation_actix_web::RequestMetrics::default())
             .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
             .app_data(web::Data::new(manager.clone()))

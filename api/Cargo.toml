@@ -53,7 +53,6 @@ tracing-subscriber = { version = "0.3.2", features = [
     "std",
     "registry",
 ] }
-tracing-actix-web = "0.7.19"
 opentelemetry = { version = "0.31.0", features = ["trace", "metrics", "logs"] }
 opentelemetry_sdk = { version = "0.31.0", features = [
     "trace",
@@ -70,6 +69,9 @@ opentelemetry-otlp = { version = "0.31.0", features = [
 opentelemetry-appender-tracing = "0.31.1"
 opentelemetry-semantic-conventions = "0.31.0"
 tracing-opentelemetry = "0.32.0"
+opentelemetry-instrumentation-actix-web = { version = "0.23.0", features = [
+    "metrics",
+] }
 
 # misc
 thiserror = "2.0.17"
