@@ -72,15 +72,21 @@ pub fn init_observability() -> ObservabilityGuard {
 
     // subscriber
     let env_filter = EnvFilter::from_default_env()
+        .add_directive("actix_server=warn".parse().unwrap())
+        .add_directive("actix_web=warn".parse().unwrap())
+        .add_directive("actix_http=warn".parse().unwrap())
         .add_directive("hyper=off".parse().unwrap())
+        .add_directive("mio=off".parse().unwrap())
+        .add_directive("aws_runtime=off".parse().unwrap())
+        .add_directive("aws_smithy_runtime=off".parse().unwrap())
+        .add_directive("aws_config=off".parse().unwrap())
+        .add_directive("tower=off".parse().unwrap())
         .add_directive("tonic=off".parse().unwrap())
         .add_directive("h2=off".parse().unwrap())
         .add_directive("reqwest=off".parse().unwrap());
 
-    let filter_fmt = EnvFilter::new("info").add_directive("opentelemetry=debug".parse().unwrap());
-    let fmt_layer = tracing_subscriber::fmt::layer()
-        .with_thread_names(true)
-        .with_filter(filter_fmt);
+    let filter_fmt = EnvFilter::new("info");
+    let fmt_layer = tracing_subscriber::fmt::layer().with_filter(filter_fmt);
 
     tracing_subscriber::registry()
         .with(env_filter)
