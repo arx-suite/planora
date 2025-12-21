@@ -19,6 +19,12 @@ exporters:
     tls:
       insecure: true
 
+  prometheus:
+    endpoint: "0.0.0.0:9464"
+    namespace: "otel"
+    send_timestamps: true
+    metric_expiration: 5m
+
 service:
   telemetry:
     logs:
@@ -33,3 +39,7 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [otlp/traces]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheus]
