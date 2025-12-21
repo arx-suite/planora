@@ -7,6 +7,7 @@ use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
 use opentelemetry::global;
+use opentelemetry::trace::TracerProvider as _;
 use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::prelude::*;
@@ -56,13 +57,18 @@ async fn main() -> std::io::Result<()> {
         .with_thread_names(true)
         .with_filter(filter_fmt);
 
+    let tracer_provider = config::init_traces();
+    let tracer = tracer_provider.tracer(config.app_name.clone());
+
+    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
+
+    global::set_tracer_provider(tracer_provider.clone());
+
     tracing_subscriber::registry()
+        .with(telemetry)
         .with(otel_layer)
         .with(fmt_layer)
         .init();
-
-    let tracer_provider = config::init_traces();
-    global::set_tracer_provider(tracer_provider.clone());
 
     let meter_provider = config::init_metrics();
     global::set_meter_provider(meter_provider.clone());
