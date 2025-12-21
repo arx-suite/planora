@@ -6,12 +6,6 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
-use opentelemetry::global;
-use opentelemetry::trace::TracerProvider as _;
-use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
-use tracing_subscriber::EnvFilter;
-use tracing_subscriber::prelude::*;
-
 use arx_gatehouse::{common::ApiResult, services};
 
 use crate::routes::v1::v1_scope;
@@ -40,38 +34,7 @@ async fn main() -> std::io::Result<()> {
     let config = config::Config::from_env();
 
     // observability
-    let logger_provider = config::init_logs();
-
-    let otel_layer = OpenTelemetryTracingBridge::new(&logger_provider);
-
-    let filter_otel = EnvFilter::from_default_env()
-        .add_directive("hyper=off".parse().unwrap())
-        .add_directive("tonic=off".parse().unwrap())
-        .add_directive("h2=off".parse().unwrap())
-        .add_directive("reqwest=off".parse().unwrap());
-
-    let otel_layer = otel_layer.with_filter(filter_otel);
-
-    let filter_fmt = EnvFilter::new("info").add_directive("opentelemetry=debug".parse().unwrap());
-    let fmt_layer = tracing_subscriber::fmt::layer()
-        .with_thread_names(true)
-        .with_filter(filter_fmt);
-
-    let tracer_provider = config::init_traces();
-    let tracer = tracer_provider.tracer(config.app_name.clone());
-
-    let telemetry = tracing_opentelemetry::layer().with_tracer(tracer);
-
-    global::set_tracer_provider(tracer_provider.clone());
-
-    tracing_subscriber::registry()
-        .with(telemetry)
-        .with(otel_layer)
-        .with(fmt_layer)
-        .init();
-
-    let meter_provider = config::init_metrics();
-    global::set_meter_provider(meter_provider.clone());
+    let _guard = config::init_observability();
 
     // initialize the application
     let is_production_env = config.is_production_env();
@@ -139,27 +102,6 @@ async fn main() -> std::io::Result<()> {
     .bind(config.addr())?
     .run()
     .await?;
-
-    // shutdown
-    let mut shutdown_errors = Vec::new();
-    if let Err(e) = tracer_provider.shutdown() {
-        shutdown_errors.push(format!("tracer provider: {e}"));
-    }
-
-    if let Err(e) = meter_provider.shutdown() {
-        shutdown_errors.push(format!("meter provider: {e}"));
-    }
-
-    if let Err(e) = logger_provider.shutdown() {
-        shutdown_errors.push(format!("logger provider: {e}"));
-    }
-
-    if !shutdown_errors.is_empty() {
-        return Err(std::io::Error::other(format!(
-            "Failed to shutdown providers:{}",
-            shutdown_errors.join("\n")
-        )));
-    }
 
     Ok(())
 }

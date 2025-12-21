@@ -1,51 +1,97 @@
+use opentelemetry::global;
+use opentelemetry_appender_tracing::layer::OpenTelemetryTracingBridge;
 use opentelemetry_otlp::{LogExporter, MetricExporter, SpanExporter};
 use opentelemetry_sdk::Resource;
 use opentelemetry_sdk::logs::SdkLoggerProvider;
 use opentelemetry_sdk::metrics::SdkMeterProvider;
 use opentelemetry_sdk::trace::SdkTracerProvider;
-use std::sync::OnceLock;
+use tracing_opentelemetry::OpenTelemetryLayer;
+use tracing_subscriber::EnvFilter;
+use tracing_subscriber::prelude::*;
 
 const SERVICE_NAME: &'static str = "arx-gatehouse";
 
-fn get_resource() -> Resource {
-    static RESOURCE: OnceLock<Resource> = OnceLock::new();
-    RESOURCE
-        .get_or_init(|| Resource::builder().with_service_name(SERVICE_NAME).build())
-        .clone()
+pub struct ObservabilityGuard {
+    logger_provider: SdkLoggerProvider,
+    tracer_provider: SdkTracerProvider,
+    meter_provider: SdkMeterProvider,
 }
 
-pub fn init_traces() -> SdkTracerProvider {
-    let exporter = SpanExporter::builder()
-        .with_tonic()
-        .build()
-        .expect("Failed to create span exporter");
-
-    SdkTracerProvider::builder()
-        .with_resource(get_resource())
-        .with_batch_exporter(exporter)
-        .build()
+impl Drop for ObservabilityGuard {
+    fn drop(&mut self) {
+        let _ = self.logger_provider.shutdown();
+        let _ = self.tracer_provider.shutdown();
+        let _ = self.meter_provider.shutdown();
+    }
 }
 
-pub fn init_metrics() -> SdkMeterProvider {
-    let exporter = MetricExporter::builder()
-        .with_tonic()
-        .build()
-        .expect("Failed to create metric exporter");
+pub fn init_observability() -> ObservabilityGuard {
+    let resource = Resource::builder().with_service_name(SERVICE_NAME).build();
 
-    SdkMeterProvider::builder()
-        .with_periodic_exporter(exporter)
-        .with_resource(get_resource())
-        .build()
-}
-
-pub fn init_logs() -> SdkLoggerProvider {
-    let exporter = LogExporter::builder()
+    // logs
+    let log_exporter = LogExporter::builder()
         .with_tonic()
         .build()
         .expect("Failed to create log exporter");
 
-    SdkLoggerProvider::builder()
-        .with_resource(get_resource())
-        .with_batch_exporter(exporter)
+    let logger_provider = SdkLoggerProvider::builder()
+        .with_resource(resource.clone())
+        .with_batch_exporter(log_exporter)
+        .build();
+
+    let otel_log_layer = OpenTelemetryTracingBridge::new(&logger_provider);
+
+    // traces
+    let span_exporter = SpanExporter::builder()
+        .with_tonic()
         .build()
+        .expect("Failed to create span exporter");
+
+    let tracer_provider = SdkTracerProvider::builder()
+        .with_resource(resource.clone())
+        .with_batch_exporter(span_exporter)
+        .build();
+
+    global::set_tracer_provider(tracer_provider.clone());
+
+    let tracer = global::tracer(SERVICE_NAME);
+    let otel_trace_layer = OpenTelemetryLayer::new(tracer);
+
+    // metrics
+    let metric_exporter = MetricExporter::builder()
+        .with_tonic()
+        .build()
+        .expect("Failed to create metric exporter");
+
+    let meter_provider = SdkMeterProvider::builder()
+        .with_periodic_exporter(metric_exporter)
+        .with_resource(resource)
+        .build();
+
+    global::set_meter_provider(meter_provider.clone());
+
+    // subscriber
+    let env_filter = EnvFilter::from_default_env()
+        .add_directive("hyper=off".parse().unwrap())
+        .add_directive("tonic=off".parse().unwrap())
+        .add_directive("h2=off".parse().unwrap())
+        .add_directive("reqwest=off".parse().unwrap());
+
+    let filter_fmt = EnvFilter::new("info").add_directive("opentelemetry=debug".parse().unwrap());
+    let fmt_layer = tracing_subscriber::fmt::layer()
+        .with_thread_names(true)
+        .with_filter(filter_fmt);
+
+    tracing_subscriber::registry()
+        .with(env_filter)
+        .with(fmt_layer)
+        .with(otel_trace_layer)
+        .with(otel_log_layer)
+        .init();
+
+    ObservabilityGuard {
+        logger_provider,
+        tracer_provider,
+        meter_provider,
+    }
 }
