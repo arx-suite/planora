@@ -2,18 +2,18 @@ use actix_web::{HttpRequest, Responder, get, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
 use arx_gatehouse::modules::organization::{OrgProfile, OrgRepo};
-use arx_gatehouse::services::DbManager;
+use arx_gatehouse::services::DbService;
 
 #[get("")]
 async fn list_organizations(
-    manager: web::Data<DbManager>,
+    db_service: web::Data<DbService>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
 
     tracing::trace!(%user_id, "list organization for the user");
 
-    let pool = manager.get_planora_pool().await?;
+    let pool = db_service.primary().await?;
 
     let org_repo = OrgRepo::new(&pool);
     let orgs = org_repo.find_by_ownerid(user_id).await?;

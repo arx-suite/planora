@@ -3,14 +3,14 @@ use actix_web::{HttpRequest, Responder, get, web};
 use super::helper::validate_org;
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_org_id};
 use arx_gatehouse::modules::space::{SpaceInfo, SpaceRepo};
-use arx_gatehouse::services::DbManager;
+use arx_gatehouse::services::DbService;
 
 #[get("")]
 async fn get_spaces_for_org(
-    manager: web::Data<DbManager>,
+    db_service: web::Data<DbService>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let pool = manager.get_planora_pool().await?;
+    let pool = db_service.primary().await?;
 
     let org_id = extract_org_id(&req)?;
     validate_org(&pool, org_id).await?;
@@ -36,12 +36,12 @@ async fn get_spaces_for_org(
 
 #[get("{space_id}")]
 async fn get_space(
-    manager: web::Data<DbManager>,
+    db_service: web::Data<DbService>,
     path: web::Path<uuid::Uuid>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let space_id = path.into_inner();
-    let pool = manager.get_planora_pool().await?;
+    let pool = db_service.primary().await?;
 
     let org_id = extract_org_id(&req)?;
     validate_org(&pool, org_id).await?;

@@ -2,11 +2,11 @@ use actix_web::{HttpResponse, Responder, post, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult};
 use arx_gatehouse::modules::user::{CreateUser, UserRepo};
-use arx_gatehouse::services::{AuthService, DbManager, auth::cookie::build_cookie};
+use arx_gatehouse::services::{AuthService, DbService, auth::cookie::build_cookie};
 
 #[post("/signup")]
 async fn signup(
-    manager: web::Data<DbManager>,
+    db_service: web::Data<DbService>,
     auth_service: web::Data<AuthService>,
     payload: web::Json<CreateUser>,
 ) -> Result<impl Responder, ApiError> {
@@ -15,7 +15,7 @@ async fn signup(
 
     tracing::trace!(%email, "signing up");
 
-    let pool = manager.get_planora_pool().await?;
+    let pool = db_service.primary().await?;
 
     let user_repo = UserRepo::new(&pool);
     match user_repo.find_by_email(email.clone()).await? {

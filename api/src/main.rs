@@ -49,9 +49,9 @@ async fn main() -> std::io::Result<()> {
 
     /* services */
     // database
-    let manager = services::DbManager::new();
-    manager
-        .init_pool()
+    let db_service = services::DbService::new();
+    db_service
+        .init_primary()
         .await
         .expect("Failed to connect to Postgres");
 
@@ -89,14 +89,14 @@ async fn main() -> std::io::Result<()> {
             .wrap(opentelemetry_instrumentation_actix_web::RequestMetrics::default())
             .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
-            .app_data(web::Data::new(manager.clone()))
+            .app_data(web::Data::new(db_service.clone()))
             .app_data(web::Data::new(auth_service.clone()))
             .app_data(web::Data::new(bucket_service.clone()))
             .route("/ws", web::get().to(ws::ws))
             .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
                 public_paths().into(),
                 auth_service.clone(),
-                manager.clone(),
+                db_service.clone(),
             )))
             .default_service(web::to(not_found_handler))
     })

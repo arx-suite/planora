@@ -1,7 +1,8 @@
 mod error;
 mod helpers;
-mod pg_service;
+mod pg;
+mod service;
 
 pub use error::{DBResult, DatabaseError};
 pub use helpers::with_org;
-pub use pg_service::DbManager;
+pub use service::DbService;

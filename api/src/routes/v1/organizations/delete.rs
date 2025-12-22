@@ -5,11 +5,11 @@ use arx_gatehouse::common::{
     headers::{extract_org_id, extract_user_id},
 };
 use arx_gatehouse::modules::organization::OrgRepo;
-use arx_gatehouse::services::DbManager;
+use arx_gatehouse::services::DbService;
 
 #[delete("")]
 async fn delete_organization(
-    manager: web::Data<DbManager>,
+    db_service: web::Data<DbService>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
@@ -17,7 +17,7 @@ async fn delete_organization(
 
     tracing::trace!(%user_id, %org_id, "delete organization");
 
-    let pool = manager.get_planora_pool().await?;
+    let pool = db_service.primary().await?;
     let org_repo = OrgRepo::new(&pool);
 
     match org_repo.find_by_orgid(org_id).await? {

@@ -9,21 +9,21 @@ use std::rc::Rc;
 use arx_gatehouse::{
     common::{ApiError, constants::X_USER_ID_HEADER, cookie::extract_access_token},
     modules::user::UserRepo,
-    services::{AuthService, DbManager},
+    services::{AuthService, DbService},
 };
 
 pub struct AuthMiddleware {
     public_paths: Rc<Vec<String>>,
     auth_service: Rc<AuthService>,
-    manager: Rc<DbManager>,
+    db_service: Rc<DbService>,
 }
 
 impl AuthMiddleware {
-    pub fn new(public_paths: Vec<&str>, auth_service: AuthService, manager: DbManager) -> Self {
+    pub fn new(public_paths: Vec<&str>, auth_service: AuthService, db_service: DbService) -> Self {
         Self {
             public_paths: Rc::new(public_paths.into_iter().map(String::from).collect()),
             auth_service: Rc::new(auth_service),
-            manager: Rc::new(manager),
+            db_service: Rc::new(db_service),
         }
     }
 }
@@ -44,7 +44,7 @@ where
             service: Rc::new(service),
             public_paths: Rc::clone(&self.public_paths),
             auth_service: Rc::clone(&self.auth_service),
-            manager: Rc::clone(&self.manager),
+            db_service: Rc::clone(&self.db_service),
         })
     }
 }
@@ -53,7 +53,7 @@ pub struct AuthMiddlewareService<S> {
     service: Rc<S>,
     public_paths: Rc<Vec<String>>,
     auth_service: Rc<AuthService>,
-    manager: Rc<DbManager>,
+    db_service: Rc<DbService>,
 }
 
 impl<S, B> Service<ServiceRequest> for AuthMiddlewareService<S>
@@ -71,7 +71,7 @@ where
         let path = req.path().to_string();
         let public_paths = Rc::clone(&self.public_paths);
         let service = Rc::clone(&self.service);
-        let manager = Rc::clone(&self.manager);
+        let db_service = Rc::clone(&self.db_service);
         let auth_service = Rc::clone(&self.auth_service);
 
         Box::pin(async move {
@@ -84,7 +84,10 @@ where
 
             tracing::debug!(%path, "checking authentication");
 
-            let pool = manager.get_planora_pool().await?;
+            let pool = db_service
+                .read()
+                .await
+                .map_err(|value| ApiError::DatabaseError(value))?;
 
             // Extract token cookie
             let token = extract_access_token(&req)?;

@@ -3,17 +3,17 @@ use actix_web::{HttpRequest, Responder, get, patch, web};
 
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
 use arx_gatehouse::modules::user::{UpdateProfileForm, UserProfile, UserRepo};
-use arx_gatehouse::services::{AvatarStorage, DbManager, S3Service};
+use arx_gatehouse::services::{AvatarStorage, DbService, S3Service};
 
 #[get("/profile")]
 async fn profile(
-    manager: web::Data<DbManager>,
+    db_service: web::Data<DbService>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
     tracing::trace!(%user_id, "request for profile data");
 
-    let pool = manager.get_planora_pool().await?;
+    let pool = db_service.primary().await?;
     let user_repo = UserRepo::new(&pool);
 
     let user: UserProfile = match user_repo.find_by_userid(user_id).await? {
