@@ -20,9 +20,7 @@ async fn create_project(
 
     tracing::trace!(%project.name, %org_id, "create project for organization");
 
-    let project_repo = ProjectRepo::new(&pool);
-
-    let inserted_project: ProjectInfo = project_repo.create_project(&project, org_id).await?.into();
+    let inserted_project: ProjectInfo = pool.project_create(&project, org_id).await?.into();
 
     tracing::info!(%inserted_project.project_id, %org_id, "project created successfully");
 

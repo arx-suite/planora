@@ -4,21 +4,20 @@ use tracing::{debug, info, trace};
 use uuid::Uuid;
 
 use super::{DeleteSpace, NewSpace, SpaceRow, Spaces, UpdateSpace};
-use crate::services::db::{DBResult, with_org};
+use crate::services::db::{DBResult, TenantContext};
 
-pub struct SpaceRepo<'a> {
-    pub pool: &'a PgPool,
+#[async_trait::async_trait]
+pub trait SpaceRepo: TenantContext {
+    async fn space_create(&self, new_space: NewSpace, org_id: Uuid) -> DBResult<SpaceRow>;
+    async fn space_find_by_id(&self, space_id: Uuid, org_id: Uuid) -> DBResult<Option<SpaceRow>>;
+    async fn space_find_by_org_id(&self, org_id: Uuid) -> DBResult<Vec<SpaceRow>>;
+    async fn space_update(&self, update_space: UpdateSpace, org_id: Uuid) -> DBResult<SpaceRow>;
+    async fn space_delete_by_id(&self, delete_space: DeleteSpace, org_id: Uuid) -> DBResult<u64>;
 }
 
-impl<'a> SpaceRepo<'a> {
-    pub fn new(pool: &'a PgPool) -> Self {
-        Self { pool }
-    }
-
-    /* create */
-    pub async fn create_space(&self, new_space: NewSpace, org_id: Uuid) -> DBResult<SpaceRow> {
-        trace!(space_name = ?new_space.space_name, organization_id = ?org_id, "starting space creation");
-
+#[async_trait::async_trait]
+impl SpaceRepo for PgPool {
+    async fn space_create(&self, new_space: NewSpace, org_id: Uuid) -> DBResult<SpaceRow> {
         let query = Query::insert()
             .into_table(Spaces::Table)
             .columns([Spaces::SpaceName, Spaces::Description])
@@ -26,9 +25,7 @@ impl<'a> SpaceRepo<'a> {
             .returning_all()
             .to_string(PostgresQueryBuilder);
 
-        debug!(query = %query, "generated insert query");
-
-        let inserted_space = with_org(self.pool, &org_id, |mut tx| async move {
+        let inserted_space = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let inserted = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_one(&mut *tx)
                 .await?;
@@ -46,12 +43,7 @@ impl<'a> SpaceRepo<'a> {
         Ok(inserted_space)
     }
 
-    /* read */
-    pub async fn find_by_space_id(
-        &self,
-        space_id: Uuid,
-        org_id: Uuid,
-    ) -> DBResult<Option<SpaceRow>> {
+    async fn space_find_by_id(&self, space_id: Uuid, org_id: Uuid) -> DBResult<Option<SpaceRow>> {
         trace!(space_id = ?space_id, organization_id = ?org_id, "find space by id");
 
         let query = Query::select()
@@ -62,7 +54,7 @@ impl<'a> SpaceRepo<'a> {
 
         debug!(query = %query, "generated select query");
 
-        let space = with_org(self.pool, &org_id, |mut tx| async move {
+        let space = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let spaces = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_optional(&mut *tx)
                 .await?;
@@ -74,7 +66,7 @@ impl<'a> SpaceRepo<'a> {
         Ok(space)
     }
 
-    pub async fn find_by_org_id(&self, org_id: Uuid) -> DBResult<Vec<SpaceRow>> {
+    async fn space_find_by_org_id(&self, org_id: Uuid) -> DBResult<Vec<SpaceRow>> {
         trace!(organization_id = ?org_id, "find spaces by org_id");
 
         let query = Query::select()
@@ -84,7 +76,7 @@ impl<'a> SpaceRepo<'a> {
 
         debug!(query = %query, "generated select query");
 
-        let spaces = with_org(self.pool, &org_id, |mut tx| async move {
+        let spaces = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let spaces = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_all(&mut *tx)
                 .await?;
@@ -96,31 +88,28 @@ impl<'a> SpaceRepo<'a> {
         Ok(spaces)
     }
 
-    /* update */
-    pub async fn update_space(
-        &self,
-        update_space: UpdateSpace,
-        org_id: Uuid,
-    ) -> DBResult<SpaceRow> {
+    async fn space_update(&self, update_space: UpdateSpace, org_id: Uuid) -> DBResult<SpaceRow> {
         trace!(space_name = ?update_space.space_name, description = ?update_space.description, "update spaces");
 
-        let mut builder = Query::update();
-        builder.table(Spaces::Table);
+        let query = {
+            let mut builder = Query::update();
+            builder.table(Spaces::Table);
 
-        update_space
-            .space_name
-            .map(|name| builder.value(Spaces::SpaceName, name));
-        update_space
-            .description
-            .map(|description| builder.value(Spaces::Description, description));
+            if let Some(name) = update_space.space_name {
+                builder.value(Spaces::SpaceName, name);
+            }
 
-        builder.returning_all();
-        builder.and_where(Expr::col(Spaces::SpaceId).eq(update_space.space_id));
+            if let Some(description) = update_space.description {
+                builder.value(Spaces::Description, description);
+            }
 
-        let query = builder.to_string(PostgresQueryBuilder);
-        debug!(query = %query, "generated update query");
+            builder.and_where(Expr::col(Spaces::SpaceId).eq(update_space.space_id));
+            builder.returning_all();
 
-        let space = with_org(self.pool, &org_id, |mut tx| async move {
+            builder.to_string(PostgresQueryBuilder)
+        };
+
+        let space = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let space = sqlx::query_as::<_, SpaceRow>(&query)
                 .fetch_one(&mut *tx)
                 .await?;
@@ -132,12 +121,7 @@ impl<'a> SpaceRepo<'a> {
         Ok(space)
     }
 
-    /* delete */
-    pub async fn delete_by_space_id(
-        &self,
-        delete_space: DeleteSpace,
-        org_id: Uuid,
-    ) -> DBResult<u64> {
+    async fn space_delete_by_id(&self, delete_space: DeleteSpace, org_id: Uuid) -> DBResult<u64> {
         trace!(organization_id = ?delete_space.space_id, "delete space by id");
 
         let query = Query::update()
@@ -145,9 +129,7 @@ impl<'a> SpaceRepo<'a> {
             .and_where(Expr::col(Spaces::SpaceId).eq(delete_space.space_id))
             .to_string(PostgresQueryBuilder);
 
-        debug!(query = %query, "generated query");
-
-        let result = with_org(self.pool, &org_id, |mut tx| async move {
+        let result = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let result = sqlx::query(&query).execute(&mut *tx).await?;
             Ok((result, tx))
         })

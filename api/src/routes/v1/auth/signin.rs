@@ -24,11 +24,7 @@ async fn signin(
     let pool = db_service.read().await?;
     tracing::debug!("database pool acquired");
 
-    let span = tracing::info_span!("user.find");
-    let _enter = span.enter();
-    let user_repo = UserRepo::new(&pool);
-
-    let user = match user_repo.find_by_email(email.clone()).await? {
+    let user = match pool.user_find_by_email(email.clone()).await? {
         Some(user) => {
             tracing::debug!(
                 user_id = %user.user_id,
@@ -57,8 +53,6 @@ async fn signin(
         }
     }
 
-    let span = tracing::info_span!("user.jwt_token", user_id = %user.user_id);
-    let _enter = span.enter();
     let (access_token, refresh_token) = auth_service.jwt_generate_token(user.user_id)?;
     let (access_token_cookie, refresh_token_cookie) = build_cookie(access_token, refresh_token);
 

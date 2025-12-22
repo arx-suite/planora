@@ -13,10 +13,9 @@ async fn list_organizations(
 
     tracing::trace!(%user_id, "list organization for the user");
 
-    let pool = db_service.primary().await?;
+    let pool = db_service.read().await?;
 
-    let org_repo = OrgRepo::new(&pool);
-    let orgs = org_repo.find_by_ownerid(user_id).await?;
+    let orgs = pool.org_find_by_owner_id(user_id).await?;
 
     let orgs = orgs
         .into_iter()

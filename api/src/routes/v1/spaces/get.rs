@@ -17,8 +17,7 @@ async fn get_spaces_for_org(
 
     tracing::trace!(%org_id, "Listing spaces for organization");
 
-    let space_repo = SpaceRepo::new(&pool);
-    let spaces = space_repo.find_by_org_id(org_id).await?;
+    let spaces = pool.space_find_by_org_id(org_id).await?;
 
     let spaces = spaces
         .into_iter()
@@ -41,15 +40,14 @@ async fn get_space(
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let space_id = path.into_inner();
-    let pool = db_service.primary().await?;
+    let pool = db_service.read().await?;
 
     let org_id = extract_org_id(&req)?;
     validate_org(&pool, org_id).await?;
 
     tracing::trace!(%org_id, %space_id, "find space by id");
 
-    let space_repo = SpaceRepo::new(&pool);
-    let space = space_repo.find_by_space_id(space_id, org_id).await?;
+    let space = pool.space_find_by_id(space_id, org_id).await?;
 
     match space {
         Some(space) => {

@@ -13,10 +13,9 @@ async fn profile(
     let user_id = extract_user_id(&req)?;
     tracing::trace!(%user_id, "request for profile data");
 
-    let pool = db_service.primary().await?;
-    let user_repo = UserRepo::new(&pool);
+    let pool = db_service.read().await?;
 
-    let user: UserProfile = match user_repo.find_by_userid(user_id).await? {
+    let user: UserProfile = match pool.user_find_by_id(user_id).await? {
         Some(user) => {
             tracing::trace!(%user_id, "user has been found");
             user.into()

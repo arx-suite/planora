@@ -97,9 +97,9 @@ where
                 .jwt_verify_access_token(&token)
                 .map_err(ApiError::from)?;
 
-            let user_repo = UserRepo::new(&pool);
-            let user = user_repo
-                .find_by_userid(user_id)
+            // let user_repo = UserRepo::new(&pool);
+            let user = pool
+                .user_find_by_id(user_id)
                 .await
                 .map_err(|_| ApiError::Unauthorized("unauthorized".to_string()))?
                 .ok_or_else(|| ApiError::Unauthorized("unauthorized".to_string()))?;

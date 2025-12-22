@@ -18,9 +18,8 @@ async fn delete_organization(
     tracing::trace!(%user_id, %org_id, "delete organization");
 
     let pool = db_service.primary().await?;
-    let org_repo = OrgRepo::new(&pool);
 
-    match org_repo.find_by_orgid(org_id).await? {
+    match pool.org_find_by_id(org_id).await? {
         Some(org) if org.owner_id == user_id => {
             tracing::trace!(%user_id, %org_id, "organization has been found");
         }
@@ -30,7 +29,7 @@ async fn delete_organization(
         }
     };
 
-    let affected_row = org_repo.delete_by_orgid(org_id).await?;
+    let affected_row = pool.org_delete_by_id(org_id).await?;
 
     tracing::info!(%user_id, %org_id, %affected_row, "organization deleted");
 

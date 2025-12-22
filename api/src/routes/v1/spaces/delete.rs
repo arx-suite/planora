@@ -19,9 +19,8 @@ async fn delete_space(
 
     tracing::trace!(%delete_space.space_id, %org_id, "delete space for organization");
 
-    let space_repo = SpaceRepo::new(&pool);
-    let affected_rows = space_repo
-        .delete_by_space_id(delete_space.clone(), org_id)
+    let affected_rows = pool
+        .space_delete_by_id(delete_space.clone(), org_id)
         .await?;
 
     if affected_rows == 0 {

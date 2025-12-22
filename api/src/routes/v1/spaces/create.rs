@@ -19,8 +19,7 @@ async fn create_space(
 
     tracing::trace!(%new_space.space_name, %org_id, "create space for organization");
 
-    let space_repo = SpaceRepo::new(&pool);
-    let inserted_space: SpaceInfo = space_repo.create_space(new_space, org_id).await?.into();
+    let inserted_space: SpaceInfo = pool.space_create(new_space, org_id).await?.into();
 
     tracing::info!(%inserted_space.space_id, %org_id, "space created successfully");
     ApiResult::to_ok_response("space has been created successfully", inserted_space)

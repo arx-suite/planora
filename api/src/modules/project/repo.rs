@@ -2,18 +2,34 @@ use sea_query::*;
 use sqlx::PgPool;
 
 use super::{CreateProject, DeleteProject, ProjectRow, Projects};
-use crate::services::db::{DBResult, with_org};
+use crate::services::db::{DBResult, TenantContext};
 
-pub struct ProjectRepo<'a> {
-    pub pool: &'a PgPool,
+#[async_trait::async_trait]
+pub trait ProjectRepo {
+    async fn project_create(
+        &self,
+        project: &CreateProject,
+        org_id: uuid::Uuid,
+    ) -> DBResult<ProjectRow>;
+
+    async fn project_find_by_id(
+        &self,
+        project_id: uuid::Uuid,
+        org_id: uuid::Uuid,
+    ) -> DBResult<Option<ProjectRow>>;
+
+    async fn project_find_by_org_id(&self, org_id: uuid::Uuid) -> DBResult<Vec<ProjectRow>>;
+
+    async fn project_delete_by_id(
+        &self,
+        project: DeleteProject,
+        org_id: uuid::Uuid,
+    ) -> DBResult<u64>;
 }
 
-impl<'a> ProjectRepo<'a> {
-    pub fn new(pool: &'a PgPool) -> Self {
-        Self { pool }
-    }
-
-    pub async fn create_project(
+#[async_trait::async_trait]
+impl ProjectRepo for PgPool {
+    async fn project_create(
         &self,
         project: &CreateProject,
         org_id: uuid::Uuid,
@@ -33,7 +49,7 @@ impl<'a> ProjectRepo<'a> {
             .returning_all()
             .to_string(PostgresQueryBuilder);
 
-        let inserted_project = with_org(self.pool, &org_id, |mut tx| async move {
+        let inserted_project = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let inserted = sqlx::query_as::<_, ProjectRow>(&query)
                 .fetch_one(&mut *tx)
                 .await?;
@@ -45,7 +61,7 @@ impl<'a> ProjectRepo<'a> {
         Ok(inserted_project)
     }
 
-    pub async fn find_by_projectid(
+    async fn project_find_by_id(
         &self,
         project_id: uuid::Uuid,
         org_id: uuid::Uuid,
@@ -56,7 +72,7 @@ impl<'a> ProjectRepo<'a> {
             .and_where(Expr::col(Projects::ProjectId).eq(project_id.to_string()))
             .to_string(PostgresQueryBuilder);
 
-        let project = with_org(self.pool, &org_id, |mut tx| async move {
+        let project = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let project = sqlx::query_as::<_, ProjectRow>(&query)
                 .fetch_optional(&mut *tx)
                 .await?;
@@ -68,14 +84,14 @@ impl<'a> ProjectRepo<'a> {
         Ok(project)
     }
 
-    pub async fn find_by_orgid(&self, org_id: uuid::Uuid) -> DBResult<Vec<ProjectRow>> {
+    async fn project_find_by_org_id(&self, org_id: uuid::Uuid) -> DBResult<Vec<ProjectRow>> {
         let query = Query::select()
             .column(Asterisk)
             .from(Projects::Table)
             .and_where(Expr::col(Projects::OrganizationId).eq(org_id.to_string()))
             .to_string(PostgresQueryBuilder);
 
-        let projects = with_org(self.pool, &org_id, |mut tx| async move {
+        let projects = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let projects = sqlx::query_as::<_, ProjectRow>(&query)
                 .fetch_all(&mut *tx)
                 .await?;
@@ -87,7 +103,7 @@ impl<'a> ProjectRepo<'a> {
         Ok(projects)
     }
 
-    pub async fn delete_by_projectid(
+    async fn project_delete_by_id(
         &self,
         project: DeleteProject,
         org_id: uuid::Uuid,
@@ -97,7 +113,7 @@ impl<'a> ProjectRepo<'a> {
             .and_where(Expr::col(Projects::ProjectId).eq(project.project_id.to_string()))
             .to_string(PostgresQueryBuilder);
 
-        let result = with_org(self.pool, &org_id, |mut tx| async move {
+        let result = Self::with_tenant_context(self, &org_id, |mut tx| async move {
             let result = sqlx::query(&query).execute(&mut *tx).await?;
             Ok((result, tx))
         })

@@ -16,9 +16,8 @@ async fn create_organization(
     tracing::trace!(%user_id, "create organization");
 
     let pool = db_service.primary().await?;
-    let org_repo = OrgRepo::new(&pool);
 
-    let inserted_org: OrgProfile = org_repo.create_org(&org, user_id).await?.into();
+    let inserted_org: OrgProfile = pool.org_create(&org, user_id).await?.into();
 
     tracing::info!(%user_id, "created organization");
 

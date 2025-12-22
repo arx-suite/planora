@@ -19,8 +19,7 @@ async fn update_space(
 
     tracing::trace!(%update_space.space_id, %org_id, "update space information");
 
-    let space_repo = SpaceRepo::new(&pool);
-    let updated_space = space_repo.update_space(update_space, org_id).await?;
+    let updated_space = pool.space_update(update_space, org_id).await?;
 
     tracing::info!(%updated_space.space_id, %org_id, "space updated successfully");
     ApiResult::to_ok_response(

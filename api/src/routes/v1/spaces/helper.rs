@@ -2,10 +2,9 @@ use arx_gatehouse::common::ApiError;
 use arx_gatehouse::modules::organization::OrgRepo;
 
 pub async fn validate_org(pool: &sqlx::PgPool, org_id: uuid::Uuid) -> Result<(), ApiError> {
-    let repo = OrgRepo::new(pool);
     tracing::trace!(%org_id, "Validating organization existence");
 
-    match repo.find_by_orgid(org_id).await {
+    match pool.org_find_by_id(org_id).await {
         Ok(Some(_)) => {
             tracing::info!(%org_id, "Organization verified");
             Ok(())

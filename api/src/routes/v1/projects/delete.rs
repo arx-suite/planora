@@ -20,10 +20,8 @@ async fn delete_project(
 
     tracing::trace!(%project.project_id, %org_id, "delete project");
 
-    let project_repo = ProjectRepo::new(&pool);
-
-    let affected_rows = project_repo
-        .delete_by_projectid(project.clone(), org_id)
+    let affected_rows = pool
+        .project_delete_by_id(project.clone(), org_id)
         .await
         .map_err(|e| {
             tracing::error!(error = ?e, %project.project_id, %org_id, "Failed to delete project");

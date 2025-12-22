@@ -17,8 +17,7 @@ async fn signup(
 
     let pool = db_service.primary().await?;
 
-    let user_repo = UserRepo::new(&pool);
-    match user_repo.find_by_email(email.clone()).await? {
+    match pool.user_find_by_email(email.clone()).await? {
         Some(_) => {
             tracing::error!(%email, "email is already registered");
             return Ok(
@@ -28,7 +27,7 @@ async fn signup(
         _ => {}
     };
 
-    let inserted_user = user_repo.create_user(user).await?;
+    let inserted_user = pool.user_create(user).await?;
 
     tracing::info!(%email, "user created successfuly");
 

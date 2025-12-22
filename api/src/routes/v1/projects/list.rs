@@ -10,15 +10,14 @@ async fn list_projects(
     db_service: web::Data<DbService>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
-    let pool = db_service.primary().await?;
+    let pool = db_service.read().await?;
 
     let org_id = extract_org_id(&req)?;
     validate_org(&pool, org_id).await?;
 
     tracing::trace!(%org_id, "Listing projects for organization");
 
-    let project_repo = ProjectRepo::new(&pool);
-    let projects = project_repo.find_by_orgid(org_id).await?;
+    let projects = pool.project_find_by_org_id(org_id).await?;
 
     let projects = projects
         .into_iter()
