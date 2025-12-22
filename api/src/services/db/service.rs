@@ -22,7 +22,7 @@ impl DbService {
     }
 
     #[inline]
-    pub async fn init_primary(&self) -> sqlx::Result<()> {
+    async fn init_primary(&self) -> sqlx::Result<()> {
         let node = DbNode::Primary;
         let url = std::env::var(ENV_PG_DATABASE_URL)
             .expect("missing required environment variable: PG_DATABASE_URL");
@@ -44,7 +44,7 @@ impl DbService {
             db.host = tracing::field::Empty
         )
     )]
-    pub async fn init_pool(
+    async fn init_pool(
         &self,
         options: PgPoolOptions,
         url: String,
@@ -95,4 +95,15 @@ impl DbService {
 
         Ok(database.read()?.clone())
     }
+}
+
+#[tracing::instrument(name = "service.database", skip_all)]
+pub async fn init() -> DbService {
+    let db_service = DbService::new();
+    db_service
+        .init_primary()
+        .await
+        .expect("Failed to connect to Postgres");
+
+    db_service
 }

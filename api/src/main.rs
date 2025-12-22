@@ -49,11 +49,7 @@ async fn main() -> std::io::Result<()> {
 
     /* services */
     // database
-    let db_service = services::DbService::new();
-    db_service
-        .init_primary()
-        .await
-        .expect("Failed to connect to Postgres");
+    let db_service = services::db::service::init().await;
 
     // auth
     let auth_service = services::AuthService::from_env();
