@@ -15,7 +15,7 @@ pub struct DbService {
 }
 
 impl DbService {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self {
             databases: Arc::new(RwLock::new(HashMap::new())),
         }
