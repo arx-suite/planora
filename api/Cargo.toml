@@ -30,6 +30,7 @@ sea-query = { version = "0.32.7", default-features = false, features = [
     "backend-postgres",
     "all-types",
 ] }
+deadpool-redis = "0.22.0"
 
 # storage bucket
 aws-config = { version = "1.8.12", features = ["behavior-version-latest"] }
@@ -43,6 +44,7 @@ async-trait = "0.1.89"
 
 # serialization
 serde = "1.0.228"
+serde_json = "1.0.146"
 
 # observability
 tracing = { version = "0.1.4", features = ["std"] }

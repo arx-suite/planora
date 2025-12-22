@@ -51,6 +51,9 @@ async fn main() -> std::io::Result<()> {
     // database
     let db_service = services::db::service::init().await;
 
+    // cache
+    let cache_service = services::cache::service::init();
+
     // auth
     let auth_service = services::AuthService::from_env();
 
@@ -85,6 +88,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(opentelemetry_instrumentation_actix_web::RequestMetrics::default())
             .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
+            .app_data(web::Data::new(cache_service.clone()))
             .app_data(web::Data::new(db_service.clone()))
             .app_data(web::Data::new(auth_service.clone()))
             .app_data(web::Data::new(bucket_service.clone()))
