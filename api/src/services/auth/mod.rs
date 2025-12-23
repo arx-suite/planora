@@ -2,7 +2,7 @@ pub mod constants;
 pub mod cookie;
 mod error;
 mod jwt;
-mod service;
+pub mod service;
 
 type AuthResult<T> = Result<T, error::AuthError>;
 

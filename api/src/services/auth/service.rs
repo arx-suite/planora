@@ -12,7 +12,7 @@ pub struct AuthService {
 }
 
 impl AuthService {
-    pub fn from_env() -> Self {
+    fn from_env() -> Self {
         let secret =
             env::var("JWT_SECRET").expect("missing required environment variable: JWT_SECRET");
 
@@ -58,4 +58,9 @@ impl AuthService {
             .verify_token(JWT_TOKEN_TYPE_REFRESH, token)?;
         Ok(claims.sub)
     }
+}
+
+#[tracing::instrument(name = "service.auth", skip_all)]
+pub fn init() -> AuthService {
+    AuthService::from_env()
 }

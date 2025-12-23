@@ -48,17 +48,10 @@ async fn main() -> std::io::Result<()> {
     );
 
     /* services */
-    // database
     let db_service = services::db::service::init().await;
-
-    // cache
     let cache_service = services::cache::service::init();
-
-    // auth
-    let auth_service = services::AuthService::from_env();
-
-    // bucket storage
-    let bucket_service = services::s3::service::init(config.app_name.clone()).await;
+    let auth_service = services::auth::service::init();
+    let s3_service = services::s3::service::init(config.app_name.clone()).await;
 
     // actix server
     tracing::info!("Starting server at http://{}", config.addr());
@@ -89,7 +82,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::Data::new(cache_service.clone()))
             .app_data(web::Data::new(db_service.clone()))
             .app_data(web::Data::new(auth_service.clone()))
-            .app_data(web::Data::new(bucket_service.clone()))
+            .app_data(web::Data::new(s3_service.clone()))
             .route("/ws", web::get().to(ws::ws))
             .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
                 public_paths().into(),
