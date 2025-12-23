@@ -16,7 +16,7 @@ pub struct S3Service {
 }
 
 impl S3Service {
-    pub async fn from_env(app_name: String) -> S3Result<Self> {
+    async fn from_env(app_name: String) -> S3Result<Self> {
         let name = aws_config::AppName::new(app_name).expect("app name should be valid");
 
         let access_key_id =
@@ -107,4 +107,13 @@ impl SignedUrlProvider for S3Service {
 
         Ok(presigned.uri().to_string())
     }
+}
+
+#[tracing::instrument(name = "service.s3", skip_all)]
+pub async fn init(app_name: String) -> S3Service {
+    let s3_service = S3Service::from_env(app_name)
+        .await
+        .expect("Failed to setup S3");
+
+    s3_service
 }

@@ -3,7 +3,7 @@
 mod asset;
 mod avatar;
 mod error;
-mod service;
+pub mod service;
 
 pub use avatar::AvatarStorage;
 pub use error::{S3Error, S3Result};

@@ -58,9 +58,7 @@ async fn main() -> std::io::Result<()> {
     let auth_service = services::AuthService::from_env();
 
     // bucket storage
-    let bucket_service = services::S3Service::from_env(config.app_name.clone())
-        .await
-        .expect("Failed to setup S3");
+    let bucket_service = services::s3::service::init(config.app_name.clone()).await;
 
     // actix server
     tracing::info!("Starting server at http://{}", config.addr());
