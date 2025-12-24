@@ -6,7 +6,7 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
-use arx_gatehouse::{common::ApiResult, services};
+use arx_gatehouse::{common::ApiResult, services, telemetry};
 
 use crate::routes::v1::v1_scope;
 
@@ -34,7 +34,7 @@ async fn main() -> std::io::Result<()> {
     let config = config::Config::from_env();
 
     // observability
-    let _guard = config::init_observability();
+    let _guard = telemetry::telemetry::init();
 
     // initialize the application
     let is_production_env = config.is_production_env();

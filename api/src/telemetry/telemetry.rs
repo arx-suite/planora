@@ -25,7 +25,7 @@ impl Drop for ObservabilityGuard {
     }
 }
 
-pub fn init_observability() -> ObservabilityGuard {
+pub fn init() -> ObservabilityGuard {
     let resource = Resource::builder().with_service_name(SERVICE_NAME).build();
 
     // logs
