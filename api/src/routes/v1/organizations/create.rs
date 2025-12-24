@@ -5,21 +5,35 @@ use arx_gatehouse::modules::organization::{CreateOrg, OrgProfile, OrgRepo};
 use arx_gatehouse::services::DbService;
 
 #[post("")]
+#[tracing::instrument(
+    name = "org.create",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        user_id = tracing::field::Empty,
+        org_id = tracing::field::Empty
+    )
+)]
 async fn create_organization(
     db_service: web::Data<DbService>,
-    payload: web::Json<CreateOrg>,
     req: HttpRequest,
+    payload: web::Json<CreateOrg>,
 ) -> Result<impl Responder, ApiError> {
-    let org = payload.into_inner();
     let user_id = extract_user_id(&req)?;
+    tracing::Span::current().record("user_id", &user_id.to_string());
 
-    tracing::trace!(%user_id, "create organization");
+    let create_org = payload.into_inner();
 
     let pool = db_service.primary().await?;
+    tracing::debug!("database pool acquired");
 
-    let inserted_org: OrgProfile = pool.org_create(&org, user_id).await?.into();
+    let inserted_org = pool.org_create(&create_org, user_id).await?;
+    tracing::Span::current().record("org_id", &inserted_org.organization_id.to_string());
 
-    tracing::info!(%user_id, "created organization");
+    tracing::info!("organization created successfully");
 
-    ApiResult::to_ok_response("organization has been created", inserted_org)
+    ApiResult::to_ok_response(
+        "organization has been created",
+        OrgProfile::from(inserted_org),
+    )
 }

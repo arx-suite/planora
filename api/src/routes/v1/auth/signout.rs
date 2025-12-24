@@ -4,13 +4,21 @@ use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
 use arx_gatehouse::services::auth::cookie::expire_cookie;
 
 #[post("/signout")]
+#[tracing::instrument(
+    name = "auth.signout",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 async fn signout(req: HttpRequest) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
-    tracing::trace!(%user_id, "signing out");
+    tracing::Span::current().record("user_id", &user_id.to_string());
 
     let (access_token_cookie, refresh_token_cookie) = expire_cookie();
 
-    tracing::info!(%user_id, "signed out successfully");
+    tracing::info!("signed out successfully");
 
     Ok(HttpResponse::Ok()
         .cookie(access_token_cookie)

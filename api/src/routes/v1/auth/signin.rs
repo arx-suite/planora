@@ -7,10 +7,11 @@ use arx_gatehouse::services::{AuthService, DbService, auth::cookie::build_cookie
 #[post("/signin")]
 #[tracing::instrument(
     name = "auth.signin",
+    skip_all,
     level = tracing::Level::INFO,
-    skip(db_service, auth_service, payload),
     fields(
-        email = %payload.email
+        email = %payload.email,
+        user_id = tracing::field::Empty
     )
 )]
 async fn signin(
@@ -26,29 +27,22 @@ async fn signin(
 
     let user = match pool.user_find_by_email(email.clone()).await? {
         Some(user) => {
-            tracing::debug!(
-                user_id = %user.user_id,
-                "user found"
-            );
+            tracing::Span::current().record("user_id", &user.user_id.to_string());
+            tracing::debug!(user_id = %user.user_id, "user found");
             user
         }
         None => {
-            tracing::warn!("signin failed: email not found");
+            tracing::warn!("signin failed: email unknown email");
             return ApiResult::to_not_found("invalid email");
         }
     };
+
     match user.password {
         Some(pass) if pass == password => {
-            tracing::debug!(
-                user_id = %user.user_id,
-                "password validated"
-            );
+            tracing::debug!(user_id = %user.user_id, "credentials validated");
         }
         _ => {
-            tracing::warn!(
-                user_id = %user.user_id,
-                "signin failed: invalid credentials"
-            );
+            tracing::warn!(user_id = %user.user_id, "signin failed: invalid credentials");
             return ApiResult::to_unauthorized("invalid credentials");
         }
     }
@@ -56,10 +50,7 @@ async fn signin(
     let (access_token, refresh_token) = auth_service.jwt_generate_token(user.user_id)?;
     let (access_token_cookie, refresh_token_cookie) = build_cookie(access_token, refresh_token);
 
-    tracing::info!(
-        user_id = %user.user_id,
-        "user signed in successfully"
-    );
+    tracing::info!(user_id = %user.user_id, "user signed in successfully");
 
     Ok(HttpResponse::Ok()
         .cookie(access_token_cookie)

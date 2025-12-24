@@ -6,44 +6,73 @@ use arx_gatehouse::modules::user::{UpdateProfileForm, UserProfile, UserRepo};
 use arx_gatehouse::services::{AvatarStorage, DbService, S3Service};
 
 #[get("/profile")]
+#[tracing::instrument(
+    name = "auth.profile.get",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 async fn profile(
     db_service: web::Data<DbService>,
     req: HttpRequest,
 ) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
-    tracing::trace!(%user_id, "request for profile data");
+    tracing::Span::current().record("user_id", &user_id.to_string());
 
     let pool = db_service.read().await?;
+    tracing::debug!("database pool acquired");
 
-    let user: UserProfile = match pool.user_find_by_id(user_id).await? {
+    let user = match pool.user_find_by_id(user_id).await? {
         Some(user) => {
-            tracing::trace!(%user_id, "user has been found");
-            user.into()
+            tracing::debug!("user profile loaded");
+            UserProfile::from(user)
         }
         None => {
-            tracing::error!(%user_id, "failed to retrieve user");
-            return ApiResult::to_not_found("user is not found");
+            tracing::warn!(%user_id, "profile not found for user");
+            return ApiResult::to_not_found("user not found");
         }
     };
-    tracing::info!(%user_id, "sending profile data");
+
+    tracing::info!("profile data returned");
 
     ApiResult::to_ok_response("profile data", user)
 }
 
 #[patch("/profile")]
+#[tracing::instrument(
+    name = "auth.profile.update",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        user_id = tracing::field::Empty
+    )
+)]
 async fn update_profile(
     s3: web::Data<S3Service>,
     req: HttpRequest,
     MultipartForm(form): MultipartForm<UpdateProfileForm>,
 ) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
-    tracing::trace!(%user_id, "update the profile");
+    tracing::Span::current().record("user_id", &user_id.to_string());
 
     if let Some(avatar) = form.avatar {
-        tracing::trace!(name = ?avatar.file_name, mime = ?avatar.content_type, size = %avatar.size, "update avatar image");
+        tracing::debug!(
+            file_name = ?avatar.file_name,
+            content_type = ?avatar.content_type,
+            size_bytes = avatar.size,
+            "uploading new avatar"
+        );
 
         s3.upload_avatar(user_id, avatar).await?;
+
+        tracing::info!("avatar updated successfully");
+    } else {
+        tracing::debug!("no avatar update provided");
     }
 
-    ApiResult::to_ok_response("Profile updated successfully.", ())
+    tracing::info!("profile update completed");
+
+    ApiResult::to_ok_response("profile updated successfully", ())
 }
