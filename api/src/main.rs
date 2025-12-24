@@ -31,7 +31,7 @@ async fn not_found_handler() -> HttpResponse {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // config
-    let config = config::Config::from_env();
+    let config = config::config::init();
 
     // observability
     let _guard = telemetry::telemetry::init();

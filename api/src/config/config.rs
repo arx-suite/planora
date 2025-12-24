@@ -81,3 +81,7 @@ impl Config {
         Self::is_production(&self.app_env)
     }
 }
+
+pub fn init() -> Config {
+    Config::from_env()
+}
