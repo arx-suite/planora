@@ -35,6 +35,7 @@ impl DbService {
     #[tracing::instrument(
         name = "db.init_pool",
         skip_all,
+        level = tracing::Level::DEBUG,
         fields(
             db.system = "postgresql",
             db.type = node_type.to_string(),
@@ -97,7 +98,11 @@ impl DbService {
     }
 }
 
-#[tracing::instrument(name = "service.database", skip_all)]
+#[tracing::instrument(
+    name = "service.database",
+    skip_all,
+    level = tracing::Level::DEBUG
+)]
 pub async fn init() -> DbService {
     let db_service = DbService::new();
     db_service

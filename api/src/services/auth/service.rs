@@ -26,8 +26,6 @@ impl AuthService {
             .parse()
             .expect("JWT_REFRESH_EXPIRY_DAYS must be a number");
 
-        tracing::info!("Auth service initialized!");
-
         Self {
             jwt_service: JwtService::new(secret, access_expiry_minutes, refresh_expiry_days),
         }
@@ -60,7 +58,11 @@ impl AuthService {
     }
 }
 
-#[tracing::instrument(name = "service.auth", skip_all)]
+#[tracing::instrument(
+    name = "service.auth",
+    skip_all,
+    level = tracing::Level::DEBUG
+)]
 pub fn init() -> AuthService {
     AuthService::from_env()
 }

@@ -73,7 +73,11 @@ impl CacheService {
     }
 }
 
-#[tracing::instrument(name = "service.cache", skip_all)]
+#[tracing::instrument(
+    name = "service.cache",
+    skip_all,
+    level = tracing::Level::DEBUG
+)]
 pub fn init() -> CacheService {
     let url =
         std::env::var(ENV_REDIS_URL).expect("missing required environment variable: `REDIS_URL`");

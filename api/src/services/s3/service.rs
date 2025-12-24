@@ -109,7 +109,11 @@ impl SignedUrlProvider for S3Service {
     }
 }
 
-#[tracing::instrument(name = "service.s3", skip_all)]
+#[tracing::instrument(
+    name = "service.s3",
+    skip_all,
+    level = tracing::Level::DEBUG
+)]
 pub async fn init(app_name: String) -> S3Service {
     let s3_service = S3Service::from_env(app_name)
         .await

@@ -43,19 +43,11 @@ impl Database {
         match self.nodes.get(&DbNode::ReadReplica) {
             Some(pool) => Ok(pool),
             None => {
-                tracing::debug!("read replica not configured, falling back to primary");
+                tracing::debug!("read replica node node not configured, falling back to primary");
                 self.primary()
             }
         }
     }
-
-    // pub fn validate(&self) -> DBResult<()> {
-    //     if !self.nodes.contains_key(&DbNode::Primary) {
-    //         tracing::error!("primary database is missing");
-    //         return Err(DatabaseError::PrimaryMissing);
-    //     }
-    //     Ok(())
-    // }
 }
 
 #[non_exhaustive]
