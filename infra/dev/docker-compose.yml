@@ -15,7 +15,7 @@ services:
     command: ["server", "--console-address", ":9001", "/data"]
 
   pg-db:
-    image: postgres:17.6-alpine3.22
+    image: postgres:18.1
     container_name: pg-db
     environment:
       - POSTGRES_DB=primary
@@ -29,7 +29,7 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - pg_db_data:/var/lib/postgresql/data
+      - pg_db_data:/var/lib/postgresql
     networks:
       - default
 
