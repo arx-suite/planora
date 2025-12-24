@@ -6,6 +6,7 @@ use tokio::sync::RwLock;
 
 use super::pg::{Database, DatabaseName, DbNode};
 use super::{DBResult, DatabaseError};
+use crate::telemetry::db::register_pool_metrics;
 
 const ENV_PG_DATABASE_URL: &'static str = "PG_DATABASE_URL";
 
@@ -55,7 +56,7 @@ impl DbService {
         let host = url.split('@').nth(1).unwrap_or("unknown-host");
 
         tracing::Span::current().record("db.host", &host);
-        tracing::debug!("initializing PostgreSQL connection pool");
+        tracing::debug!("initializing postgresql connection pool");
 
         let pool = match options.connect(&url).await {
             Ok(pool) => pool,
@@ -67,6 +68,9 @@ impl DbService {
                 return Err(err);
             }
         };
+
+        tracing::debug!("initialize pool metrics");
+        register_pool_metrics(pool.clone(), name.clone());
 
         let mut map = self.databases.write().await;
 
