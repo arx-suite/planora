@@ -1,7 +1,12 @@
 {
   "extends": "../tsconfig/react-library.json",
   "compilerOptions": {
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    }
   },
   "include": [
     "."
