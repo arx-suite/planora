@@ -2,3 +2,4 @@ packages:
   - apps/web
   - api
   - infra/dev
+  - packages/*
