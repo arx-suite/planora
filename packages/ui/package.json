@@ -15,6 +15,6 @@
     "keywords": [],
     "author": "sajeevan",
     "devDependencies": {
-        "typescript": "^5"
+        "typescript": "catalog:"
     }
 }

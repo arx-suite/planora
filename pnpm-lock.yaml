@@ -4,6 +4,30 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@types/node':
+      specifier: ^20
+      version: 20.19.24
+    '@types/react':
+      specifier: ^19
+      version: 19.2.2
+    '@types/react-dom':
+      specifier: ^19
+      version: 19.2.2
+    next:
+      specifier: 16.0.10
+      version: 16.0.10
+    react:
+      specifier: 19.2.3
+      version: 19.2.3
+    react-dom:
+      specifier: 19.2.3
+      version: 19.2.3
+    typescript:
+      specifier: ^5
+      version: 5.9.3
+
 importers:
 
   .:
@@ -77,16 +101,16 @@ importers:
         specifier: ^12.23.24
         version: 12.23.24(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next:
-        specifier: 16.0.10
+        specifier: 'catalog:'
         version: 16.0.10(@opentelemetry/api@1.9.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       next-themes:
         specifier: ^0.4.6
         version: 0.4.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react:
-        specifier: 19.2.3
+        specifier: 'catalog:'
         version: 19.2.3
       react-dom:
-        specifier: 19.2.3
+        specifier: 'catalog:'
         version: 19.2.3(react@19.2.3)
       sonner:
         specifier: ^2.0.7
@@ -105,13 +129,13 @@ importers:
         specifier: ^4
         version: 4.1.16
       '@types/node':
-        specifier: ^20
+        specifier: 'catalog:'
         version: 20.19.24
       '@types/react':
-        specifier: ^19
+        specifier: 'catalog:'
         version: 19.2.2
       '@types/react-dom':
-        specifier: ^19
+        specifier: 'catalog:'
         version: 19.2.2(@types/react@19.2.2)
       tailwindcss:
         specifier: ^4
@@ -120,7 +144,7 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
       typescript:
-        specifier: ^5
+        specifier: 'catalog:'
         version: 5.9.3
 
   infra/dev: {}
@@ -128,7 +152,7 @@ importers:
   packages/ui:
     devDependencies:
       typescript:
-        specifier: ^5
+        specifier: 'catalog:'
         version: 5.9.3
 
 packages:
