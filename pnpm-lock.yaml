@@ -125,6 +125,12 @@ importers:
 
   infra/dev: {}
 
+  packages/ui:
+    devDependencies:
+      typescript:
+        specifier: ^5
+        version: 5.9.3
+
 packages:
 
   '@alloc/quick-lru@5.2.0':
