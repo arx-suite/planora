@@ -1,0 +1,9 @@
+{
+    "name": "@planora/design-system",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "description": "design system",
+    "license": "MIT",
+    "author": "sajeevan"
+}
