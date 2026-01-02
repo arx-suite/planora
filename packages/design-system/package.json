@@ -2,7 +2,13 @@
     "name": "@planora/design-system",
     "version": "0.0.0",
     "private": true,
+    "sideEffects": [
+        "*.css"
+    ],
     "type": "module",
+    "exports": {
+        "./globals": "./src/index.css"
+    },
     "description": "design system",
     "license": "MIT",
     "author": "sajeevan"
