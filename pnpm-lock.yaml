@@ -157,6 +157,8 @@ importers:
 
   packages/design-system: {}
 
+  packages/tsconfig: {}
+
   packages/ui:
     dependencies:
       '@radix-ui/react-avatar':
@@ -208,6 +210,9 @@ importers:
         specifier: ^1.4.0
         version: 1.4.0
     devDependencies:
+      '@planora/tsconfig':
+        specifier: workspace:*
+        version: link:../tsconfig
       '@types/react':
         specifier: 'catalog:'
         version: 19.2.2

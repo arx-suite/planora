@@ -1,19 +1,19 @@
 {
-  "extends": "../tsconfig/react-library.json",
-  "compilerOptions": {
-    "resolveJsonModule": true,
-    "paths": {
-      "@/*": [
-        "./*"
-      ]
-    }
-  },
-  "include": [
-    "."
-  ],
-  "exclude": [
-    "dist",
-    "build",
-    "node_modules"
-  ]
+    "extends": "@planora/tsconfig/react-library.json",
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "paths": {
+            "@/*": [
+                "./*"
+            ]
+        }
+    },
+    "include": [
+        "."
+    ],
+    "exclude": [
+        "dist",
+        "build",
+        "node_modules"
+    ]
 }

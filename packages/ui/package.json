@@ -35,6 +35,7 @@
     "devDependencies": {
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
-        "typescript": "catalog:"
+        "typescript": "catalog:",
+        "@planora/tsconfig": "workspace:*"
     }
 }
