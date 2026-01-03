@@ -6,17 +6,18 @@ CREATE TABLE IF NOT EXISTS organizations (
     owner_id uuid NOT NULL REFERENCES users (user_id),
     name varchar(100) NOT NULL,
     subdomain varchar(100) NOT NULL UNIQUE,
-    plan text NOT NULL DEFAULT 'free',
+    plan text NOT NULL REFERENCES plans (plan_name),
+    space_enabled boolean NOT NULL DEFAULT false,
     created_at timestamptz DEFAULT now(),
     updated_at timestamptz DEFAULT now()
 );
 
-CREATE TABLE IF NOT EXISTS plans (
-    plan_name text PRIMARY KEY,
-    max_spaces int,
-    max_projects int,
-    max_members int,
-    description text
+CREATE TABLE IF NOT EXISTS organization_features (
+    organization_id uuid REFERENCES organizations (organization_id) ON DELETE CASCADE,
+    feature_name text REFERENCES features (feature_name) ON DELETE CASCADE,
+    enabled boolean NOT NULL,
+    updated_at timestamptz NOT NULL DEFAULT now(),
+    PRIMARY KEY (organization_id, feature_name)
 );
 
 
@@ -53,11 +54,3 @@ CREATE TRIGGER trg_limit_organizations
     BEFORE INSERT ON organizations
     FOR EACH ROW
     EXECUTE FUNCTION limit_organizations_per_user ();
-
-
-/* === values === */
-INSERT INTO plans (plan_name, max_spaces, max_projects, max_members, description)
-VALUES
-    ('free', 3, 20, 50, 'Free plan with limited spaces'),
-    ('pro', 10, 50, 100, 'Pro plan with more spaces'),
-    ('enterprise', NULL, NULL, NULL, 'Unlimited spaces');

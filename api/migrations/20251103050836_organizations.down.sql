@@ -11,6 +11,6 @@ DROP INDEX IF EXISTS idx_organization_owner;
 
 
 /* === tables === */
-DROP TABLE IF EXISTS plans;
+DROP TABLE IF EXISTS organization_features;
 
 DROP TABLE IF EXISTS organizations;
