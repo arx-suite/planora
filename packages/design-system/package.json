@@ -11,5 +11,8 @@
     },
     "description": "design system",
     "license": "MIT",
-    "author": "sajeevan"
+    "author": "sajeevan",
+    "dependencies": {
+        "tailwindcss": "catalog:"
+    }
 }

@@ -12,3 +12,4 @@ catalog:
   "@types/node": "^20"
   "@types/react": "^19"
   "@types/react-dom": "^19"
+  "tailwindcss": "^4"
