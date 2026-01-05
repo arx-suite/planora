@@ -3,17 +3,9 @@
     "compilerOptions": {
         "resolveJsonModule": true,
         "paths": {
-            "@/*": [
-                "./*"
-            ]
+            "@/*": ["./*"]
         }
     },
-    "include": [
-        "."
-    ],
-    "exclude": [
-        "dist",
-        "build",
-        "node_modules"
-    ]
+    "include": ["."],
+    "exclude": ["dist", "build", "node_modules"]
 }

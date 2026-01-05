@@ -8,18 +8,35 @@
     "files": {
         "ignoreUnknown": true,
         "includes": [
-            "**",
-            "!node_modules",
-            "!.next",
-            "!dist",
-            "!build",
-            "!src/components/ui"
+            "packages/**",
+            "apps/web/**",
+            "!**/node_modules",
+            "!**/.next",
+            "!**/dist",
+            "!**/build",
+            "!packages/ui/src/components/shadcn"
         ]
     },
     "formatter": {
         "enabled": true,
         "indentStyle": "space",
-        "indentWidth": 4
+        "indentWidth": 4,
+        "lineWidth": 100
+    },
+    "javascript": {
+        "formatter": {
+            "enabled": true
+        }
+    },
+    "css": {
+        "formatter": {
+            "enabled": true
+        }
+    },
+    "json": {
+        "formatter": {
+            "enabled": true
+        }
     },
     "linter": {
         "enabled": true,

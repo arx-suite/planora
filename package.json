@@ -2,6 +2,7 @@
 	"name": "@arx/planora-workspace",
 	"private": true,
 	"devDependencies": {
+		"@biomejs/biome": "2.2.0",
 		"turbo": "^2.7.1"
 	},
 	"scripts": {
@@ -10,7 +11,9 @@
 		"dev:api": "turbo run dev --filter=@arx/gatehouse",
 		"infra:up": "turbo run dev --filter=@arx/infra-dev",
 		"infra:down": "pnpm --filter=@arx/infra-dev run down",
-		"infra:clean": "pnpm --filter=@arx/infra-dev run clean"
+		"infra:clean": "pnpm --filter=@arx/infra-dev run clean",
+		"format": "biome format --write",
+        "lint": "biome check"
 	},
 	"packageManager": "pnpm@10.26.0"
 }
