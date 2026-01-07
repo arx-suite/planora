@@ -5,10 +5,7 @@ import type { ReactNode } from "react";
 import type { ProfileSidebarTabProps } from "./shared";
 import { BillingTab, ProfileTab, SecurityTab } from "./tabs";
 
-export function ProfileBody({
-    activeTab,
-    setActiveTab,
-}: ProfileSidebarTabProps) {
+export function ProfileBody({ activeTab, setActiveTab }: ProfileSidebarTabProps) {
     return (
         <main>
             <motion.div

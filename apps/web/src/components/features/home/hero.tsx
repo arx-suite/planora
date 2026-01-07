@@ -58,9 +58,8 @@ export function HeroSection() {
                     animate="show"
                     className="text-muted-foreground text-lg md:text-xl max-w-2xl mb-10"
                 >
-                    Plan, collaborate, and build with your team — all in one
-                    unified workspace. From ideas to execution, everything stays
-                    connected.
+                    Plan, collaborate, and build with your team — all in one unified workspace. From
+                    ideas to execution, everything stays connected.
                 </motion.p>
 
                 <motion.div
@@ -69,10 +68,7 @@ export function HeroSection() {
                     transition={{ delay: 0.2 }}
                 >
                     <Link href="/signup">
-                        <Button
-                            size="lg"
-                            className="px-8 py-6 text-lg cursor-pointer"
-                        >
+                        <Button size="lg" className="px-8 py-6 text-lg cursor-pointer">
                             Get Started — It's Free
                         </Button>
                     </Link>
@@ -90,15 +86,9 @@ export function HeroSection() {
                     >
                         <Card className="p-6 hover:shadow-lg transition-shadow h-full">
                             <CardContent className="">
-                                <div className="text-primary mb-4">
-                                    {f.icon}
-                                </div>
-                                <h3 className="text-xl font-semibold mb-2">
-                                    {f.title}
-                                </h3>
-                                <p className="text-muted-foreground">
-                                    {f.desc}
-                                </p>
+                                <div className="text-primary mb-4">{f.icon}</div>
+                                <h3 className="text-xl font-semibold mb-2">{f.title}</h3>
+                                <p className="text-muted-foreground">{f.desc}</p>
                             </CardContent>
                         </Card>
                     </motion.div>
@@ -115,9 +105,8 @@ export function HeroSection() {
                     Collaboration in Real-Time
                 </motion.h2>
                 <p className="text-muted-foreground mb-10 max-w-2xl mx-auto">
-                    Chat, assign tasks, manage documents, and brainstorm in one
-                    seamless interface. Stay productive without context
-                    switching.
+                    Chat, assign tasks, manage documents, and brainstorm in one seamless interface.
+                    Stay productive without context switching.
                 </p>
 
                 <motion.div
@@ -154,9 +143,7 @@ export function HeroSection() {
                             className="p-6 border rounded-xl bg-background/60 backdrop-blur-sm"
                         >
                             <p className="italic mb-4">“{t.quote}”</p>
-                            <div className="text-sm text-muted-foreground">
-                                {t.author}
-                            </div>
+                            <div className="text-sm text-muted-foreground">{t.author}</div>
                         </motion.div>
                     ))}
                 </div>
@@ -178,10 +165,9 @@ export function HeroSection() {
                         whileInView="show"
                         className="text-lg text-muted-foreground mb-8 leading-relaxed"
                     >
-                        We're building the next-generation collaboration
-                        platform — open, transparent, and shaped by real teams
-                        like yours. Join us early and help shape the future of
-                        teamwork.
+                        We're building the next-generation collaboration platform — open,
+                        transparent, and shaped by real teams like yours. Join us early and help
+                        shape the future of teamwork.
                     </motion.p>
 
                     <motion.div

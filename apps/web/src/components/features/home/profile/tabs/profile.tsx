@@ -111,16 +111,12 @@ export function ProfileTab() {
                 <div className="relative group w-fit">
                     <Avatar className="h-20 w-20">
                         <AvatarImage src={preview ?? user.avatarUrl} />
-                        <AvatarFallback>
-                            {user.username.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback>{user.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                         {isEditing && (
                             <>
                                 <button
                                     type="button"
-                                    onClick={() =>
-                                        fileInputRef.current?.click()
-                                    }
+                                    onClick={() => fileInputRef.current?.click()}
                                     className={cn(
                                         "absolute inset-0 flex items-center justify-center rounded-full",
                                         "bg-black/40 opacity-0 group-hover:opacity-100 transition",
@@ -194,8 +190,7 @@ function validateAvatar(file: File): Promise<void> {
     if (!ALLOWED_TYPES.includes(file.type))
         return Promise.reject("Only JPG, PNG or WEBP images are allowed");
 
-    if (file.size > MAX_FILE_SIZE)
-        return Promise.reject("Image must be smaller than 2MB");
+    if (file.size > MAX_FILE_SIZE) return Promise.reject("Image must be smaller than 2MB");
 
     return new Promise((resolve, reject) => {
         const img = new Image();

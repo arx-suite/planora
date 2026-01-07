@@ -35,8 +35,8 @@ import { config } from "@/lib/config";
 
 const orgsData: Org[] = [
     {
-        name: "organization-1",
-        subdomain: "organization_1",
+        name: "acme",
+        subdomain: "acme",
         organizationId: "232-34-3131",
         ownerId: "321411312",
         plan: "Free",
@@ -84,17 +84,11 @@ export function OrgSection() {
                 <CardContent className="flex items-center gap-4 p-6">
                     <Avatar className="h-14 w-14">
                         <AvatarImage src={user.avatarUrl} />
-                        <AvatarFallback>
-                            {user.username.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback>{user.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex flex-col">
-                        <span className="font-semibold text-lg">
-                            {user.username}
-                        </span>
-                        <span className="text-sm text-muted-foreground">
-                            {user.email}
-                        </span>
+                        <span className="font-semibold text-lg">{user.username}</span>
+                        <span className="text-sm text-muted-foreground">{user.email}</span>
                     </div>
                 </CardContent>
             </Card>
@@ -109,10 +103,7 @@ export function OrgSection() {
                     <SearchIcon className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 </div>
 
-                <Select
-                    onValueChange={(v) => setPlanFilter(v as any)}
-                    defaultValue="All"
-                >
+                <Select onValueChange={(v) => setPlanFilter(v as any)} defaultValue="All">
                     <SelectTrigger className="w-36">
                         <SelectValue placeholder="Plan" />
                     </SelectTrigger>
@@ -134,19 +125,9 @@ export function OrgSection() {
                         {orgsData.length > 0 ? (
                             orgsData
                                 .filter((o) =>
-                                    filteredOrgs.some(
-                                        (f) =>
-                                            f.organizationId ===
-                                            o.organizationId,
-                                    ),
+                                    filteredOrgs.some((f) => f.organizationId === o.organizationId),
                                 )
-                                .map((org) => (
-                                    <OrgRow
-                                        key={org.organizationId}
-                                        org={org}
-                                        isOwned
-                                    />
-                                ))
+                                .map((org) => <OrgRow key={org.organizationId} org={org} isOwned />)
                         ) : (
                             <p>No owned organizations</p>
                         )}
@@ -165,18 +146,10 @@ export function OrgSection() {
                         {orgsData.length > 0 ? (
                             orgsData
                                 .filter((o) =>
-                                    filteredOrgs.some(
-                                        (f) =>
-                                            f.organizationId ===
-                                            o.organizationId,
-                                    ),
+                                    filteredOrgs.some((f) => f.organizationId === o.organizationId),
                                 )
                                 .map((org) => (
-                                    <OrgRow
-                                        key={org.organizationId}
-                                        org={org}
-                                        isOwned={false}
-                                    />
+                                    <OrgRow key={org.organizationId} org={org} isOwned={false} />
                                 ))
                         ) : (
                             <p>No joined organizations</p>
@@ -207,13 +180,8 @@ function OrgRow({ org, isOwned }: { org: Org; isOwned: boolean }) {
                     </div>
                     <div className="min-w-0">
                         <div className="flex items-center gap-2">
-                            <Link
-                                href={`${getSubdomain(org.subdomain)}`}
-                                target="_blank"
-                            >
-                                <p className="font-medium truncate">
-                                    {org.name}
-                                </p>
+                            <Link href={`${getSubdomain(org.subdomain)}`} target="_blank">
+                                <p className="font-medium truncate">{org.name}</p>
                             </Link>
                             <PlanBadge plan={org.plan} />
                         </div>
@@ -225,11 +193,7 @@ function OrgRow({ org, isOwned }: { org: Org; isOwned: boolean }) {
 
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => e.stopPropagation()}
-                        >
+                        <Button variant="ghost" size="icon" onClick={(e) => e.stopPropagation()}>
                             <MoreHorizontal className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>

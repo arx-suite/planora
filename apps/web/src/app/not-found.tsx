@@ -32,8 +32,8 @@ export default function NotFound() {
                 animate="show"
                 className="text-muted-foreground max-w-md mb-8"
             >
-                Looks like the page you're looking for drifted away. Let's get
-                you back to home base.
+                Looks like the page you're looking for drifted away. Let's get you back to home
+                base.
             </motion.p>
 
             <motion.div variants={fadeIn} initial="hidden" animate="show">

@@ -7,9 +7,7 @@ export function BillingTab() {
                 <CardTitle>Billing</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="text-sm text-muted-foreground">
-                    Billing portal coming soon.
-                </div>
+                <div className="text-sm text-muted-foreground">Billing portal coming soon.</div>
             </CardContent>
         </Card>
     );

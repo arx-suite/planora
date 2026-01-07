@@ -19,8 +19,8 @@ export function Footer() {
                             Arx - Planora
                         </Link>
                         <p className="text-sm text-muted-foreground mt-2">
-                            An open-source collaboration tool built for teams
-                            who love to create together.
+                            An open-source collaboration tool built for teams who love to create
+                            together.
                         </p>
                     </div>
 
@@ -32,9 +32,7 @@ export function Footer() {
                             className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
                         >
                             <Github className="h-5 w-5" />
-                            <span className="text-sm font-medium">
-                                View on GitHub
-                            </span>
+                            <span className="text-sm font-medium">View on GitHub</span>
                         </Link>
                     </div>
                 </motion.div>

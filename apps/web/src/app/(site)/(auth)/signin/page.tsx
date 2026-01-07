@@ -9,12 +9,7 @@ import { toast } from "sonner";
 import { signinAction } from "@/actions/signin";
 import { slideLeft } from "@/components/core/motions";
 import { Button } from "@/components/ui/button";
-import {
-    Card,
-    CardContent,
-    CardFooter,
-    CardHeader,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/spinner";
@@ -26,10 +21,7 @@ const initialState: SignInFormActionResponse = {
 };
 
 export default function SigninPage() {
-    const [state, action, isPending] = useActionState(
-        signinAction,
-        initialState,
-    );
+    const [state, action, isPending] = useActionState(signinAction, initialState);
     const router = useRouter();
 
     useEffect(() => {
@@ -59,9 +51,7 @@ export default function SigninPage() {
         >
             <Card className="shadow-xl">
                 <CardHeader>
-                    <h2 className="text-2xl font-bold text-center">
-                        Welcome back
-                    </h2>
+                    <h2 className="text-2xl font-bold text-center">Welcome back</h2>
                     <p className="text-sm text-center text-muted-foreground mt-1">
                         Sign in to continue your collaboration
                     </p>
@@ -70,10 +60,7 @@ export default function SigninPage() {
                 <CardContent className="space-y-4">
                     <form action={action} className="flex flex-col gap-5">
                         <div className="flex flex-col gap-1">
-                            <Label
-                                htmlFor="email"
-                                className="text-sm font-medium"
-                            >
+                            <Label htmlFor="email" className="text-sm font-medium">
                                 Email
                             </Label>
                             <Input
@@ -92,10 +79,7 @@ export default function SigninPage() {
                             )}
                         </div>
                         <div className="flex flex-col gap-1">
-                            <Label
-                                htmlFor="password"
-                                className="text-sm font-medium"
-                            >
+                            <Label htmlFor="password" className="text-sm font-medium">
                                 Password
                             </Label>
                             <Input
@@ -137,16 +121,10 @@ export default function SigninPage() {
                     </div>
 
                     <div className="flex justify-center gap-4">
-                        <Button
-                            variant="outline"
-                            className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" className="flex items-center gap-2">
                             <Github className="w-4 h-4" /> GitHub
                         </Button>
-                        <Button
-                            variant="outline"
-                            className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" className="flex items-center gap-2">
                             <Mail className="w-4 h-4" /> Google
                         </Button>
                     </div>
@@ -154,10 +132,7 @@ export default function SigninPage() {
 
                 <CardFooter className="flex gap-2 text-center text-sm text-muted-foreground">
                     <p>Don't have an account? </p>
-                    <Link
-                        href="/signup"
-                        className="text-indigo-500 hover:underline"
-                    >
+                    <Link href="/signup" className="text-indigo-500 hover:underline">
                         Create one
                     </Link>
                 </CardFooter>

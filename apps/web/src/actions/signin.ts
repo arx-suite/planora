@@ -36,10 +36,7 @@ export async function signinAction(
                 const parsed = signinSchema.safeParse(rawData);
                 if (!parsed.success) {
                     span?.setStatus({ code: 2, message: "Validation failed" });
-                    span?.addEvent(
-                        "form_validation_failed",
-                        parsed.error.flatten().fieldErrors,
-                    );
+                    span?.addEvent("form_validation_failed", parsed.error.flatten().fieldErrors);
                     span?.end();
 
                     return {
@@ -52,16 +49,13 @@ export async function signinAction(
 
                 span?.addEvent("sending_auth_request");
 
-                const response = await fetch(
-                    `${config.internal_api}/v1/auth/signin`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(parsed.data),
+                const response = await fetch(`${config.internal_api}/v1/auth/signin`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
                     },
-                );
+                    body: JSON.stringify(parsed.data),
+                });
 
                 span?.setAttribute("response.status_code", response.status);
 
@@ -106,8 +100,7 @@ export async function signinAction(
 
                 return {
                     success: false,
-                    message:
-                        "An unexpected error occurred. Please try again later.",
+                    message: "An unexpected error occurred. Please try again later.",
                 };
             }
         },

@@ -5,11 +5,7 @@ import { motion } from "motion/react";
 import { slideRight } from "@/components/core/motions";
 import { Navbar } from "@/components/features/home/layout";
 
-export default function AuthLayout({
-    children,
-}: {
-    children: React.ReactNode;
-}) {
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
     return (
         <>
             <Navbar />
@@ -26,9 +22,8 @@ export default function AuthLayout({
                                 Collaborate. Plan. Deliver.
                             </h1>
                             <p className="text-muted-foreground text-lg leading-relaxed">
-                                Planora brings your team, tasks, and
-                                communication together in one place — so you can
-                                focus on what matters.
+                                Planora brings your team, tasks, and communication together in one
+                                place — so you can focus on what matters.
                             </p>
                             <div className="mt-8 text-sm text-muted-foreground italic">
                                 “Finally, a workspace that just *feels right.*”

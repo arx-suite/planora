@@ -51,9 +51,7 @@ type ProfileProviderProps = {
     children: ReactNode;
 };
 
-const ProfileContext = createContext<ProfileContextValue | undefined>(
-    undefined,
-);
+const ProfileContext = createContext<ProfileContextValue | undefined>(undefined);
 
 export function ProfileProvider({ profile, children }: ProfileProviderProps) {
     const [state, setState] = useState<ProfileState>(() => mapProfile(profile));
@@ -74,11 +72,7 @@ export function ProfileProvider({ profile, children }: ProfileProviderProps) {
         },
     };
 
-    return (
-        <ProfileContext.Provider value={value}>
-            {children}
-        </ProfileContext.Provider>
-    );
+    return <ProfileContext.Provider value={value}>{children}</ProfileContext.Provider>;
 }
 
 export function useProfile(): ProfileContextValue {

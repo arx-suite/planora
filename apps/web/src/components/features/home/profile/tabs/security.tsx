@@ -11,12 +11,8 @@ export function SecurityTab() {
             <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <div className="font-medium">
-                            Two-factor Authentication
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                            Strongly recommended
-                        </div>
+                        <div className="font-medium">Two-factor Authentication</div>
+                        <div className="text-xs text-muted-foreground">Strongly recommended</div>
                     </div>
                     <Button variant="ghost">Enable</Button>
                 </div>

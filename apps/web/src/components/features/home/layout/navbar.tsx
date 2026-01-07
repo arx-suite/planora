@@ -32,20 +32,17 @@ export function Navbar() {
                     href="/"
                     className="text-xl font-semibold tracking-tight flex items-center gap-1"
                 >
-                    <Image
-                        width={40}
-                        height={40}
-                        alt="Planora"
-                        src="/planora.png"
-                    />
-                    <span className="bg-linear-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">
+                    <Image width={40} height={40} alt="Planora" src="/planora.png" />
+                    {/* <span className="bg-linear-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent"> */}
+                    <span className="bg-[linear-gradient(135deg,var(--color-primary)_0%,var(--color-secondary)_40%,var(--color-accent-purple)_100%)] bg-clip-text text-transparent uppercase font-extrabold text-lg">
                         Planora
                     </span>
                 </Link>
 
                 <div className="flex items-center gap-3">
                     <Link href="/signup">
-                        <Button className="bg-linear-to-r from-indigo-500 to-violet-500 text-white px-4">
+                        {/* <Button className="bg-linear-to-r from-indigo-500 to-violet-500 text-white px-4"> */}
+                        <Button className="bg-[linear-gradient(135deg,var(--color-primary)_0%,var(--color-secondary)_40%,var(--color-accent-purple)_100%)] text-white px-4">
                             Get Started
                         </Button>
                     </Link>

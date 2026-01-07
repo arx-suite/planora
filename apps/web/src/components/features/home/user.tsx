@@ -21,9 +21,7 @@ export function UserProfileSection() {
                 transition={{ delay: 0.2 }}
                 className="text-center space-y-3"
             >
-                <h1 className="text-3xl font-bold tracking-tight">
-                    {welcomeMessage}
-                </h1>
+                <h1 className="text-3xl font-bold tracking-tight">{welcomeMessage}</h1>
                 <p className="text-muted-foreground text-sm max-w-md mx-auto">
                     Navigate to your personal settings or workspace management.
                 </p>
@@ -36,14 +34,10 @@ export function UserProfileSection() {
                     transition={{ type: "spring", stiffness: 300 }}
                 >
                     <Card className="rounded-3xl p-6 hover:shadow-xl border bg-card transition cursor-pointer">
-                        <Link
-                            href="/profile"
-                            className="flex flex-col gap-3 h-full"
-                        >
+                        <Link href="/profile" className="flex flex-col gap-3 h-full">
                             <h3 className="text-xl font-semibold">Profile</h3>
                             <p className="text-sm text-muted-foreground">
-                                Manage your personal settings, preferences, and
-                                account details.
+                                Manage your personal settings, preferences, and account details.
                             </p>
                         </Link>
                     </Card>
@@ -55,14 +49,10 @@ export function UserProfileSection() {
                     transition={{ type: "spring", stiffness: 300 }}
                 >
                     <Card className="rounded-3xl p-6 hover:shadow-xl border bg-card transition cursor-pointer">
-                        <Link
-                            href="/workspace"
-                            className="flex flex-col gap-3 h-full"
-                        >
+                        <Link href="/workspace" className="flex flex-col gap-3 h-full">
                             <h3 className="text-xl font-semibold">Workspace</h3>
                             <p className="text-sm text-muted-foreground">
-                                View and manage your organizations, roles, and
-                                collaboration tools.
+                                View and manage your organizations, roles, and collaboration tools.
                             </p>
                         </Link>
                     </Card>

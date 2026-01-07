@@ -30,13 +30,10 @@ export function AlertDialogDemo() {
             </AlertDialogTrigger>
             <AlertDialogContent>
                 <AlertDialogHeader>
-                    <AlertDialogTitle>
-                        Are you absolutely sure?
-                    </AlertDialogTitle>
+                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                     <AlertDialogDescription>
-                        This action cannot be undone. This will permanently
-                        delete your account and remove your data from our
-                        servers.
+                        This action cannot be undone. This will permanently delete your account and
+                        remove your data from our servers.
                     </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -48,10 +45,7 @@ export function AlertDialogDemo() {
     );
 }
 
-export function ProfileSidebar({
-    activeTab,
-    setActiveTab,
-}: ProfileSidebarTabProps) {
+export function ProfileSidebar({ activeTab, setActiveTab }: ProfileSidebarTabProps) {
     const { user } = useAuthenticatedProfile();
 
     const router = useRouter();
@@ -86,17 +80,11 @@ export function ProfileSidebar({
                 <div className="flex items-center gap-4">
                     <Avatar className="h-14 w-14">
                         <AvatarImage src={user.avatarUrl} />
-                        <AvatarFallback>
-                            {user.username.slice(0, 2).toUpperCase()}
-                        </AvatarFallback>
+                        <AvatarFallback>{user.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <div className="text-sm font-semibold">
-                            {user.username}
-                        </div>
-                        <div className="text-xs text-muted-foreground">
-                            {user.email}
-                        </div>
+                        <div className="text-sm font-semibold">{user.username}</div>
+                        <div className="text-xs text-muted-foreground">{user.email}</div>
                     </div>
                 </div>
 
@@ -126,10 +114,7 @@ export function ProfileSidebar({
                     <div className="mt-3 pt-3 border-t border-white/6">
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
-                                <Button
-                                    variant="ghost"
-                                    className="w-full justify-start"
-                                >
+                                <Button variant="ghost" className="w-full justify-start">
                                     <LogOut className="w-4 h-4 mr-2" />
                                     Sign out
                                 </Button>
@@ -137,29 +122,22 @@ export function ProfileSidebar({
 
                             <AlertDialogContent>
                                 <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Sign out?
-                                    </AlertDialogTitle>
+                                    <AlertDialogTitle>Sign out?</AlertDialogTitle>
                                     <AlertDialogDescription>
-                                        Are you sure you want to sign out? You
-                                        will need to sign in again to access
-                                        your account.
+                                        Are you sure you want to sign out? You will need to sign in
+                                        again to access your account.
                                     </AlertDialogDescription>
                                 </AlertDialogHeader>
 
                                 <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
 
                                     <AlertDialogAction
                                         onClick={signOut}
                                         disabled={loading}
                                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                                     >
-                                        {loading
-                                            ? "Signing out..."
-                                            : "Sign out"}
+                                        {loading ? "Signing out..." : "Sign out"}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -188,11 +166,7 @@ function SidebarItem({
             className={`w-full flex items-center gap-3 p-2 rounded-md text-sm transition ${active ? "bg-white/6" : "hover:bg-white/3"}`}
         >
             <div className="text-muted-foreground">{icon}</div>
-            <div
-                className={`flex-1 text-left ${active ? "font-medium" : "text-sm"}`}
-            >
-                {title}
-            </div>
+            <div className={`flex-1 text-left ${active ? "font-medium" : "text-sm"}`}>{title}</div>
         </button>
     );
 }
