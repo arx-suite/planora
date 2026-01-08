@@ -1,7 +1,3 @@
-import { CreditCard, LogOut, Settings, ShieldCheck } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { type ReactNode, useState } from "react";
-import { toast } from "sonner";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -12,10 +8,16 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
     AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    Button,
+    Separator,
+} from "@planora/ui";
+import { CreditCard, LogOut, Settings, ShieldCheck } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { type ReactNode, useState } from "react";
+import { toast } from "sonner";
 import { useAuthenticatedProfile } from "@/context/profile-context";
 import { config } from "@/lib/config";
 import type { ProfileSidebarTabProps } from ".";

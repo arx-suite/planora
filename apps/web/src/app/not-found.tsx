@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@planora/ui";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { fadeIn, slideUp } from "@/components/core/motions";
-import { Button } from "@/components/ui/button";
 
 export default function NotFound() {
     return (

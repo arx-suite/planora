@@ -1,12 +1,19 @@
+import {
+    Avatar,
+    AvatarFallback,
+    AvatarImage,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+    Input,
+    Label,
+} from "@planora/ui";
 import { Camera, Loader2 } from "lucide-react";
 import type React from "react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useAuthenticatedProfile } from "@/context/profile-context";
 import { config } from "@/lib/config";
 import { cn } from "@/lib/utils";

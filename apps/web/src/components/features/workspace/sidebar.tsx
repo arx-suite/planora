@@ -1,6 +1,19 @@
 "use client";
 
 import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from "@planora/ui";
+import {
     ArrowRight,
     ChevronDown,
     Clock,
@@ -12,21 +25,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@/components/ui/sidebar";
 import { config } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
@@ -65,12 +63,7 @@ export function WorkspaceNavbar() {
                             href={config.nextjs}
                             className="flex items-center gap-2 text-xl font-semibold tracking-tight"
                         >
-                            <Image
-                                width={36}
-                                height={36}
-                                alt="Planora"
-                                src="/planora.png"
-                            />
+                            <Image width={36} height={36} alt="Planora" src="/planora.png" />
                             <span className="bg-linear-to-r from-indigo-500 to-violet-500 bg-clip-text text-transparent">
                                 Planora
                             </span>

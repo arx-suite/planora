@@ -1,10 +1,9 @@
 "use client";
 
+import { Button, Card, CardContent } from "@planora/ui";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { fadeIn, scaleIn, slideUp } from "@/components/core/motions";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
     {

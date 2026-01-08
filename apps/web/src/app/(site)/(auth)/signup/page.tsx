@@ -1,5 +1,15 @@
 "use client";
 
+import {
+    Button,
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    Input,
+    Label,
+    Spinner,
+} from "@planora/ui";
 import { Github, Mail } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -8,11 +18,6 @@ import { useActionState, useEffect } from "react";
 import { toast } from "sonner";
 import { signupAction } from "@/actions/signup";
 import { slideLeft } from "@/components/core/motions";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Spinner } from "@/components/ui/spinner";
 import type { SignUpFormActionResponse } from "@/types/auth";
 
 const initialState: SignUpFormActionResponse = {

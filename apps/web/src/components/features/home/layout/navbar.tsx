@@ -1,12 +1,11 @@
 "use client";
 
+import { Button } from "@planora/ui";
 import { motion, useMotionValueEvent, useScroll } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
 import { ThemeToggle } from "@/components/core/theme-toggle";
-import { Button } from "@/components/ui/button";
 
 export function Navbar() {
     const [scrolled, setScrolled] = useState(false);

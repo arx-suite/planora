@@ -1,6 +1,6 @@
+import { Card } from "@planora/ui";
 import { motion } from "motion/react";
 import Link from "next/link";
-import { Card } from "@/components/ui/card";
 import { useAuthenticatedProfile } from "@/context/profile-context";
 
 export function UserProfileSection() {

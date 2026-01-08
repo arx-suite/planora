@@ -1,6 +1,6 @@
+import { SidebarProvider, SidebarTrigger } from "@planora/ui";
 import type { ReactNode } from "react";
 import { WorkspaceNavbar } from "@/components/features/workspace/sidebar";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function WorkspaceRootLayout({
     children,
