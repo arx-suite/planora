@@ -1,50 +1,48 @@
 -- Add up migration script here
 
 /* === tables === */
-CREATE TABLE IF NOT EXISTS deleted_record (
-    id uuid PRIMARY KEY DEFAULT gen_random_uuid (),
-    original_table text NOT NULL,
-    original_id uuid NOT NULL,
-    deleted_at timestamptz NOT NULL DEFAULT now(),
-    data jsonb NOT NULL
+create table if not exists deleted_record (
+    id uuid primary key default gen_random_uuid(),
+    original_table text not null,
+    original_id uuid not null,
+    deleted_at timestamptz not null default now(),
+    data jsonb not null
 );
 
 
 /* === functions / triggers === */
-CREATE OR REPLACE FUNCTION archive_deleted_row ()
-    RETURNS TRIGGER
-    LANGUAGE plpgsql
-    AS $$
-DECLARE
+create or replace function archive_deleted_row()
+returns trigger
+language plpgsql
+as $$
+declare
     key_name text;
     key_value uuid;
-BEGIN
-    SELECT
-        a.attname INTO key_name
-    FROM
-        pg_index i
-        JOIN pg_attribute a ON a.attrelid = i.indrelid
-            AND a.attnum = ANY (i.indkey)
-    WHERE
-        i.indrelid = TG_RELID
-        AND i.indisprimary
-    LIMIT 1;
-    EXECUTE format('SELECT ($1).%I', key_name) INTO key_value
-    USING OLD;
-    INSERT INTO deleted_record (original_table, original_id, data)
-        VALUES (TG_TABLE_NAME, key_value, to_jsonb (OLD));
-    RETURN OLD;
-END;
+begin
+    select a.attname into key_name
+    from pg_index i
+    join pg_attribute a on a.attrelid = i.indrelid
+    and a.attnum = any (i.indkey)
+    where i.indrelid = TG_RELID and i.indisprimary
+    limit 1;
+
+    execute format('select ($1).%I', key_name) into key_value
+    using OLD;
+
+    insert into deleted_record (original_table, original_id, data)
+    values (TG_TABLE_NAME, key_value, to_jsonb(OLD));
+    return OLD;
+end;
 $$;
 
-CREATE OR REPLACE FUNCTION attach_archive_trigger (tablename text)
-    RETURNS void
-    LANGUAGE plpgsql
-    AS $$
-BEGIN
-    EXECUTE format('CREATE TRIGGER trg_%I_deleted_record
-         BEFORE DELETE ON %I
-         FOR EACH ROW
-         EXECUTE FUNCTION archive_deleted_row()', tablename, tablename);
-END;
+create or replace function attach_archive_trigger(tablename text)
+returns void
+language plpgsql
+as $$
+begin
+    execute format('create trigger trg_%I_deleted_record
+        before delete on %I
+        for each row
+        execute function archive_deleted_row()', tablename, tablename);
+end;
 $$;

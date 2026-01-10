@@ -1,9 +1,6 @@
 -- Add down migration script here
 
 /* === tables === */
-
-
-/* === tables === */
-DROP TABLE IF EXISTS features;
-DROP TABLE IF EXISTS plan_limits;
-DROP TABLE IF EXISTS plans;
+drop table if not exists features;
+drop table if not exists plan_limits;
+drop table if not exists plans;

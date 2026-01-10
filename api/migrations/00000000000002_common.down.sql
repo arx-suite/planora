@@ -1,10 +1,9 @@
 -- Add down migration script here
 
 /* === functions / triggers === */
-DROP FUNCTION IF EXISTS attach_archive_trigger;
-
-DROP FUNCTION IF EXISTS archive_deleted_row;
+drop function if exists attach_archive_trigger;
+drop function if exists archive_deleted_row;
 
 
 /* === tables === */
-DROP TABLE IF EXISTS deleted_record;
+drop table if exists deleted_record;
