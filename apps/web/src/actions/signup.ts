@@ -62,7 +62,7 @@ export async function signupAction(
 
                 span?.addEvent("sending_auth_request");
 
-                const response = await fetch(`${config.internal_api}/v1/auth/signup`, {
+                const response = await fetch(`${config.api}/v1/auth/signup`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
