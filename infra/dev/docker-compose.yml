@@ -45,6 +45,19 @@ services:
     networks:
       - default
 
+  mail:
+    container_name: mail
+    image: inbucket/inbucket:3.1.1
+    ports:
+      - "9002:9000" # web ui
+      - "2500:2500" # SMTP
+      - "1100:1100" # POP3
+    restart: always
+    networks:
+      - default
+    volumes:
+      - inbucket_data:/storage
+
   prometheus:
     image: prom/prometheus:v3.8.1
     container_name: prometheus
@@ -132,6 +145,7 @@ volumes:
   loki_data:
   tempo_data:
   redis_data:
+  inbucket_data:
 
 networks:
   default:
