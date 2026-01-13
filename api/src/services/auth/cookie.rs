@@ -2,6 +2,10 @@ use actix_web::cookie::{Cookie, SameSite, time};
 
 use super::constants::{JWT_ACCESS_TOKEN_KEY, JWT_REFRESH_TOKEN_KEY};
 
+// TODO: remove these hardcoded values
+const DOMAIN: &str = ".planora.sbs";
+const SAME_SITE: SameSite = SameSite::Lax;
+
 pub fn build_cookie(
     access_token: String,
     refresh_token: String,
@@ -20,10 +24,11 @@ pub fn build_cookie_cn(is_access_token: bool, token: String) -> Cookie<'static> 
     };
 
     let cookie = Cookie::build(key, token)
+        .domain(DOMAIN)
         .path("/")
         .secure(false)
         .http_only(true)
-        .same_site(SameSite::None)
+        .same_site(SAME_SITE)
         .finish();
 
     return cookie;
