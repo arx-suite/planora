@@ -1,5 +1,6 @@
+pub mod bootstrap;
 pub mod common;
 pub mod modules;
-pub mod services;
 pub mod telemetry;
-pub mod bootstrap;
+
+pub use bootstrap as services;
