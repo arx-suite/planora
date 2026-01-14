@@ -36,6 +36,13 @@ deadpool-redis = "0.22.0"
 aws-config = { version = "1.8.12", features = ["behavior-version-latest"] }
 aws-sdk-s3 = "1.117.0"
 
+# smtp
+lettre = { version = "0.11.19", default-features = false, features = [
+    "builder",
+    "smtp-transport",
+    "tokio1-native-tls",
+] }
+
 # async / runtime
 tokio = { version = "1.48.0", features = ["sync", "signal"] }
 futures-util = "0.3.31"
