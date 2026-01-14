@@ -8,6 +8,11 @@ use uuid::Uuid;
 
 use super::asset::SignedUrlProvider;
 use super::{S3Error, S3Result, S3ServiceI};
+use crate::common::utils;
+
+const ENV_AWS_ACCESS_KEY_ID: &str = "AWS_ACCESS_KEY_ID";
+const ENV_AWS_SECRET_ACCESS_KEY: &str = "AWS_SECRET_ACCESS_KEY";
+const ENV_AWS_S3_ENDPOINT: &str = "AWS_S3_ENDPOINT";
 
 #[derive(Debug, Clone)]
 pub struct S3Service {
@@ -19,11 +24,9 @@ impl S3Service {
     async fn from_env(app_name: String) -> S3Result<Self> {
         let name = aws_config::AppName::new(app_name).expect("app name should be valid");
 
-        let access_key_id =
-            std::env::var("AWS_ACCESS_KEY_ID").expect("`AWS_ACCESS_KEY_ID` must be set");
-        let secret_access_key =
-            std::env::var("AWS_SECRET_ACCESS_KEY").expect("`AWS_SECRET_ACCESS_KEY` must be set");
-        let s3_endpoint = std::env::var("AWS_S3_ENDPOINT").expect("`AWS_S3_ENDPOINT` must be set");
+        let access_key_id = utils::get_env::<String>(ENV_AWS_ACCESS_KEY_ID).unwrap();
+        let secret_access_key = utils::get_env::<String>(ENV_AWS_SECRET_ACCESS_KEY).unwrap();
+        let s3_endpoint = utils::get_env::<url::Url>(ENV_AWS_S3_ENDPOINT).unwrap();
 
         let creds = Credentials::new(access_key_id, secret_access_key, None, None, "minio");
 
@@ -44,7 +47,7 @@ impl S3Service {
 
         Ok(Self {
             client,
-            endpoint: s3_endpoint,
+            endpoint: s3_endpoint.to_string(),
         })
     }
 }

@@ -6,6 +6,7 @@ use serde::Serialize;
 use serde::de::DeserializeOwned;
 
 use super::CacheResult;
+use crate::common::utils;
 
 const ENV_REDIS_URL: &'static str = "REDIS_URL";
 
@@ -79,10 +80,8 @@ impl CacheService {
     level = tracing::Level::DEBUG
 )]
 pub fn init() -> CacheService {
-    let url =
-        std::env::var(ENV_REDIS_URL).expect("missing required environment variable: `REDIS_URL`");
-
-    let cfg = Config::from_url(url);
+    let url = utils::get_env::<url::Url>(ENV_REDIS_URL).unwrap();
+    let cfg = Config::from_url(url.to_string());
     let pool = cfg
         .create_pool(Some(deadpool_redis::Runtime::Tokio1))
         .unwrap();

@@ -6,6 +6,7 @@ use tokio::sync::RwLock;
 
 use super::pg::{Database, DatabaseName, DbNode};
 use super::{DBResult, DatabaseError};
+use crate::common::utils;
 use crate::telemetry::db::register_pool_metrics;
 
 const ENV_PG_DATABASE_URL: &'static str = "PG_DATABASE_URL";
@@ -25,11 +26,10 @@ impl DbService {
     #[inline]
     async fn init_primary(&self) -> sqlx::Result<()> {
         let node = DbNode::Primary;
-        let url = std::env::var(ENV_PG_DATABASE_URL)
-            .expect("missing required environment variable: PG_DATABASE_URL");
+        let url = utils::get_env::<url::Url>(ENV_PG_DATABASE_URL).unwrap();
         let name = DatabaseName::Primary;
 
-        self.init_pool(node.pool_options(), url, name.into(), node)
+        self.init_pool(node.pool_options(), url.to_string(), name.into(), node)
             .await
     }
 

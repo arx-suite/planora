@@ -1,10 +1,13 @@
-use std::env;
-
 use super::{
     AuthResult,
     constants::{JWT_TOKEN_TYPE_ACCESS, JWT_TOKEN_TYPE_REFRESH},
     jwt::JwtService,
 };
+use crate::common::utils;
+
+const ENV_JWT_SECRET: &str = "JWT_SECRET";
+const ENV_JWT_ACCESS_EXPIRY_MINUTES: &str = "JWT_ACCESS_EXPIRY_MINUTES";
+const ENV_JWT_REFRESH_EXPIRY_DAYS: &str = "JWT_REFRESH_EXPIRY_DAYS";
 
 #[derive(Debug, Clone)]
 pub struct AuthService {
@@ -13,18 +16,9 @@ pub struct AuthService {
 
 impl AuthService {
     fn from_env() -> Self {
-        let secret =
-            env::var("JWT_SECRET").expect("missing required environment variable: JWT_SECRET");
-
-        let access_expiry_minutes = env::var("JWT_ACCESS_EXPIRY_MINUTES")
-            .expect("missing required environment variable: JWT_ACCESS_EXPIRY_MINUTES")
-            .parse()
-            .expect("JWT_ACCESS_EXPIRY_MINUTES must be a number");
-
-        let refresh_expiry_days = env::var("JWT_REFRESH_EXPIRY_DAYS")
-            .expect("missing required environment variable: JWT_REFRESH_EXPIRY_DAYS")
-            .parse()
-            .expect("JWT_REFRESH_EXPIRY_DAYS must be a number");
+        let secret = utils::get_env::<String>(ENV_JWT_SECRET).unwrap();
+        let access_expiry_minutes = utils::get_env::<i64>(ENV_JWT_ACCESS_EXPIRY_MINUTES).unwrap();
+        let refresh_expiry_days = utils::get_env::<i64>(ENV_JWT_REFRESH_EXPIRY_DAYS).unwrap();
 
         Self {
             jwt_service: JwtService::new(secret, access_expiry_minutes, refresh_expiry_days),
