@@ -1,51 +1,32 @@
-pub mod env_utils {
-    use std::env;
-    use url::Url;
+use std::{env, str::FromStr};
 
-    #[inline]
-    pub fn get_env(key: &str) -> String {
-        if let Ok(value) = env::var(key) {
-            value
-        } else {
-            panic!("missing required environment variable: `{key}`");
-        }
-    }
+#[derive(Debug, thiserror::Error)]
+pub enum EnvError {
+    #[error("missing required environment variable `{0}`")]
+    Missing(String),
 
-    #[inline]
-    pub fn get_env_optional(key: &str) -> Option<String> {
-        env::var(key).ok()
-    }
+    #[error("invalid value for `{key}`: {reason}")]
+    Invalid { key: String, reason: String },
+}
 
-    #[inline]
-    pub fn get_env_port(key: &str) -> u16 {
-        if let Ok(value) = get_env(key).parse::<u16>() {
-            value
-        } else {
-            panic!("`{key}`: must be a valid number");
-        }
-    }
+pub trait EnvParse: Sized {
+    fn parse_env(key: &str, value: String) -> Result<Self, EnvError>;
+}
 
-    #[inline]
-    pub fn get_env_port_optional(key: &str) -> Option<u16> {
-        get_env_optional(key).and_then(|value| value.parse::<u16>().ok())
-    }
+pub fn get_env<T: EnvParse>(key: &str) -> Result<T, EnvError> {
+    let value = env::var(key).map_err(|_| EnvError::Missing(key.into()))?;
+    T::parse_env(key, value)
+}
 
-    #[inline]
-    pub fn get_env_url(key: &str) -> String {
-        let value = get_env(key);
-
-        if let Ok(url) = Url::parse(&value) {
-            return url.to_string();
-        } else {
-            panic!("`{key}`: must be a valid URL");
-        }
-    }
-
-    #[inline]
-    pub fn get_env_url_optional(key: &str) -> Option<String> {
-        get_env_optional(key).and_then(|value| match Url::parse(&value) {
-            Ok(url) => Some(url.to_string()),
-            Err(_) => None,
+impl<T> EnvParse for T
+where
+    T: FromStr,
+    T::Err: std::fmt::Display,
+{
+    fn parse_env(key: &str, value: String) -> Result<Self, EnvError> {
+        value.parse::<T>().map_err(|e| EnvError::Invalid {
+            key: key.into(),
+            reason: e.to_string(),
         })
     }
 }
