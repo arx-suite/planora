@@ -1,5 +1,6 @@
-pub mod env {
+pub mod env_utils {
     use std::env;
+    use url::Url;
 
     #[inline]
     pub fn get_env(key: &str) -> String {
@@ -27,5 +28,24 @@ pub mod env {
     #[inline]
     pub fn get_env_port_optional(key: &str) -> Option<u16> {
         get_env_optional(key).and_then(|value| value.parse::<u16>().ok())
+    }
+
+    #[inline]
+    pub fn get_env_url(key: &str) -> String {
+        let value = get_env(key);
+
+        if let Ok(url) = Url::parse(&value) {
+            return url.to_string();
+        } else {
+            panic!("`{key}`: must be a valid URL");
+        }
+    }
+
+    #[inline]
+    pub fn get_env_url_optional(key: &str) -> Option<String> {
+        get_env_optional(key).and_then(|value| match Url::parse(&value) {
+            Ok(url) => Some(url.to_string()),
+            Err(_) => None,
+        })
     }
 }

@@ -5,7 +5,7 @@ use lettre::{
 use std::sync::Arc;
 
 use super::MailResult;
-use crate::common::env;
+use crate::common::env_utils;
 
 const ENV_SMTP_IP: &str = "SMTP_HOST";
 const ENV_SMTP_PORT: &str = "SMTP_PORT";
@@ -111,10 +111,10 @@ impl MailService {
     level = tracing::Level::DEBUG
 )]
 pub fn init() -> MailService {
-    let host = env::get_env(ENV_SMTP_IP);
-    let port = env::get_env_port(ENV_SMTP_PORT);
-    let username = env::get_env(ENV_SMTP_USER);
-    let password = env::get_env(ENV_SMTP_PASSWORD);
+    let host = env_utils::get_env_url(ENV_SMTP_IP);
+    let port = env_utils::get_env_port(ENV_SMTP_PORT);
+    let username = env_utils::get_env(ENV_SMTP_USER);
+    let password = env_utils::get_env(ENV_SMTP_PASSWORD);
 
     let config = MailConfig::new(host, port, username, password);
     MailService::new(config)
