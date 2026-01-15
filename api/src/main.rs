@@ -6,7 +6,7 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
-use arx_gatehouse::{common::ApiResult, services, telemetry};
+use arx_gatehouse::{bootstrap, common::ApiResult, telemetry};
 
 use crate::routes::v1::v1_scope;
 
@@ -29,22 +29,15 @@ async fn not_found_handler() -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // observability
+    // bootstrap
+    let app = bootstrap::init().await;
+
     let _guard = telemetry::telemetry::init();
 
-    // initialize the application
-    let is_production_env = false;
-    let addr = "localhost:8080".to_owned();
-    let web_url = "http://localhost:3000".to_owned();
+    let addr = app.config().addr();
+    let is_production_env = app.config().is_production_env();
+    let web_url = app.config().web_url.clone();
 
-    /* services */
-    let db_service = services::db::service::init().await;
-    let cache_service = services::cache::service::init();
-    let auth_service = services::auth::service::init();
-    let s3_service = services::s3::service::init("planora".to_string()).await;
-    let mail_service = services::mail::service::init();
-
-    // actix server
     tracing::info!("Starting server at http://{}", addr);
     HttpServer::new(move || {
         use actix_web::http::header;
@@ -70,16 +63,12 @@ async fn main() -> std::io::Result<()> {
             .wrap(opentelemetry_instrumentation_actix_web::RequestMetrics::default())
             .wrap(middleware::NormalizePath::trim())
             .wrap(cors)
-            .app_data(web::Data::new(cache_service.clone()))
-            .app_data(web::Data::new(db_service.clone()))
-            .app_data(web::Data::new(auth_service.clone()))
-            .app_data(web::Data::new(s3_service.clone()))
-            .app_data(web::Data::new(mail_service.clone()))
+            .app_data(web::Data::new(app.clone()))
             .route("/ws", web::get().to(ws::ws))
             .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
                 public_paths().into(),
-                auth_service.clone(),
-                db_service.clone(),
+                app.auth().clone(),
+                app.db().clone(),
             )))
             .default_service(web::to(not_found_handler))
     })
