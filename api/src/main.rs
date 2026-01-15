@@ -6,7 +6,7 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
-use arx_gatehouse::{bootstrap, common::ApiResult, telemetry};
+use arx_gatehouse::{bootstrap, common::ApiResult};
 
 use crate::routes::v1::v1_scope;
 
@@ -30,9 +30,7 @@ async fn not_found_handler() -> HttpResponse {
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     // bootstrap
-    let app = bootstrap::init().await;
-
-    let _guard = telemetry::telemetry::init();
+    let (app, _guard) = bootstrap::init().await;
 
     let addr = app.config().addr();
     let is_production_env = app.config().is_production_env();

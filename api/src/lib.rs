@@ -1,6 +1,8 @@
 pub mod bootstrap;
 pub mod common;
 pub mod modules;
-pub mod telemetry;
 
-pub use bootstrap as services;
+pub use bootstrap::App;
+pub use bootstrap::config::AppConfig;
+pub use bootstrap::services;
+pub use bootstrap::telemetry;

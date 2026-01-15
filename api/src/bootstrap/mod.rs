@@ -1,12 +1,13 @@
 #![allow(dead_code)]
 
 use config::AppConfig;
+use services::{AppService, AuthService, CacheService, DbService, MailService, S3Service};
 use std::sync::Arc;
+use telemetry::telemetry::ObservabilityGuard;
 
-mod config;
-mod services;
-
-pub use services::*;
+pub mod config;
+pub mod services;
+pub mod telemetry;
 
 #[derive(Debug, Clone)]
 pub struct App {
@@ -57,11 +58,16 @@ impl App {
     skip_all,
     level = tracing::Level::DEBUG
 )]
-pub async fn init() -> App {
+pub async fn init() -> (App, ObservabilityGuard) {
+    // app configuration
     let config = config::init()
         .inspect_err(|err| tracing::error!(error = ?err))
         .unwrap();
 
+    // telemetry
+    let guard = telemetry::telemetry::init();
+
+    // services
     let service = services::init(config.name.clone()).await;
 
     tracing::info!(
@@ -72,5 +78,5 @@ pub async fn init() -> App {
         config.profile
     );
 
-    App::new(config, service)
+    (App::new(config, service), guard)
 }
