@@ -10,7 +10,6 @@ use arx_gatehouse::{common::ApiResult, services, telemetry};
 
 use crate::routes::v1::v1_scope;
 
-mod config;
 mod middlewares;
 mod routes;
 mod ws;
@@ -30,32 +29,23 @@ async fn not_found_handler() -> HttpResponse {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    // config
-    let config = config::config::init();
-
     // observability
     let _guard = telemetry::telemetry::init();
 
     // initialize the application
-    let is_production_env = config.is_production_env();
-    let web_url = config.next_base_url.to_owned();
-    tracing::info!(
-        "{} v{} initialized - running in {} ({}) mode",
-        config.app_name,
-        config.app_version,
-        config.app_env,
-        config.profile
-    );
+    let is_production_env = false;
+    let addr = "localhost:8080".to_owned();
+    let web_url = "http://localhost:3000".to_owned();
 
     /* services */
     let db_service = services::db::service::init().await;
     let cache_service = services::cache::service::init();
     let auth_service = services::auth::service::init();
-    let s3_service = services::s3::service::init(config.app_name.clone()).await;
+    let s3_service = services::s3::service::init("planora".to_string()).await;
     let mail_service = services::mail::service::init();
 
     // actix server
-    tracing::info!("Starting server at http://{}", config.addr());
+    tracing::info!("Starting server at http://{}", addr);
     HttpServer::new(move || {
         use actix_web::http::header;
 
@@ -93,7 +83,7 @@ async fn main() -> std::io::Result<()> {
             )))
             .default_service(web::to(not_found_handler))
     })
-    .bind(config.addr())?
+    .bind(addr.clone())?
     .run()
     .await?;
 
