@@ -1,7 +1,8 @@
 use actix_web::{HttpRequest, HttpResponse, Responder, get, web};
 
+use arx_gatehouse::App;
 use arx_gatehouse::common::{ApiError, ApiResult, cookie::extract_refresh_token};
-use arx_gatehouse::services::{AuthService, auth::cookie::build_cookie_cn};
+use arx_gatehouse::services::auth::cookie::build_cookie_cn;
 
 #[get("/refresh")]
 #[tracing::instrument(
@@ -12,16 +13,13 @@ use arx_gatehouse::services::{AuthService, auth::cookie::build_cookie_cn};
         user_id = tracing::field::Empty
     )
 )]
-async fn refresh(
-    req: HttpRequest,
-    auth_service: web::Data<AuthService>,
-) -> Result<impl Responder, ApiError> {
+async fn refresh(app: web::Data<App>, req: HttpRequest) -> Result<impl Responder, ApiError> {
     let refresh_token = extract_refresh_token(&req)?;
     tracing::trace!("refresh token extracted");
 
-    let access_token = auth_service.jwt_generate_access_token(refresh_token)?;
+    let access_token = app.auth().jwt_generate_access_token(refresh_token)?;
 
-    let user_id = auth_service.jwt_verify_access_token(&access_token)?;
+    let user_id = app.auth().jwt_verify_access_token(&access_token)?;
 
     tracing::Span::current().record("user_id", &user_id.to_string());
 

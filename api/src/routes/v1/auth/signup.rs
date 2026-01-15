@@ -1,8 +1,9 @@
 use actix_web::{HttpResponse, Responder, post, web};
 
+use arx_gatehouse::App;
 use arx_gatehouse::common::{ApiError, ApiResult};
 use arx_gatehouse::modules::user::{CreateUser, UserRepo};
-use arx_gatehouse::services::{AuthService, DbService, auth::cookie::build_cookie};
+use arx_gatehouse::services::auth::cookie::build_cookie;
 
 #[post("/signup")]
 #[tracing::instrument(
@@ -16,14 +17,13 @@ use arx_gatehouse::services::{AuthService, DbService, auth::cookie::build_cookie
     )
 )]
 async fn signup(
-    db_service: web::Data<DbService>,
-    auth_service: web::Data<AuthService>,
+    app: web::Data<App>,
     payload: web::Json<CreateUser>,
 ) -> Result<impl Responder, ApiError> {
     let user = payload.into_inner();
     let email = user.email.clone();
 
-    let pool = db_service.primary().await?;
+    let pool = app.db().primary().await?;
     tracing::debug!("database pool acquired");
 
     match pool.user_find_by_email(email.clone()).await? {
@@ -43,7 +43,7 @@ async fn signup(
     tracing::info!("user created successfuly");
 
     tracing::trace!("generating session tokens");
-    let (access_token, refresh_token) = auth_service.jwt_generate_token(inserted_user.user_id)?;
+    let (access_token, refresh_token) = app.auth().jwt_generate_token(inserted_user.user_id)?;
     let (access_token_cookie, refresh_token_cookie) = build_cookie(access_token, refresh_token);
 
     tracing::info!("signed up successfully");

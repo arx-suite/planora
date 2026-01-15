@@ -1,9 +1,10 @@
 use actix_multipart::form::MultipartForm;
 use actix_web::{HttpRequest, Responder, get, patch, web};
 
+use arx_gatehouse::App;
 use arx_gatehouse::common::{ApiError, ApiResult, headers::extract_user_id};
 use arx_gatehouse::modules::user::{UpdateProfileForm, UserProfile, UserRepo};
-use arx_gatehouse::services::{AvatarStorage, DbService, S3Service};
+use arx_gatehouse::services::AvatarStorage;
 
 #[get("/profile")]
 #[tracing::instrument(
@@ -14,14 +15,11 @@ use arx_gatehouse::services::{AvatarStorage, DbService, S3Service};
         user_id = tracing::field::Empty
     )
 )]
-async fn profile(
-    db_service: web::Data<DbService>,
-    req: HttpRequest,
-) -> Result<impl Responder, ApiError> {
+async fn profile(app: web::Data<App>, req: HttpRequest) -> Result<impl Responder, ApiError> {
     let user_id = extract_user_id(&req)?;
     tracing::Span::current().record("user_id", &user_id.to_string());
 
-    let pool = db_service.read().await?;
+    let pool = app.db().read().await?;
     tracing::debug!("database pool acquired");
 
     let user = match pool.user_find_by_id(user_id).await? {
@@ -50,7 +48,7 @@ async fn profile(
     )
 )]
 async fn update_profile(
-    s3: web::Data<S3Service>,
+    app: web::Data<App>,
     req: HttpRequest,
     MultipartForm(form): MultipartForm<UpdateProfileForm>,
 ) -> Result<impl Responder, ApiError> {
@@ -65,7 +63,7 @@ async fn update_profile(
             "uploading new avatar"
         );
 
-        s3.upload_avatar(user_id, avatar).await?;
+        app.s3().upload_avatar(user_id, avatar).await?;
 
         tracing::info!("avatar updated successfully");
     } else {
