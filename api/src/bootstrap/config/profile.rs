@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub(crate) enum Profile {
+pub enum Profile {
     Development,
     Release,
 }

@@ -77,7 +77,7 @@ impl AppConfig {
             dotenvy::from_filename(CONFIG_FILE)?;
         }
 
-        let host = utils::get_env::<url::Url>(ENV_API_HOST)?.to_string();
+        let host = utils::get_env::<String>(ENV_API_HOST)?;
         let port = utils::get_env::<u16>(ENV_API_PORT)?;
         let web_base_url = utils::get_env::<url::Url>(ENV_WEB_BASE_URL)?.to_string();
 
