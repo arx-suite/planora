@@ -1,4 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
+import { config as appConfig } from "@/lib/config";
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
@@ -6,23 +7,18 @@ export function proxy(request: NextRequest) {
 
     if (subdomain) {
         if (pathname === "/")
-            return NextResponse.rewrite(
-                new URL(`/workspace/dashboard`, request.url),
-            );
+            return NextResponse.rewrite(new URL(`/workspace/dashboard`, request.url));
 
-        if (pathname === "/dashboard")
-            return NextResponse.redirect(new URL("/", request.url));
+        if (pathname === "/dashboard") return NextResponse.redirect(new URL("/", request.url));
 
-        return NextResponse.rewrite(
-            new URL(`/workspace${pathname}`, request.url),
-        );
+        return NextResponse.rewrite(new URL(`/workspace${pathname}`, request.url));
     }
 
     return NextResponse.next();
 }
 
 function extractSubdomain(req: NextRequest): string | null {
-    const { hostname } = req.nextUrl;
+    const hostname = appConfig.domain;
     const host = req.headers.get("host") || "";
     const hostnameWithSubdomain = host.split(":")[0];
 
