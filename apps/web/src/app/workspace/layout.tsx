@@ -1,6 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@planora/ui";
 import type { ReactNode } from "react";
-import { WorkspaceNavbar } from "@/components/features/workspace/sidebar";
+import { WorkspaceNavbar } from "@/components/workspace/layout";
 import { WorkspaceProvider } from "@/context/workspace-provider";
 
 const productDevelopmentProjects: Project[] = [
