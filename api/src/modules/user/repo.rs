@@ -1,5 +1,5 @@
 use sea_query::*;
-use sqlx::PgPool;
+use sqlx::PgExecutor;
 use tracing::info;
 
 use super::{CreateUser, UserRow, Users};
@@ -15,7 +15,10 @@ pub trait UserRepo {
 }
 
 #[async_trait::async_trait]
-impl UserRepo for PgPool {
+impl<T> UserRepo for T
+where
+    for<'e> &'e T: PgExecutor<'e>,
+{
     async fn user_create(&self, user: CreateUser) -> DBResult<UserRow> {
         info!(
             action = "user_creation",
