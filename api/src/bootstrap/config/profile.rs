@@ -12,6 +12,6 @@ impl Profile {
 
     #[inline]
     pub fn is_development(&self) -> bool {
-        matches!(self, Self::Release)
+        matches!(self, Self::Development)
     }
 }
