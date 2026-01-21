@@ -60,7 +60,7 @@ const orgsData: Org[] = [
 
 function getSubdomain(subdomain: string) {
     const url = new URL(config.nextjs);
-    return url.protocol + "//" + subdomain + "." + url.host;
+    return `${url.protocol}//${subdomain}.${url.host}`;
 }
 
 export function OrgSection() {
