@@ -58,6 +58,9 @@ importers:
       '@opentelemetry/sdk-trace-base':
         specifier: ^2.2.0
         version: 2.2.0(@opentelemetry/api@1.9.0)
+      '@planora/common':
+        specifier: workspace:*
+        version: link:../../packages/common
       '@planora/design-system':
         specifier: workspace:*
         version: link:../../packages/design-system
@@ -118,6 +121,8 @@ importers:
         version: 5.9.3
 
   infra/dev: {}
+
+  packages/common: {}
 
   packages/design-system:
     dependencies:

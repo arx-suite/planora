@@ -1,0 +1,15 @@
+{
+    "name": "@planora/common",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./api": {
+            "default": "./src/api/index.ts",
+            "types": "./src/api/types.ts"
+        }
+    },
+    "description": "Shared utilities",
+    "license": "MIT",
+    "author": "sajeevan"
+}
