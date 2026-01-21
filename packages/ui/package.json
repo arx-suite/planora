@@ -4,8 +4,10 @@
     "private": true,
     "type": "module",
     "description": "shared UI components and layouts",
-    "main": "./src/index.tsx",
-    "types": "./src/index.tsx",
+    "exports": {
+        ".": "./src/index.tsx",
+        "./lib": "./src/lib/index.ts"
+    },
     "license": "MIT",
     "scripts": {
         "typecheck": "tsc --noEmit",
