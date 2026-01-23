@@ -1,4 +1,4 @@
-import { Task, TaskType, TaskStatus, TaskPriority } from "@planora/common/types";
+import { type Task, TaskPriority, TaskStatus, TaskType } from "@planora/common/types";
 
 export const TASKS: Task[] = [
     {
