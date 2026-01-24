@@ -1,5 +1,6 @@
 "use client";
 
+export { Slot } from "@radix-ui/react-slot";
 export * from "./components/accordian";
 export * from "./components/alert";
 export * from "./components/alert-dialog";
