@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { TaskBoardView } from "../task-views/board";
+import { TaskBoardView } from "./board-view";
 import { TaskCommandBar } from "./command-bar";
 import type { TaskViewsList } from "./types";
 
