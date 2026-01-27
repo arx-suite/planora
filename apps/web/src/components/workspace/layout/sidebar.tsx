@@ -26,6 +26,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useWorkspace } from "@/context/workspace-provider";
 import { config } from "@/lib/config";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +55,7 @@ const recentActivity = [
 
 export function WorkspaceNavbar() {
     const pathname = usePathname();
+    const { info } = useWorkspace();
 
     return (
         <Sidebar>
@@ -80,21 +82,25 @@ export function WorkspaceNavbar() {
                                 active={pathname.startsWith("/dashboard")}
                             />
 
-                            <NavDropdown
-                                icon={Orbit}
-                                label="Spaces"
-                                items={recentSpaces}
-                                viewAllHref="/spaces"
-                                active={pathname.startsWith("/spaces")}
-                            />
+                            {info.spaceEnabled && (
+                                <NavDropdown
+                                    icon={Orbit}
+                                    label="Spaces"
+                                    items={recentSpaces}
+                                    viewAllHref="/spaces"
+                                    active={pathname.startsWith("/spaces")}
+                                />
+                            )}
 
-                            <NavDropdown
-                                icon={SquareDashedKanban}
-                                label="Projects"
-                                items={recentProjects}
-                                viewAllHref="/projects"
-                                active={pathname.startsWith("/projects")}
-                            />
+                            {!info.spaceEnabled && (
+                                <NavDropdown
+                                    icon={SquareDashedKanban}
+                                    label="Projects"
+                                    items={recentProjects}
+                                    viewAllHref="/projects"
+                                    active={pathname.startsWith("/projects")}
+                                />
+                            )}
 
                             <NavItem
                                 icon={Brain}
