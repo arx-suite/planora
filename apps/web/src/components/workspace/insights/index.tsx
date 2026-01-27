@@ -9,7 +9,7 @@ export function InsightSection() {
     return (
         <section className="space-y-4">
             <header>
-                <h2 className="text-xl font-semibold">Organization Overview</h2>
+                <h2 className="text-xl md:text-3xl font-semibold">Workspace Insights</h2>
                 <p className="text-sm text-muted-foreground">
                     Insights into activity, usage, and operational health
                 </p>
