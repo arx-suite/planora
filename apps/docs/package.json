@@ -1,0 +1,28 @@
+{
+    "name": "@arx/planora-docs",
+    "version": "0.1.0",
+    "description": "planora docs - developer and user documentation for planora",
+    "author": "sajeevan",
+    "license": "AGPL-3.0-or-later",
+    "private": true,
+    "scripts": {
+        "dev": "next dev -p 3002",
+        "build": "next build",
+        "start": "next start",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "next": "catalog:",
+        "react": "catalog:",
+        "react-dom": "catalog:"
+    },
+    "devDependencies": {
+        "@planora/tsconfig": "workspace:*",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "catalog:",
+        "@types/react": "catalog:",
+        "@types/react-dom": "catalog:",
+        "tailwindcss": "catalog:",
+        "typescript": "catalog:"
+    }
+}
