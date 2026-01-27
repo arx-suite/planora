@@ -58,6 +58,9 @@ importers:
       '@dnd-kit/utilities':
         specifier: ^3.2.2
         version: 3.2.2(react@19.2.3)
+      '@next/env':
+        specifier: ^16.1.5
+        version: 16.1.5
       '@opentelemetry/api':
         specifier: ^1.9.0
         version: 1.9.0
@@ -520,6 +523,9 @@ packages:
 
   '@next/env@16.0.10':
     resolution: {integrity: sha512-8tuaQkyDVgeONQ1MeT9Mkk8pQmZapMKFh5B+OrFUlG3rVmYTXcXlBetBgTurKXGaIZvkoqRT9JL5K3phXcgang==}
+
+  '@next/env@16.1.5':
+    resolution: {integrity: sha512-CRSCPJiSZoi4Pn69RYBDI9R7YK2g59vLexPQFXY0eyw+ILevIenCywzg+DqmlBik9zszEnw2HLFOUlLAcJbL7g==}
 
   '@next/swc-darwin-arm64@16.0.10':
     resolution: {integrity: sha512-4XgdKtdVsaflErz+B5XeG0T5PeXKDdruDf3CRpnhN+8UebNa5N2H58+3GDgpn/9GBurrQ1uWW768FfscwYkJRg==}
@@ -2537,6 +2543,8 @@ snapshots:
   '@js-sdsl/ordered-map@4.4.2': {}
 
   '@next/env@16.0.10': {}
+
+  '@next/env@16.1.5': {}
 
   '@next/swc-darwin-arm64@16.0.10':
     optional: true
