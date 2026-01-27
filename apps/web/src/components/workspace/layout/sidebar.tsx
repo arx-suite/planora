@@ -15,6 +15,7 @@ import {
 } from "@planora/ui";
 import {
     ArrowRight,
+    Brain,
     ChevronDown,
     Clock,
     Home,
@@ -93,6 +94,13 @@ export function WorkspaceNavbar() {
                                 items={recentProjects}
                                 viewAllHref="/projects"
                                 active={pathname.startsWith("/projects")}
+                            />
+
+                            <NavItem
+                                icon={Brain}
+                                label="Insight"
+                                href="/insight"
+                                active={pathname.startsWith("/insight")}
                             />
 
                             <NavDropdown
