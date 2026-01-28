@@ -14,7 +14,7 @@
 		"infra:down": "pnpm --filter=@arx/infra-dev run down",
 		"infra:clean": "pnpm --filter=@arx/infra-dev run clean",
 		"format": "biome format --write",
-        "lint": "biome check"
+		"lint": "biome check"
 	},
-	"packageManager": "pnpm@10.26.0"
+	"packageManager": "pnpm@10.28.2"
 }
