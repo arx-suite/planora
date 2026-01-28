@@ -8,6 +8,7 @@
 	"scripts": {
 		"dev": "turbo run dev",
 		"dev:web": "turbo run dev --filter=@arx/planora-hall",
+		"dev:docs": "turbo run dev --filter=@arx/planora-docs",
 		"dev:api": "turbo run dev --filter=@arx/gatehouse",
 		"infra:up": "turbo run dev --filter=@arx/infra-dev",
 		"infra:down": "pnpm --filter=@arx/infra-dev run down",
