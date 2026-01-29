@@ -1,18 +1,7 @@
 "use client";
 
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-    Sidebar,
-    SidebarContent,
-    SidebarGroup,
-    SidebarGroupContent,
-    SidebarGroupLabel,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from "@planora/ui";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@planora/ui";
+import { cn } from "@planora/ui/lib";
 import {
     ArrowRight,
     Brain,
@@ -28,7 +17,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useWorkspace } from "@/context/workspace-provider";
 import { config } from "@/lib/config";
-import { cn } from "@/lib/utils";
+import {
+    Sidebar,
+    SidebarContent,
+    SidebarGroup,
+    SidebarGroupContent,
+    SidebarGroupLabel,
+    SidebarMenu,
+    SidebarMenuButton,
+    SidebarMenuItem,
+} from "./sidebar-orig";
 
 const recentSpaces = [
     { id: "1", name: "Engineering", href: "/spaces/engineering" },
