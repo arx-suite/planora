@@ -7,6 +7,7 @@
     "exports": {
         ".": "./src/index.tsx",
         "./lib": "./src/lib/index.ts",
+        "./hooks": "./src/hooks/index.ts",
         "./animation": "./src/animation/index.ts",
         "./icons": "./src/icons/index.ts"
     },
