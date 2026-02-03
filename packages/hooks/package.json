@@ -1,0 +1,15 @@
+{
+    "name": "@planora/hooks",
+    "version": "0.0.0",
+    "private": true,
+    "type": "module",
+    "exports": {
+        "./web": "./src/web/index.ts"
+    },
+    "description": "Hooks",
+    "license": "MIT",
+    "author": "sajeevan",
+    "devDependencies": {
+        "@planora/tsconfig": "workspace:*"
+    }
+}
