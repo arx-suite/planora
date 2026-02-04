@@ -9,7 +9,8 @@
             "default": "./src/api/index.ts",
             "types": "./src/api/types.ts"
         },
-        "./data": "./src/data/index.ts"
+        "./data": "./src/data/index.ts",
+        "./utils": "./src/utils/index.ts"
     },
     "description": "Shared utilities",
     "license": "MIT",
