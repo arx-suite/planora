@@ -10,6 +10,7 @@ use arx_gatehouse::{bootstrap, common::ApiResult};
 
 use crate::routes::v1::v1_scope;
 
+mod components;
 mod middlewares;
 mod routes;
 mod ws;
