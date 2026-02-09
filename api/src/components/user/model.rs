@@ -13,6 +13,18 @@ pub enum UserStatus {
     Banned,
 }
 
+impl From<UserStatus> for sea_query::Value {
+    fn from(value: UserStatus) -> Self {
+        match value {
+            UserStatus::Pending => "pending".into(),
+            UserStatus::Active => "active".into(),
+            UserStatus::Suspended => "suspended".into(),
+            UserStatus::Deactivated => "deactivated".into(),
+            UserStatus::Banned => "banned".into(),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Deserialize)]
 pub struct UserPreferences {
     pub locale: Option<String>,
