@@ -9,7 +9,8 @@ use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 use arx_gatehouse::{bootstrap, common::ApiResult};
 
 mod components;
-mod middlewares;
+// TODO: refactor this
+// mod middlewares;
 mod ws;
 
 pub fn v1_scope() -> actix_web::Scope {
@@ -65,11 +66,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(app.clone()))
             .route("/ws", web::get().to(ws::ws))
-            .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
-                public_paths().into(),
-                app.auth().clone(),
-                app.db().clone(),
-            )))
+            .service(v1_scope())
             .default_service(web::to(not_found_handler))
     })
     .bind(addr.clone())?

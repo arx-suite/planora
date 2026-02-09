@@ -1,6 +1,5 @@
 pub mod bootstrap;
 pub mod common;
-pub mod modules;
 
 pub use bootstrap::App;
 pub use bootstrap::config::AppConfig;
