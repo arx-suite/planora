@@ -1,9 +1,10 @@
 -- Add down migration script here
 
 /* === indexes === */
+drop index if exists idx_user_identities_provider_email;
 drop index if exists idx_user_identities_provider;
-drop index if exists idx_app_users_email;
-drop index if exists idx_app_users_user_tag;
+drop index if exists idx_users_email;
+drop index if exists idx_users_usertag;
 
 
 /* === tables === */
