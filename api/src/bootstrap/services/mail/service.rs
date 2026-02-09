@@ -68,6 +68,7 @@ impl MailService {
         to: &str,
         subject: &str,
         body: &str,
+        content_type: ContentType,
     ) -> MailResult<()> {
         let email = Message::builder()
             .from(from.parse()?)
@@ -82,8 +83,31 @@ impl MailService {
     }
 
     #[inline]
-    pub async fn send_mail_official(&self, to: &str, subject: &str, body: &str) -> MailResult<()> {
-        self.send_mail(Self::PLANORA_EMAIL, to, subject, body).await
+    pub async fn send_mail_official(
+        &self,
+        to: &str,
+        subject: &str,
+        body: &str,
+        content_type: ContentType,
+    ) -> MailResult<()> {
+        self.send_mail(Self::PLANORA_EMAIL, to, subject, body, content_type)
+            .await
+    }
+
+    #[inline]
+    pub async fn send_mail_html(&self, to: &str, subject: &str, body: &str) -> MailResult<()> {
+        self.send_mail_official(to, subject, body, ContentType::TEXT_HTML)
+            .await
+    }
+
+    #[inline]
+    pub async fn send_email_verification_code(&self, to: &str, code: &str) -> MailResult<()> {
+        self.send_mail_html(
+            to,
+            "planora email verification code",
+            &super::template::email_verify(code),
+        )
+        .await
     }
 
     #[tracing::instrument(
@@ -93,13 +117,15 @@ impl MailService {
     )]
     pub async fn send_bulk_email(
         &self,
-        recipients: Vec<(&str, &str, &str, &str)>,
+        recipients: Vec<(&str, &str, &str, &str, ContentType)>,
     ) -> Vec<MailResult<()>> {
         use futures::future::join_all;
 
         let futures = recipients
             .into_iter()
-            .map(|(from, to, subject, body)| self.send_mail(from, to, subject, body));
+            .map(|(from, to, subject, body, content_type)| {
+                self.send_mail(from, to, subject, body, content_type)
+            });
 
         join_all(futures).await
     }
