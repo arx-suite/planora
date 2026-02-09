@@ -8,12 +8,13 @@ use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 
 use arx_gatehouse::{bootstrap, common::ApiResult};
 
-use crate::routes::v1::v1_scope;
-
 mod components;
 mod middlewares;
-mod routes;
 mod ws;
+
+pub fn v1_scope() -> actix_web::Scope {
+    web::scope("/v1").service(components::user::handlers::auth_scope())
+}
 
 pub const fn public_paths() -> [&'static str; 4] {
     [
