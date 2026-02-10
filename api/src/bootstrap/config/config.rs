@@ -7,6 +7,7 @@ const DEFAULT_APP_ENVIRONMENT: &str = "development";
 const ENV_APP_ENVIRONMENT: &str = "APP_ENV";
 const ENV_API_HOST: &str = "API_HOST";
 const ENV_API_PORT: &str = "API_PORT";
+const ENV_API_BASE_URL: &str = "API_BASE_URL";
 const ENV_WEB_BASE_URL: &str = "WEB_BASE_URL";
 
 #[derive(Debug, Clone)]
@@ -17,6 +18,7 @@ pub struct AppConfig {
     pub app_env: String,
     pub host: String,
     pub port: u16,
+    pub api_url: String,
     pub web_url: String,
 }
 
@@ -39,6 +41,7 @@ impl AppConfig {
         profile: Profile,
         host: String,
         port: u16,
+        api_url: String,
         web_url: String,
         app_env: String,
     ) -> AppConfigResult {
@@ -52,6 +55,7 @@ impl AppConfig {
             app_env,
             host,
             port,
+            api_url,
             web_url,
         })
     }
@@ -80,8 +84,9 @@ impl AppConfig {
         let host = utils::get_env::<String>(ENV_API_HOST)?;
         let port = utils::get_env::<u16>(ENV_API_PORT)?;
         let web_base_url = utils::get_env::<url::Url>(ENV_WEB_BASE_URL)?.to_string();
+        let api_url = utils::get_env::<url::Url>(ENV_API_BASE_URL)?.to_string();
 
-        Self::new(profile, host, port, web_base_url, app_env)
+        Self::new(profile, host, port, api_url, web_base_url, app_env)
     }
 
     #[inline]
