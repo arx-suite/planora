@@ -4,6 +4,7 @@ version = "0.1.0"
 authors = ["sajeevan"]
 edition.workspace = true
 license.workspace = true
+default-run = "arx-gatehouse"
 
 [[bin]]
 name = "arx-gatehouse"

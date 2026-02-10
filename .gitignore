@@ -3,3 +3,4 @@
 .env.production
 node_modules
 .turbo
+openapi

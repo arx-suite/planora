@@ -10,6 +10,7 @@
 		"dev:web": "turbo run dev --filter=@arx/planora-hall",
 		"dev:docs": "turbo run dev --filter=@arx/planora-docs",
 		"dev:api": "turbo run dev --filter=@arx/gatehouse",
+		"api:spec": "cargo run --bin export_openapi",
 		"infra:up": "turbo run dev --filter=@arx/infra-dev",
 		"infra:down": "pnpm --filter=@arx/infra-dev run down",
 		"infra:clean": "pnpm --filter=@arx/infra-dev run clean",
