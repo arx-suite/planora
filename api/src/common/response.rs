@@ -2,15 +2,21 @@ use actix_web::HttpResponse;
 
 use super::ApiResponse;
 
-#[derive(serde::Serialize, serde::Deserialize)]
-pub struct ApiResult<T> {
+#[derive(serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct ApiResult<T>
+where
+    T: utoipa::ToSchema,
+{
     pub success: bool,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub payload: Option<T>,
 }
 
-impl<T> ApiResult<T> {
+impl<T> ApiResult<T>
+where
+    T: utoipa::ToSchema,
+{
     pub fn success<M: Into<String>>(message: M, payload: T) -> Self {
         Self {
             success: true,
