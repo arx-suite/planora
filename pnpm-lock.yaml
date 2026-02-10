@@ -198,10 +198,17 @@ importers:
         version: 4.1.16
 
   packages/hooks:
+    dependencies:
+      react:
+        specifier: 'catalog:'
+        version: 19.2.3
     devDependencies:
       '@planora/tsconfig':
         specifier: workspace:*
         version: link:../tsconfig
+      '@types/react':
+        specifier: 'catalog:'
+        version: 19.2.2
 
   packages/tsconfig: {}
 

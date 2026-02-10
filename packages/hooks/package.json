@@ -4,12 +4,16 @@
     "private": true,
     "type": "module",
     "exports": {
-        "./web": "./src/web/index.ts"
+        "./common": "./src/common/index.ts"
     },
     "description": "Hooks",
     "license": "MIT",
     "author": "sajeevan",
+    "dependencies": {
+        "react": "catalog:"
+    },
     "devDependencies": {
-        "@planora/tsconfig": "workspace:*"
+        "@planora/tsconfig": "workspace:*",
+        "@types/react": "catalog:"
     }
 }
