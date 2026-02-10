@@ -30,8 +30,9 @@ fn email_verification_cache_key(email: &str) -> String {
     tag = "Auth",
     request_body = CreateUser,
     responses(
-        (status = 201, description = "User created, verification email sent"),
-        (status = 400, description = "Invalid signup data"),
+        (status = 200, description = "Verification email sent"),
+        // TODO: common response
+        // (status = 400, description = "Invalid signup data"),
         (status = 409, description = "User already exists"),
         (status = 500, description = "Internal server error")
     )
@@ -117,9 +118,8 @@ pub struct VerifyEmail {
     tag = "Auth",
     request_body = VerifyEmail,
     responses(
-        (status = 200, description = "Email verified successfully"),
-        (status = 400, description = "Invalid or expired verification code"),
-        (status = 404, description = "User not found"),
+        (status = 201, description = "Email verified successfully"),
+        (status = 401, description = "Invalid or expired verification code"),
         (status = 500, description = "Internal server error")
     )
 )]
@@ -175,5 +175,5 @@ async fn verify_email(
     )
     .await?;
 
-    ApiResult::to_ok_response("Signed up successfully", ())
+    ApiResult::to_created_response("Signed up successfully", ())
 }
