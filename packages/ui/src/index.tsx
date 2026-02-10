@@ -28,6 +28,7 @@ export * from "./components/switcher";
 export * from "./components/table";
 export * from "./components/tabs";
 export * from "./components/textarea";
+export * from "./components/timeline";
 export * from "./components/toast";
 export * from "./components/toggle";
 export * from "./components/tooltip";
