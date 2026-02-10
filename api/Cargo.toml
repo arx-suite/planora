@@ -82,6 +82,10 @@ opentelemetry-instrumentation-actix-web = { version = "0.23.0", features = [
     "metrics",
 ] }
 
+# documentation
+utoipa = { version = "5.4.0", features = ["actix_extras"] }
+utoipa-swagger-ui = { version = "9.0.2", features = ["actix-web"] }
+
 # misc
 thiserror = "2.0.17"
 dotenvy = "0.15"

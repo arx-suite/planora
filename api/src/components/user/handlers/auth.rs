@@ -6,8 +6,8 @@ use arx_gatehouse::common::{ApiError, ApiResult};
 
 use super::UserRepo;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct CreateUser {
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+pub struct CreateUser {
     pub username: String,
     pub email: String,
     pub password: String,
@@ -24,7 +24,18 @@ fn email_verification_cache_key(email: &str) -> String {
     format!("email_verification:{email}")
 }
 
-#[post("/signup")]
+#[utoipa::path(
+    post,
+    path = "/auth/signup",
+    tag = "Auth",
+    request_body = CreateUser,
+    responses(
+        (status = 201, description = "User created, verification email sent"),
+        (status = 400, description = "Invalid signup data"),
+        (status = 409, description = "User already exists"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 #[tracing::instrument(
     name = "auth.signup",
     skip_all,
@@ -34,6 +45,7 @@ fn email_verification_cache_key(email: &str) -> String {
         email = payload.email
     )
 )]
+#[post("/signup")]
 async fn signup(
     app: web::Data<App>,
     payload: web::Json<CreateUser>,
@@ -93,13 +105,24 @@ async fn signup(
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
-struct VerifyEmail {
+#[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+pub struct VerifyEmail {
     pub email: String,
     pub verification_code: String,
 }
 
-#[post("/verify-email")]
+#[utoipa::path(
+    post,
+    path = "/auth/verify-email",
+    tag = "Auth",
+    request_body = VerifyEmail,
+    responses(
+        (status = 200, description = "Email verified successfully"),
+        (status = 400, description = "Invalid or expired verification code"),
+        (status = 404, description = "User not found"),
+        (status = 500, description = "Internal server error")
+    )
+)]
 #[tracing::instrument(
     name = "auth.verify-email",
     skip_all,
@@ -108,6 +131,7 @@ struct VerifyEmail {
         email = payload.email
     )
 )]
+#[post("/verify-email")]
 async fn verify_email(
     app: web::Data<App>,
     payload: web::Json<VerifyEmail>,
@@ -131,7 +155,7 @@ async fn verify_email(
         user
     } else {
         tracing::debug!("Email verification failed");
-        return ApiResult::to_unauthorized("Email verification failed, Signup again");
+        return ApiResult::to_bad_request("Email verification failed, Signup again");
     };
 
     if let Err(err) = app.cache().delete(cache_key).await {

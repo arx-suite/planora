@@ -1,4 +1,4 @@
-mod auth;
+pub mod auth;
 
 use actix_web::Scope;
 
