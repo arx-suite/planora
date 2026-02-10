@@ -5,12 +5,10 @@
 
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, middleware, web};
+
+use arx_gatehouse::{ApiDoc, bootstrap, common::ApiResult, components};
 use utoipa::OpenApi;
 
-use arx_gatehouse::{bootstrap, common::ApiResult};
-use components::user::handlers::auth;
-
-mod components;
 // TODO: refactor this
 // mod middlewares;
 mod ws;
@@ -81,13 +79,3 @@ async fn main() -> std::io::Result<()> {
 
     Ok(())
 }
-
-#[derive(utoipa::OpenApi)]
-#[openapi(
-    paths(auth::signup, auth::verify_email),
-    components(schemas(auth::CreateUser, auth::VerifyEmail)),
-    tags(
-        (name = "Auth", description = "Authentication endpoints")
-    )
-)]
-pub struct ApiDoc;

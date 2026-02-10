@@ -1,8 +1,8 @@
 use actix_web::{HttpResponse, Responder, post, web};
 use serde::{Deserialize, Serialize};
 
-use arx_gatehouse::App;
-use arx_gatehouse::common::{ApiError, ApiResult};
+use crate::App;
+use crate::common::{ApiError, ApiResult};
 
 use super::UserRepo;
 

@@ -3,7 +3,7 @@ use sqlx::PgExecutor;
 use tracing::info;
 
 use super::model::{UserRow, UserStatus, Users};
-use arx_gatehouse::services::db::DBResult;
+use crate::services::db::DBResult;
 
 #[async_trait::async_trait]
 pub trait UserRepo {
