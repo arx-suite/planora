@@ -1,8 +1,8 @@
 use actix_web::{HttpResponse, Responder, get, web};
 use oauth2::basic::BasicClient;
 use oauth2::{AuthUrl, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope, TokenUrl};
-use once_cell::sync::Lazy;
 use serde::Deserialize;
+use std::sync::{Arc, LazyLock};
 
 use crate::App;
 use crate::common::{ApiError, ApiResult};
@@ -132,16 +132,20 @@ impl OAuthProviderInfo {
     }
 }
 
-static GITHUB: Lazy<OAuthProviderInfo> = Lazy::new(|| OAuthProviderInfo {
-    name: "GITHUB",
-    auth_url: "https://github.com/login/oauth/authorize",
-    token_url: "https://github.com/login/oauth/access_token",
-    scopes: vec![Scope::new("user:email".into())],
+static GITHUB: LazyLock<Arc<OAuthProviderInfo>> = LazyLock::new(|| {
+    Arc::new(OAuthProviderInfo {
+        name: "GITHUB",
+        auth_url: "https://github.com/login/oauth/authorize",
+        token_url: "https://github.com/login/oauth/access_token",
+        scopes: vec![Scope::new("user:email".into())],
+    })
 });
 
-static GOOGLE: Lazy<OAuthProviderInfo> = Lazy::new(|| OAuthProviderInfo {
-    name: "GOOGLE",
-    auth_url: "https://accounts.google.com/o/oauth2/v2/auth",
-    token_url: "https://oauth2.googleapis.com/token",
-    scopes: vec![Scope::new("email".into()), Scope::new("profile".into())],
+static GOOGLE: LazyLock<Arc<OAuthProviderInfo>> = LazyLock::new(|| {
+    Arc::new(OAuthProviderInfo {
+        name: "GOOGLE",
+        auth_url: "https://accounts.google.com/o/oauth2/v2/auth",
+        token_url: "https://oauth2.googleapis.com/token",
+        scopes: vec![Scope::new("email".into()), Scope::new("profile".into())],
+    })
 });
