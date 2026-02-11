@@ -2,13 +2,13 @@
     "name": "@planora/api-types",
     "version": "0.0.0",
     "private": true,
-    "type": "module",
-    "main": "./src/index.ts",
+    "main": "./index.ts",
+    "types": "./index.ts",
     "description": "API types",
     "license": "MIT",
     "author": "sajeevan",
     "scripts": {
-        "generate": "openapi-typescript ../../openapi/openapi.yaml -o generated/types.ts"
+        "codegen": "openapi-typescript ../../openapi/openapi.yaml -o types/api.d.ts && biome format --write types/api.d.ts"
     },
     "devDependencies": {
         "openapi-typescript": "^7.12.0",

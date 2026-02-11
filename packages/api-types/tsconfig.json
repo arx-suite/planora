@@ -10,5 +10,5 @@
         "moduleResolution": "bundler",
         "noUncheckedIndexedAccess": true
     },
-    "include": ["generated", "src"]
+    "include": ["."]
 }
