@@ -66,7 +66,7 @@ async fn oauth_start(
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, utoipa::ToSchema)]
-enum OAuthProvider {
+pub enum OAuthProvider {
     Github,
     Google,
     Unknown(String),

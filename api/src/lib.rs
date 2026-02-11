@@ -16,7 +16,13 @@ use components::user::handlers::{auth, oauth};
         auth::verify_email,
         oauth::oauth_start
     ),
-    components(schemas(auth::CreateUser, auth::VerifyEmail)),
+    components(
+        schemas(
+            auth::CreateUser,
+            auth::VerifyEmail,
+            oauth::OAuthProvider
+        )
+    ),
     tags(
         (name = "Auth", description = "Authentication endpoints")
     )
