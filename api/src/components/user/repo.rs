@@ -1,6 +1,5 @@
 use sea_query::*;
 use sqlx::PgExecutor;
-use tracing::info;
 
 use super::model::{UserRow, UserStatus, Users};
 use crate::services::db::DBResult;
@@ -17,6 +16,7 @@ pub trait UserRepo {
     ) -> DBResult<UserRow>;
     async fn user_find_by_email(&self, email: String) -> DBResult<Option<UserRow>>;
     async fn user_find_by_usertag(&self, usertag: String) -> DBResult<Option<UserRow>>;
+    async fn user_find_by_id(&self, userid: uuid::Uuid) -> DBResult<Option<UserRow>>;
 }
 
 #[async_trait::async_trait]
@@ -33,7 +33,7 @@ where
         usertag: String,
         created_at: chrono::DateTime<chrono::Utc>,
     ) -> DBResult<UserRow> {
-        info!(
+        tracing::debug!(
             action = "user_creation",
             %username,
             "creating new user"
@@ -63,7 +63,7 @@ where
 
         let created_user = sqlx::query_as::<_, UserRow>(&query).fetch_one(self).await?;
 
-        info!(
+        tracing::info!(
             action = "user_creation",
             %created_user.user_id,
             "user created"
@@ -74,7 +74,7 @@ where
 
     // read
     async fn user_find_by_email(&self, email: String) -> DBResult<Option<UserRow>> {
-        info!(
+        tracing::debug!(
             action = "user_lookup",
             lookup_field = "email",
             %email,
@@ -91,7 +91,7 @@ where
             .fetch_optional(self)
             .await?;
 
-        info!(
+        tracing::debug!(
             action = "user_lookup",
             found = user.is_some(),
             "finished user lookup"
@@ -101,7 +101,7 @@ where
     }
 
     async fn user_find_by_usertag(&self, usertag: String) -> DBResult<Option<UserRow>> {
-        info!(
+        tracing::debug!(
             action = "user_lookup",
             lookup_field = "usertag",
             %usertag,
@@ -118,7 +118,34 @@ where
             .fetch_optional(self)
             .await?;
 
-        info!(
+        tracing::debug!(
+            action = "user_lookup",
+            found = user.is_some(),
+            "finished user lookup"
+        );
+
+        Ok(user)
+    }
+
+    async fn user_find_by_id(&self, userid: uuid::Uuid) -> DBResult<Option<UserRow>> {
+        tracing::debug!(
+            action = "user_lookup",
+            lookup_field = "userid",
+            %userid,
+            "starting user lookup"
+        );
+
+        let query = Query::select()
+            .column(Asterisk)
+            .from(Users::Table)
+            .and_where(Expr::col(Users::UserId).eq(userid.to_string()))
+            .to_string(PostgresQueryBuilder);
+
+        let user = sqlx::query_as::<_, UserRow>(&query)
+            .fetch_optional(self)
+            .await?;
+
+        tracing::debug!(
             action = "user_lookup",
             found = user.is_some(),
             "finished user lookup"
