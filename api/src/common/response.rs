@@ -1,6 +1,8 @@
 use actix_web::HttpResponse;
 
-use super::ApiResponse;
+use super::ApiError;
+
+type ApiResponse = Result<HttpResponse, ApiError>;
 
 #[derive(serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
 pub struct ApiResult<T>
