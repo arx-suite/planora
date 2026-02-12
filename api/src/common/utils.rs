@@ -1,5 +1,6 @@
 use std::{env, str::FromStr};
 
+// environment variables
 #[derive(Debug, thiserror::Error)]
 pub enum EnvError {
     #[error("missing required environment variable `{0}`")]
@@ -29,4 +30,9 @@ where
             reason: e.to_string(),
         })
     }
+}
+
+// time
+pub fn current_utc_timestamp() -> String {
+    chrono::Utc::now().format("%Y-%m-%d %H:%M:%S").to_string()
 }

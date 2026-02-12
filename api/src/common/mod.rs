@@ -3,7 +3,6 @@ mod error;
 pub mod extractors;
 pub mod headers;
 mod response;
-pub mod time;
 pub mod utils;
 
 pub use error::ApiError;
