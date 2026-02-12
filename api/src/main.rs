@@ -9,8 +9,7 @@ use actix_web::{App, HttpResponse, HttpServer, middleware, web};
 use arx_gatehouse::{ApiDoc, bootstrap, common::ApiResult, components};
 use utoipa::OpenApi;
 
-// TODO: refactor this
-// mod middlewares;
+mod middlewares;
 mod ws;
 
 pub fn v1_scope() -> actix_web::Scope {
@@ -66,7 +65,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(app.clone()))
             .route("/ws", web::get().to(ws::ws))
-            .service(v1_scope())
+            .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
+                public_paths().into_iter().collect::<Vec<_>>(),
+            )))
             .service(
                 utoipa_swagger_ui::SwaggerUi::new("/docs/{_:.*}")
                     .url("/api-doc/openapi.json", ApiDoc::openapi()),

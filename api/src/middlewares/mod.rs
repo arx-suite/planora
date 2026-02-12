@@ -1,3 +1,3 @@
-mod auth_middleware;
+mod auth;
 
-pub use auth_middleware::AuthMiddleware;
+pub use auth::AuthMiddleware;
