@@ -1,8 +1,12 @@
+use actix_web::dev::ServiceRequest;
+
+use super::constants::{JWT_ACCESS_TOKEN_KEY, JWT_REFRESH_TOKEN_KEY};
 use super::{
     AuthResult,
     constants::{JWT_TOKEN_TYPE_ACCESS, JWT_TOKEN_TYPE_REFRESH},
     jwt::JwtService,
 };
+use crate::common::ApiError;
 use crate::common::utils;
 
 const ENV_JWT_SECRET: &str = "JWT_SECRET";
@@ -49,6 +53,24 @@ impl AuthService {
             .jwt_service
             .verify_token(JWT_TOKEN_TYPE_REFRESH, token)?;
         Ok(claims.sub)
+    }
+
+    #[inline]
+    pub fn extract_access_token(&self, req: &ServiceRequest) -> Result<String, ApiError> {
+        let cookie = req
+            .cookie(JWT_ACCESS_TOKEN_KEY)
+            .ok_or_else(|| ApiError::Unauthorized("Unauthorized".to_string()))?;
+
+        Ok(cookie.value().to_owned())
+    }
+
+    #[inline]
+    pub fn extract_refresh_token(&self, req: &ServiceRequest) -> Result<String, ApiError> {
+        let cookie = req
+            .cookie(JWT_REFRESH_TOKEN_KEY)
+            .ok_or_else(|| ApiError::Unauthorized("Unauthorized".to_string()))?;
+
+        Ok(cookie.value().to_owned())
     }
 }
 

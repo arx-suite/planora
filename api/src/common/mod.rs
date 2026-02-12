@@ -1,4 +1,3 @@
-pub mod cookie;
 mod error;
 pub mod extractors;
 pub mod headers;

@@ -7,8 +7,8 @@ use futures_util::future::{LocalBoxFuture, Ready, ok};
 use std::rc::Rc;
 
 use crate::components::user::repo::UserRepo;
+use arx_gatehouse::App;
 use arx_gatehouse::common::ApiError;
-use arx_gatehouse::{App, common::cookie::extract_access_token};
 
 #[derive(Clone, Debug)]
 pub struct AuthUser {
@@ -84,7 +84,7 @@ where
                 return service.call(req).await;
             }
 
-            let token = extract_access_token(&req)?;
+            let token = app.auth().extract_access_token(&req)?;
 
             let user_id = app
                 .auth()
