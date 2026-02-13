@@ -7,20 +7,22 @@ pub use bootstrap::config::AppConfig;
 pub use bootstrap::services;
 pub use bootstrap::telemetry;
 
-use components::user::handlers::{auth, oauth};
+use components::user::handlers::{auth, oauth, profile};
 
 #[derive(utoipa::OpenApi)]
 #[openapi(
     paths(
         auth::signup,
         auth::verify_email,
-        oauth::oauth_start
+        oauth::oauth_start,
+        profile::get_profile
     ),
     components(
         schemas(
             auth::CreateUser,
             auth::VerifyEmail,
-            oauth::OAuthProvider
+            oauth::OAuthProvider,
+            profile::UserProfile
         )
     ),
     tags(

@@ -1,10 +1,11 @@
 use chrono::{DateTime, Utc};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use sqlx::types::Json;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, sqlx::Type)]
+#[derive(Debug, Clone, Serialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "user_status", rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub enum UserStatus {
     Pending,
     Active,
@@ -47,7 +48,8 @@ impl From<UserStatus> for sea_query::Value {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct UserPreferences {
     pub locale: Option<String>,
     pub timezone: Option<String>,
