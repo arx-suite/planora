@@ -26,7 +26,8 @@ use components::user::handlers::{auth, oauth, profile};
         )
     ),
     tags(
-        (name = "Auth", description = "Authentication endpoints")
+        (name = "Auth", description = "Authentication endpoints"),
+        (name = "Profile", description = "Managing profile")
     )
 )]
 pub struct ApiDoc;

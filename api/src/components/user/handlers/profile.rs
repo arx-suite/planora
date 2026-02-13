@@ -50,7 +50,7 @@ impl From<UserRow> for UserProfile {
     )
 )]
 #[tracing::instrument(
-    name = "auth.signin",
+    name = "profile.get",
     skip_all,
     level = tracing::Level::INFO,
     fields(
