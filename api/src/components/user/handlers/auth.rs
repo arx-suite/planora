@@ -228,7 +228,11 @@ async fn signin(
         return ApiResult::to_forbidden("User cannot login.");
     }
 
-    let cookies = app.auth().issue_auth_cookies(user.user_id)?;
+    // TODO
+    let replace_this_session_id = uuid::Uuid::new_v4();
+    let cookies = app
+        .auth()
+        .issue_auth_cookies(user.user_id, replace_this_session_id)?;
 
     tracing::info!(%user.user_id, %payload.email, "user signed in successfully");
 

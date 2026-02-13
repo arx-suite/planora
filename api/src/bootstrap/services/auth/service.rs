@@ -52,9 +52,7 @@ impl AuthService {
     }
 
     // jwt
-    pub fn issue_token_pair(&self, user_id: Uuid) -> Result<TokenPair, ApiError> {
-        let session_id = Uuid::new_v4();
-
+    pub fn issue_token_pair(&self, user_id: Uuid, session_id: Uuid) -> Result<TokenPair, ApiError> {
         Ok(TokenPair {
             access: self.issue_access_token(user_id, session_id)?,
             refresh: self.issue_refresh_token(user_id, session_id)?,
@@ -101,8 +99,12 @@ impl AuthService {
     }
 
     // cookie
-    pub fn issue_auth_cookies(&self, user_id: uuid::Uuid) -> Result<AuthCookies, ApiError> {
-        let pair = self.issue_token_pair(user_id)?;
+    pub fn issue_auth_cookies(
+        &self,
+        user_id: Uuid,
+        session_id: Uuid,
+    ) -> Result<AuthCookies, ApiError> {
+        let pair = self.issue_token_pair(user_id, session_id)?;
 
         Ok(AuthCookies {
             access: self.build_cookie(ACCESS_COOKIE, pair.access, self.access_ttl_min * 60),
@@ -166,7 +168,6 @@ impl AuthService {
 
         JwtClaims {
             sub: user_id,
-            jti: Uuid::new_v4(),
             sid: session_id,
             typ,
             iat: now.timestamp() as usize,

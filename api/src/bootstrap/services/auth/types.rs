@@ -9,11 +9,15 @@ pub struct TokenPair {
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
 pub struct JwtClaims {
+    /// User id
     pub sub: uuid::Uuid,
-    pub jti: uuid::Uuid,
+    /// Session id
     pub sid: uuid::Uuid,
+    /// Token type
     pub typ: TokenType,
+    /// Issued at
     pub iat: usize,
+    /// Expired at
     pub exp: usize,
 }
 
