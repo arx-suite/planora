@@ -59,7 +59,7 @@ impl From<UserRow> for UserProfile {
 )]
 #[get("")]
 async fn get_profile(req: HttpRequest) -> Result<impl Responder, ApiError> {
-    let user = UserRow::extract(&req)?;
+    let user = UserRow::extract_extension(&req)?;
     tracing::Span::current().record("user_id", &user.user_id.to_string());
 
     ApiResult::to_ok_response("Profile data", UserProfile::from(user))
