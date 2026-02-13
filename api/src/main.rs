@@ -13,7 +13,9 @@ mod middlewares;
 mod ws;
 
 pub fn v1_scope() -> actix_web::Scope {
-    web::scope("/v1").service(components::user::handlers::auth_scope())
+    web::scope("/v1")
+        .service(components::user::handlers::auth_scope())
+        .service(components::user::handlers::profile_scope())
 }
 
 pub const fn public_paths() -> [&'static str; 4] {
