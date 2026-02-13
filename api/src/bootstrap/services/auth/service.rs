@@ -117,6 +117,44 @@ impl AuthService {
         }
     }
 
+    pub fn extract_access_token(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<String, ApiError> {
+        let cookie = req
+            .cookie(ACCESS_COOKIE)
+            .ok_or_else(|| ApiError::Unauthorized("Missing access token".into()))?;
+
+        Ok(cookie.value().to_string())
+    }
+
+    pub fn extract_refresh_token(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<String, ApiError> {
+        let cookie = req
+            .cookie(REFRESH_COOKIE)
+            .ok_or_else(|| ApiError::Unauthorized("Missing refresh token".into()))?;
+
+        Ok(cookie.value().to_string())
+    }
+
+    #[inline]
+    pub fn extract_access_claims(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<JwtClaims, ApiError> {
+        self.verify_access(&self.extract_access_token(req)?)
+    }
+
+    #[inline]
+    pub fn extract_refresh_claims(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<JwtClaims, ApiError> {
+        self.verify_refresh(&self.extract_refresh_token(req)?)
+    }
+
     fn build_claims(
         &self,
         user_id: Uuid,
@@ -195,28 +233,6 @@ impl AuthService {
         }
 
         builder.finish()
-    }
-
-    pub fn extract_access_token(
-        &self,
-        req: &actix_web::dev::ServiceRequest,
-    ) -> Result<String, ApiError> {
-        let cookie = req
-            .cookie(ACCESS_COOKIE)
-            .ok_or_else(|| ApiError::Unauthorized("Missing access token".into()))?;
-
-        Ok(cookie.value().to_string())
-    }
-
-    pub fn extract_refresh_token(
-        &self,
-        req: &actix_web::dev::ServiceRequest,
-    ) -> Result<String, ApiError> {
-        let cookie = req
-            .cookie(REFRESH_COOKIE)
-            .ok_or_else(|| ApiError::Unauthorized("Missing refresh token".into()))?;
-
-        Ok(cookie.value().to_string())
     }
 }
 
