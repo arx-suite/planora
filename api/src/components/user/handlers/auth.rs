@@ -212,7 +212,7 @@ async fn signin(
     let password = payload.password.to_owned();
 
     tracing::debug!("database pool acquired");
-    let pool = app.db().read().await?;
+    let pool = app.db().primary().await?;
 
     let user = pool
         .user_find_by_email(email)
@@ -228,11 +228,25 @@ async fn signin(
         return ApiResult::to_forbidden("User cannot login.");
     }
 
-    // TODO
-    let replace_this_session_id = uuid::Uuid::new_v4();
+    let now = chrono::Utc::now();
+    // TODO: retrieve user device and network information
+    let session = pool
+        .session_create(
+            user.user_id,
+            "unknown".into(),
+            None,
+            None,
+            None,
+            None,
+            None,
+            now + chrono::Duration::minutes(app.auth().access_ttl_min),
+            now + chrono::Duration::days(app.auth().refresh_ttl_days),
+        )
+        .await?;
+
     let cookies = app
         .auth()
-        .issue_auth_cookies(user.user_id, replace_this_session_id)?;
+        .issue_auth_cookies(user.user_id, session.session_id)?;
 
     tracing::info!(%user.user_id, %payload.email, "user signed in successfully");
 

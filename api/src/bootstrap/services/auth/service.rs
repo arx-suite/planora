@@ -20,9 +20,9 @@ const DOMAIN: &str = ".planora.sbs";
 #[derive(Debug, Clone)]
 pub struct AuthService {
     secret: String,
-    access_ttl_min: i64,
-    refresh_ttl_days: i64,
-    cookie: AuthCookieConfig,
+    pub access_ttl_min: i64,
+    pub refresh_ttl_days: i64,
+    pub cookie: AuthCookieConfig,
 }
 
 impl AuthService {
