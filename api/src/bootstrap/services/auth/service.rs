@@ -206,12 +206,15 @@ impl AuthService {
         let mut builder = Cookie::build(name, value)
             .path("/")
             .http_only(true)
-            .secure(self.cookie.secure)
             .same_site(self.cookie.same_site)
             .max_age(time::Duration::seconds(max_age_secs));
 
         if let Some(domain) = &self.cookie.domain {
             builder = builder.domain(domain.clone());
+        }
+
+        if self.cookie.secure {
+            builder = builder.secure(true);
         }
 
         builder.finish()
@@ -221,7 +224,6 @@ impl AuthService {
         let mut builder = Cookie::build(name, "")
             .path("/")
             .http_only(true)
-            .secure(self.cookie.secure)
             .same_site(self.cookie.same_site)
             .max_age(time::Duration::seconds(-1));
 
