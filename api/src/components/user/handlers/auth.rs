@@ -177,3 +177,63 @@ async fn verify_email(
 
     ApiResult::to_created_response("Signed up successfully", ())
 }
+
+#[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+pub struct SigninPayload {
+    pub email: String,
+    pub password: String,
+}
+
+#[utoipa::path(
+    post,
+    path = "/auth/signin",
+    tag = "Auth",
+    request_body = SigninPayload,
+    responses(
+        (status = 401, description = "Authentication failed"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+#[tracing::instrument(
+    name = "auth.signin",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        email = %payload.email,
+        user_id = tracing::field::Empty
+    )
+)]
+#[post("/signin")]
+async fn signin(
+    app: web::Data<App>,
+    payload: web::Json<SigninPayload>,
+) -> Result<impl Responder, ApiError> {
+    let email = payload.email.to_owned();
+    let password = payload.password.to_owned();
+
+    tracing::debug!("database pool acquired");
+    let pool = app.db().read().await?;
+
+    let user = pool
+        .user_find_by_email(email)
+        .await?
+        .ok_or_else(|| ApiError::Unauthorized("Authentication failed".into()))?;
+
+    match user.password_hash {
+        Some(p) if p == password => {}
+        _ => return Err(ApiError::Unauthorized("Authentication failed".into())),
+    }
+
+    if user.status.is_signin_allowed() {
+        return ApiResult::to_forbidden("User cannot login.");
+    }
+
+    let cookies = app.auth().issue_auth_cookies(user.user_id)?;
+
+    tracing::info!(%user.user_id, %payload.email, "user signed in successfully");
+
+    Ok(HttpResponse::Ok()
+        .cookie(cookies.access)
+        .cookie(cookies.refresh)
+        .json(ApiResult::ok("Signed in successfully")))
+}

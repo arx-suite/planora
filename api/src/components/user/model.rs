@@ -34,6 +34,10 @@ impl UserStatus {
     pub fn is_banned(&self) -> bool {
         matches!(self, UserStatus::Banned)
     }
+
+    pub fn is_signin_allowed(&self) -> bool {
+        matches!(self, UserStatus::Active | UserStatus::Pending)
+    }
 }
 
 impl From<UserStatus> for sea_query::Value {
