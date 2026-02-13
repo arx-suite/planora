@@ -80,12 +80,15 @@ where
                 return service.call(req).await;
             }
 
-            let token = app.auth().extract_access_token(&req)?;
+            // TODO: replace this code, with the new AuthService
+            // let token = app.auth().extract_access_token(&req)?;
 
-            let user_id = app
-                .auth()
-                .jwt_verify_access_token(&token)
-                .map_err(ApiError::from)?;
+            // let user_id = app
+            //     .auth()
+            //     .jwt_verify_access_token(&token)
+            //     .map_err(ApiError::from)?;
+
+            let user_id = uuid::Uuid::new_v4();
 
             let pool = app.db().read().await.map_err(ApiError::DatabaseError)?;
 

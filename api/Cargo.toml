@@ -100,7 +100,7 @@ utoipa-swagger-ui = { version = "9.0.2", features = ["actix-web"] }
 thiserror = "2.0.17"
 dotenvy = "0.15"
 chrono = { version = "0.4.42", features = ["serde"] }
-uuid = { version = "1.18.1", features = ["serde"] }
+uuid = { version = "1.18.1", features = ["serde", "v4"] }
 url = "2.5.7"
 
 [dev-dependencies]
