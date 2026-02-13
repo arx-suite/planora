@@ -44,11 +44,11 @@ impl AuthService {
     pub fn authenticate_request(
         &self,
         req: &actix_web::dev::ServiceRequest,
-    ) -> Result<uuid::Uuid, ApiError> {
+    ) -> Result<JwtClaims, ApiError> {
         let token = self.extract_access_token(req)?;
         let claims = self.verify_access(&token)?;
 
-        Ok(claims.sub)
+        Ok(claims)
     }
 
     // jwt

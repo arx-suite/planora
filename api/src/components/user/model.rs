@@ -147,6 +147,13 @@ pub enum SessionStatus {
     Suspicious,
 }
 
+impl SessionStatus {
+    #[inline]
+    pub fn is_active(&self) -> bool {
+        matches!(self, Self::Active)
+    }
+}
+
 impl TryFrom<String> for SessionStatus {
     type Error = ();
 

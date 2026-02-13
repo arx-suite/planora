@@ -80,11 +80,26 @@ where
                 return service.call(req).await;
             }
 
-            let user_id = app.auth().authenticate_request(&req)?;
+            let claims = app.auth().authenticate_request(&req)?;
+
             let pool = app.db().read().await.map_err(ApiError::DatabaseError)?;
 
+            // session check
+            let session = pool
+                .session_find_by_id(claims.sid)
+                .await
+                .map_err(ApiError::from)?
+                .ok_or_else(|| ApiError::Unauthorized("Unauthorized".into()))?;
+
+            if !session.status.is_active() || chrono::Utc::now() > session.access_expires_at {
+                return Err(ApiError::unauthorized("Unauthorized"))?;
+            }
+
+            // TODO: last_ip and current_ip check
+            // TODO: last_activity checks
+
             let user = pool
-                .user_find_by_id(user_id)
+                .user_find_by_id(claims.sub)
                 .await
                 .map_err(|_| ApiError::Unauthorized("Unauthorized".into()))?
                 .ok_or_else(|| ApiError::Unauthorized("Unauthorized".into()))?;
