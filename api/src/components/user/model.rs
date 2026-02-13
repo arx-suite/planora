@@ -131,6 +131,97 @@ pub enum Users {
     UpdatedAt,
 }
 
+// user session
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type)]
+#[sqlx(type_name = "session_status", rename_all = "snake_case")]
+pub enum SessionStatus {
+    Active,
+    Revoked,
+    Expired,
+    Suspicious,
+}
+
+impl TryFrom<String> for SessionStatus {
+    type Error = ();
+
+    fn try_from(value: String) -> Result<Self, Self::Error> {
+        match value.as_ref() {
+            "active" => Ok(Self::Active),
+            "revoked" => Ok(Self::Revoked),
+            "expired" => Ok(Self::Expired),
+            "suspicious" => Ok(Self::Suspicious),
+            _ => Err(()),
+        }
+    }
+}
+
+impl std::fmt::Display for SessionStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Active => write!(f, "active"),
+            Self::Revoked => write!(f, "revoked"),
+            Self::Expired => write!(f, "expired"),
+            Self::Suspicious => write!(f, "suspicious"),
+        }
+    }
+}
+
+#[derive(Debug, Clone, sqlx::FromRow)]
+pub struct UserSessionRow {
+    pub session_id: Uuid,
+    pub user_id: Uuid,
+
+    // device and network
+    pub user_agent: String,
+    pub ip_address: Option<sqlx::types::ipnetwork::IpNetwork>,
+    pub ip_country: Option<String>,
+
+    pub device_type: Option<String>,
+    pub device_name: Option<String>,
+    pub os_name: Option<String>,
+
+    // session status
+    pub status: SessionStatus,
+    pub revoked_at: Option<DateTime<Utc>>,
+    pub revoked_reason: Option<String>,
+
+    // token metadata
+    pub access_expires_at: DateTime<Utc>,
+    pub refresh_expires_at: DateTime<Utc>,
+
+    // activity
+    pub last_activity_at: Option<DateTime<Utc>>,
+    pub last_ip: Option<sqlx::types::ipnetwork::IpNetwork>,
+
+    pub failed_login_attempts: i32,
+
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(sea_query::Iden)]
+pub enum UserSessions {
+    Table,
+    SessionId,
+    UserId,
+    UserAgent,
+    IpAddress,
+    IpCountry,
+    DeviceType,
+    DeviceName,
+    OsName,
+    Status,
+    RevokedAt,
+    RevokedReason,
+    AccessExpiredAt,
+    RefreshExpiredAt,
+    LastActivityAt,
+    LastIp,
+    FailedAttempts,
+    CreatedAt,
+    UpdatedAt,
+}
+
 // user identities
 #[derive(Debug, Clone, Deserialize)]
 pub struct ProviderData {}
