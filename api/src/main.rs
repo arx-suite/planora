@@ -4,7 +4,7 @@
 */
 
 use actix_cors::Cors;
-use actix_web::{App, HttpResponse, HttpServer, middleware, web};
+use actix_web::{App, HttpResponse, HttpServer, Responder, get, middleware, web};
 
 use arx_gatehouse::{ApiDoc, bootstrap, common::ApiResult, components};
 use utoipa::OpenApi;
@@ -18,17 +18,21 @@ pub fn v1_scope() -> actix_web::Scope {
         .service(components::user::handlers::profile_scope())
 }
 
-pub const fn public_paths() -> [&'static str; 4] {
+pub const fn public_paths() -> [&'static str; 3] {
     [
         "/v1/auth/signin",
         "/v1/auth/signup",
-        "/v1/auth/refresh",
-        "/v1/health",
+        "/v1/auth/verify-email",
     ]
 }
 
 async fn not_found_handler() -> HttpResponse {
     HttpResponse::NotFound().json(ApiResult::error("Endpoint not found"))
+}
+
+#[get("/health")]
+async fn health_check() -> impl Responder {
+    HttpResponse::Ok().json(ApiResult::ok("Ok"))
 }
 
 #[actix_web::main]
@@ -70,6 +74,7 @@ async fn main() -> std::io::Result<()> {
             .service(v1_scope().wrap(middlewares::AuthMiddleware::new(
                 public_paths().into_iter().collect::<Vec<_>>(),
             )))
+            .service(health_check)
             .service(
                 utoipa_swagger_ui::SwaggerUi::new("/docs/{_:.*}")
                     .url("/api-doc/openapi.json", ApiDoc::openapi()),
