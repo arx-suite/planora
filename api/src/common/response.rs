@@ -72,6 +72,10 @@ impl ApiResult<()> {
         Ok(HttpResponse::Unauthorized().json(Self::error(message)))
     }
 
+    pub fn to_forbidden(message: impl Into<String>) -> ApiResponse {
+        Ok(HttpResponse::Forbidden().json(Self::error(message)))
+    }
+
     pub fn to_not_found(message: impl Into<String>) -> ApiResponse {
         Ok(HttpResponse::NotFound().json(Self::error(message)))
     }

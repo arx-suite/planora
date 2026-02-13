@@ -13,6 +13,28 @@ pub enum UserStatus {
     Banned,
 }
 
+impl UserStatus {
+    pub fn is_pending(&self) -> bool {
+        matches!(self, UserStatus::Pending)
+    }
+
+    pub fn is_active(&self) -> bool {
+        matches!(self, UserStatus::Active)
+    }
+
+    pub fn is_suspended(&self) -> bool {
+        matches!(self, UserStatus::Suspended)
+    }
+
+    pub fn is_deactivated(&self) -> bool {
+        matches!(self, UserStatus::Deactivated)
+    }
+
+    pub fn is_banned(&self) -> bool {
+        matches!(self, UserStatus::Banned)
+    }
+}
+
 impl From<UserStatus> for sea_query::Value {
     fn from(value: UserStatus) -> Self {
         match value {
@@ -25,7 +47,7 @@ impl From<UserStatus> for sea_query::Value {
     }
 }
 
-#[derive(Debug, Clone, Deserialize)]
+#[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
 pub struct UserPreferences {
     pub locale: Option<String>,
     pub timezone: Option<String>,

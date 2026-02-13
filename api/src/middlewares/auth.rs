@@ -95,6 +95,29 @@ where
                 .map_err(|_| ApiError::Unauthorized("unauthorized".into()))?
                 .ok_or_else(|| ApiError::Unauthorized("unauthorized".into()))?;
 
+            tracing::trace!(%user.user_id, ?user.status, %user.usertag, ?user.email, "user information");
+
+            // user status check
+            if user.status.is_banned() {
+                return Err(ApiError::Forbidden(
+                    "Your account has been permanently banned.".into(),
+                ))?;
+            }
+
+            if user.status.is_deactivated() || user.deactivated_at.is_some() {
+                return Err(ApiError::Forbidden(
+                    "Your account has been deactivated.".into(),
+                ))?;
+            }
+
+            if user.status.is_suspended() {
+                if let Some(locked_until) = user.locked_until {
+                    if locked_until < chrono::Utc::now() {
+                        return Err(ApiError::Forbidden("Account is temporarily locked.".into()))?;
+                    }
+                }
+            }
+
             // adding extension
             tracing::trace!(user_id = %user.user_id, "authenticated user attached");
             user.add(&req);
