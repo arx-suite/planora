@@ -1,8 +1,8 @@
 use sea_query::*;
 use sqlx::PgExecutor;
 
-use super::model::{UserRow, UserStatus, Users};
-use crate::services::db::DBResult;
+use super::model::{UserRow, UserSessionRow, UserSessions, UserStatus, Users};
+use crate::{components::user::model::SessionStatus, services::db::DBResult};
 
 #[async_trait::async_trait]
 pub trait UserRepo {
@@ -17,6 +17,22 @@ pub trait UserRepo {
     async fn user_find_by_email(&self, email: String) -> DBResult<Option<UserRow>>;
     async fn user_find_by_usertag(&self, usertag: String) -> DBResult<Option<UserRow>>;
     async fn user_find_by_id(&self, userid: uuid::Uuid) -> DBResult<Option<UserRow>>;
+
+    async fn session_create(
+        &self,
+        userid: uuid::Uuid,
+        user_agent: String,
+        ip_addr: sqlx::types::ipnetwork::IpNetwork,
+        ip_country: String,
+        device_type: String,
+        device_name: String,
+        os_name: String,
+        access_expired_at: chrono::DateTime<chrono::Utc>,
+        refresh_expired_at: chrono::DateTime<chrono::Utc>,
+    ) -> DBResult<UserSessionRow>;
+    async fn session_find_by_id(&self, session_id: uuid::Uuid) -> DBResult<Option<UserSessionRow>>;
+    async fn session_find_by_userid(&self, userid: uuid::Uuid) -> DBResult<Vec<UserSessionRow>>;
+    async fn session_revoke(&self, session_id: uuid::Uuid, reason: &str) -> DBResult<()>;
 }
 
 #[async_trait::async_trait]
@@ -24,7 +40,6 @@ impl<T> UserRepo for T
 where
     for<'e> &'e T: PgExecutor<'e>,
 {
-    // create
     async fn user_create_email(
         &self,
         username: String,
@@ -72,7 +87,6 @@ where
         Ok(created_user)
     }
 
-    // read
     async fn user_find_by_email(&self, email: String) -> DBResult<Option<UserRow>> {
         tracing::debug!(
             action = "user_lookup",
@@ -152,5 +166,108 @@ where
         );
 
         Ok(user)
+    }
+
+    // session
+    async fn session_create(
+        &self,
+        userid: uuid::Uuid,
+        user_agent: String,
+        ip_addr: sqlx::types::ipnetwork::IpNetwork,
+        ip_country: String,
+        device_type: String,
+        device_name: String,
+        os_name: String,
+        access_expired_at: chrono::DateTime<chrono::Utc>,
+        refresh_expired_at: chrono::DateTime<chrono::Utc>,
+    ) -> DBResult<UserSessionRow> {
+        tracing::debug!(user_id = %userid, "creating session");
+
+        let query = Query::insert()
+            .into_table(UserSessions::Table)
+            .columns([
+                UserSessions::UserId,
+                UserSessions::UserAgent,
+                UserSessions::IpAddress,
+                UserSessions::IpCountry,
+                UserSessions::DeviceType,
+                UserSessions::DeviceName,
+                UserSessions::OsName,
+                UserSessions::Status,
+                UserSessions::AccessExpiredAt,
+                UserSessions::RefreshExpiredAt,
+            ])
+            .values([
+                userid.into(),
+                user_agent.into(),
+                ip_addr.into(),
+                ip_country.into(),
+                device_type.into(),
+                device_name.into(),
+                os_name.into(),
+                SessionStatus::Active.to_string().into(),
+                access_expired_at.into(),
+                refresh_expired_at.into(),
+            ])?
+            .returning_all()
+            .to_string(PostgresQueryBuilder);
+
+        let row = sqlx::query_as::<_, UserSessionRow>(&query)
+            .fetch_one(self)
+            .await?;
+
+        Ok(row)
+    }
+
+    async fn session_find_by_id(&self, session_id: uuid::Uuid) -> DBResult<Option<UserSessionRow>> {
+        tracing::debug!(%session_id, "looking up session");
+
+        let query = Query::select()
+            .column(Asterisk)
+            .from(UserSessions::Table)
+            .and_where(Expr::col(UserSessions::SessionId).eq(session_id))
+            .to_string(PostgresQueryBuilder);
+
+        let session = sqlx::query_as::<_, UserSessionRow>(&query)
+            .fetch_optional(self)
+            .await?;
+
+        Ok(session)
+    }
+    async fn session_find_by_userid(&self, userid: uuid::Uuid) -> DBResult<Vec<UserSessionRow>> {
+        tracing::debug!(%userid, "looking up sessions for user");
+
+        let query = Query::select()
+            .column(Asterisk)
+            .from(UserSessions::Table)
+            .and_where(Expr::col(UserSessions::UserId).eq(userid))
+            .to_string(PostgresQueryBuilder);
+
+        let session = sqlx::query_as::<_, UserSessionRow>(&query)
+            .fetch_all(self)
+            .await?;
+
+        Ok(session)
+    }
+
+    async fn session_revoke(&self, session_id: uuid::Uuid, reason: &str) -> DBResult<()> {
+        tracing::debug!(%session_id, "revoking session");
+
+        let query = Query::update()
+            .table(UserSessions::Table)
+            .values([
+                (
+                    UserSessions::Status,
+                    SessionStatus::Revoked.to_string().into(),
+                ),
+                (UserSessions::RevokedAt, Expr::current_timestamp().into()),
+                (UserSessions::RevokedReason, reason.into()),
+            ])
+            .and_where(Expr::col(UserSessions::SessionId).eq(session_id))
+            .to_string(PostgresQueryBuilder);
+
+        sqlx::query(&query).execute(self).await?;
+
+        Ok(())
     }
 }
