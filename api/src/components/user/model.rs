@@ -206,7 +206,7 @@ pub struct UserSessionRow {
     pub last_activity_at: Option<DateTime<Utc>>,
     pub last_ip: Option<sqlx::types::ipnetwork::IpNetwork>,
 
-    pub failed_login_attempts: i32,
+    pub failed_attempts: i32,
 
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
