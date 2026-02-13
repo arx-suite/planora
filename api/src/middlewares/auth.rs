@@ -1,19 +1,15 @@
 use actix_web::{
-    Error, HttpMessage,
+    Error,
     dev::{Service, ServiceRequest, ServiceResponse, Transform, forward_ready},
     web,
 };
 use futures_util::future::{LocalBoxFuture, Ready, ok};
 use std::rc::Rc;
 
-use crate::components::user::repo::UserRepo;
 use arx_gatehouse::App;
 use arx_gatehouse::common::ApiError;
 
-#[derive(Clone, Debug)]
-pub struct AuthUser {
-    pub id: uuid::Uuid,
-}
+use crate::components::user::repo::UserRepo;
 
 pub struct AuthMiddleware {
     public_paths: Rc<Vec<String>>,
@@ -99,9 +95,9 @@ where
                 .map_err(|_| ApiError::Unauthorized("unauthorized".into()))?
                 .ok_or_else(|| ApiError::Unauthorized("unauthorized".into()))?;
 
-            req.extensions_mut().insert(AuthUser { id: user.user_id });
-
+            // adding extension
             tracing::trace!(user_id = %user.user_id, "authenticated user attached");
+            user.add(&req);
 
             return service.call(req).await;
         })
