@@ -80,23 +80,14 @@ where
                 return service.call(req).await;
             }
 
-            // TODO: replace this code, with the new AuthService
-            // let token = app.auth().extract_access_token(&req)?;
-
-            // let user_id = app
-            //     .auth()
-            //     .jwt_verify_access_token(&token)
-            //     .map_err(ApiError::from)?;
-
-            let user_id = uuid::Uuid::new_v4();
-
+            let user_id = app.auth().authenticate_request(&req)?;
             let pool = app.db().read().await.map_err(ApiError::DatabaseError)?;
 
             let user = pool
                 .user_find_by_id(user_id)
                 .await
-                .map_err(|_| ApiError::Unauthorized("unauthorized".into()))?
-                .ok_or_else(|| ApiError::Unauthorized("unauthorized".into()))?;
+                .map_err(|_| ApiError::Unauthorized("Unauthorized".into()))?
+                .ok_or_else(|| ApiError::Unauthorized("Unauthorized".into()))?;
 
             tracing::trace!(%user.user_id, ?user.status, %user.usertag, ?user.email, "user information");
 

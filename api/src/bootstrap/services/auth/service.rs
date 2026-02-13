@@ -40,6 +40,17 @@ impl AuthService {
         }
     }
 
+    // Auth middleware helper
+    pub fn authenticate_request(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<uuid::Uuid, ApiError> {
+        let token = self.extract_access_token(req)?;
+        let claims = self.verify_access(&token)?;
+
+        Ok(claims.sub)
+    }
+
     // jwt
     pub fn issue_token_pair(&self, user_id: Uuid) -> Result<TokenPair, ApiError> {
         let session_id = Uuid::new_v4();
@@ -184,6 +195,28 @@ impl AuthService {
         }
 
         builder.finish()
+    }
+
+    pub fn extract_access_token(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<String, ApiError> {
+        let cookie = req
+            .cookie(ACCESS_COOKIE)
+            .ok_or_else(|| ApiError::Unauthorized("Missing access token".into()))?;
+
+        Ok(cookie.value().to_string())
+    }
+
+    pub fn extract_refresh_token(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+    ) -> Result<String, ApiError> {
+        let cookie = req
+            .cookie(REFRESH_COOKIE)
+            .ok_or_else(|| ApiError::Unauthorized("Missing refresh token".into()))?;
+
+        Ok(cookie.value().to_string())
     }
 }
 
