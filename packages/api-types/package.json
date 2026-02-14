@@ -8,8 +8,8 @@
     "license": "MIT",
     "author": "sajeevan",
     "scripts": {
-        "codegen": "openapi-typescript --redocly ./redocly.yaml --alphabetize --default-non-nullable=false && biome format --write types/api.d.ts",
-        "codegen:file-spec": "openapi-typescript ../../openapi/openapi.yaml -o types/api.d.ts && biome format --write types/api.d.ts"
+        "codegen": "openapi-typescript -c ./spec.yaml --alphabetize --default-non-nullable=false && biome format --write types/api.d.ts",
+        "codegen:file-spec": "openapi-typescript ../../openapi/openapi.yaml --default-non-nullable=false -o types/api.d.ts && biome format --write types/api.d.ts"
     },
     "devDependencies": {
         "openapi-typescript": "^7.12.0",
