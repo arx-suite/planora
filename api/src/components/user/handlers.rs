@@ -14,6 +14,7 @@ pub fn auth_scope() -> Scope {
         .service(auth::signup)
         .service(auth::verify_email)
         .service(oauth::oauth_start)
+        .service(oauth::oauth_callback)
 }
 
 pub fn profile_scope() -> Scope {

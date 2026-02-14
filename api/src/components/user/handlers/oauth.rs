@@ -61,7 +61,63 @@ async fn oauth_start(
         .url();
 
     Ok(HttpResponse::Found()
-        .append_header(("Location", authorize_url.to_string()))
+        .append_header((actix_web::http::header::LOCATION, authorize_url.to_string()))
+        .finish())
+}
+
+#[derive(Debug, Deserialize, utoipa::ToSchema)]
+pub struct AuthCallbackQuery {
+    pub code: String,
+    pub state: Option<String>,
+    pub error: Option<String>,
+    pub error_description: Option<String>,
+}
+
+#[utoipa::path(
+    get,
+    path = "/oauth/{provider}/callback",
+    params(
+        ("callback" = AuthCallbackQuery, description = "OAuth provider callback")
+    ),
+    responses(
+        (status = 302, description = "Authentication successful"),
+        (status = 400, description = "Invalid provider"),
+        (status = 500, description = "Internal server error")
+    ),
+)]
+#[tracing::instrument(
+    name = "auth.oauth.callback",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        provider = %provider,
+        code = %query.code
+    )
+)]
+#[get("/oauth/{provider}/callback")]
+async fn oauth_callback(
+    app: web::Data<App>,
+    provider: web::Path<OAuthProvider>,
+    query: web::Query<AuthCallbackQuery>,
+) -> Result<impl Responder, ApiError> {
+    let provider = provider.into_inner();
+    let _query = query.into_inner();
+
+    match provider {
+        OAuthProvider::Unknown(_) => return Err(ApiError::not_found("Invalid provider")),
+        _ => {}
+    }
+
+    /* TODO:
+        get user information from the provider
+        create session and attach
+    */
+
+    Ok(HttpResponse::Found()
+        .append_header((
+            actix_web::http::header::LOCATION,
+            app.config().web_url.clone(),
+        ))
         .finish())
 }
 
@@ -122,7 +178,6 @@ impl OAuthProviderInfo {
             "{api_url}v1/auth/oauth/{}/callback",
             self.name.to_lowercase()
         ))?;
-        tracing::info!("OAuth redirect URI: {}", redirect_url.as_str());
 
         let basic_client =
             BasicClient::new(client_id, Some(client_secret), auth_url, Some(token_url))
