@@ -10,6 +10,7 @@ pub(crate) use super::repo::UserRepo;
 pub fn auth_scope() -> Scope {
     Scope::new("/auth")
         .service(auth::signin)
+        .service(auth::signout)
         .service(auth::signup)
         .service(auth::verify_email)
         .service(oauth::oauth_start)

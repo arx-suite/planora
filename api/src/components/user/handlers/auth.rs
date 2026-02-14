@@ -1,10 +1,10 @@
-use actix_web::{HttpResponse, Responder, post, web};
+use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
 use serde::{Deserialize, Serialize};
 
+use super::UserRepo;
+use super::model::{UserRow, UserSessionRow};
 use crate::App;
 use crate::common::{ApiError, ApiResult};
-
-use super::UserRepo;
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct CreateUser {
@@ -254,4 +254,64 @@ async fn signin(
         .cookie(cookies.access)
         .cookie(cookies.refresh)
         .json(ApiResult::ok("Signed in successfully")))
+}
+
+#[utoipa::path(
+    post,
+    path = "/auth/signout",
+    tag = "Auth",
+    responses(
+        (status = 200, description = "Signed out successfully"),
+        (status = 401, description = "Unauthorized"),
+        (status = 500, description = "Internal server error")
+    )
+)]
+#[tracing::instrument(
+    name = "auth.signout",
+    skip_all,
+    level = tracing::Level::INFO,
+    fields(
+        user_id = tracing::field::Empty,
+        session_id = tracing::field::Empty
+    )
+)]
+#[post("/signout")]
+async fn signout(req: HttpRequest, app: web::Data<App>) -> Result<impl Responder, ApiError> {
+    let user = UserRow::extract_extension(&req)?;
+    let session = UserSessionRow::extract_extension(&req)?;
+
+    let span = tracing::Span::current();
+    span.record("user_id", &user.user_id.to_string());
+    span.record("session_id", &session.session_id.to_string());
+
+    // revoke session
+    let pool = app.db().primary().await?;
+    pool.session_revoke(session.session_id, "user_signout")
+        .await?;
+
+    // add the tokens while expiry
+    let cache = app.cache();
+
+    let ttl = (session.refresh_expires_at - chrono::Utc::now())
+        .num_seconds()
+        .max(0) as u64;
+
+    let key = revoke_key(session.session_id);
+    cache
+        .set_with_ttl(&key, &key, std::time::Duration::from_secs(ttl))
+        .await
+        .map_err(|_| ApiError::internal("Internal error"))?;
+
+    let cookies = app.auth().clear_auth_cookies();
+
+    Ok(HttpResponse::Ok()
+        .cookie(cookies.access)
+        .cookie(cookies.refresh)
+        .json(ApiResult::ok("Signed out successfully")))
+}
+
+// TODO: add this code inside the AuthService
+#[inline]
+fn revoke_key(session_id: uuid::Uuid) -> String {
+    format!("revoked:session:{}", session_id)
 }
