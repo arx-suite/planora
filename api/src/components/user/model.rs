@@ -112,7 +112,7 @@ impl UserRow {
         <actix_web::HttpRequest as actix_web::HttpMessage>::extensions(req)
             .get::<UserRow>()
             .cloned()
-            .ok_or_else(|| crate::common::ApiError::Unauthorized("User not authenticated".into()))
+            .ok_or_else(|| crate::common::ApiError::unauthorized("User not authenticated"))
     }
 }
 
@@ -210,6 +210,25 @@ pub struct UserSessionRow {
 
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+}
+
+// helper functions for actix-web extensions
+impl UserSessionRow {
+    #[inline]
+    pub fn add_extension(self, req: &actix_web::dev::ServiceRequest) {
+        <actix_web::dev::ServiceRequest as actix_web::HttpMessage>::extensions_mut(req)
+            .insert(self);
+    }
+
+    #[inline]
+    pub fn extract_extension(
+        req: &actix_web::HttpRequest,
+    ) -> Result<UserSessionRow, crate::common::ApiError> {
+        <actix_web::HttpRequest as actix_web::HttpMessage>::extensions(req)
+            .get::<UserSessionRow>()
+            .cloned()
+            .ok_or_else(|| crate::common::ApiError::unauthorized("User not authenticated"))
+    }
 }
 
 #[derive(sea_query::Iden)]
