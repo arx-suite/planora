@@ -1,4 +1,4 @@
-use arx_gatehouse::ApiDoc;
+use arx_gatehouse::doc::ApiDoc;
 use std::fs;
 use utoipa::OpenApi;
 

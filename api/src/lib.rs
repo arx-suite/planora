@@ -1,40 +1,9 @@
 pub mod bootstrap;
 pub mod common;
 pub mod components;
+pub mod doc;
 
 pub use bootstrap::App;
 pub use bootstrap::config::AppConfig;
 pub use bootstrap::services;
 pub use bootstrap::telemetry;
-
-use components::user::handlers::{auth, oauth, profile};
-
-// openapi doc helper types
-#[derive(serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ApiResultEmpty {
-    pub success: bool,
-    pub message: String,
-}
-
-#[derive(utoipa::OpenApi)]
-#[openapi(
-    paths(
-        auth::signup,
-        auth::verify_email,
-        oauth::oauth_start,
-        profile::get_profile
-    ),
-    components(
-        schemas(
-            auth::CreateUser,
-            auth::VerifyEmail,
-            oauth::OAuthProvider,
-            profile::UserProfile
-        )
-    ),
-    tags(
-        (name = "Auth", description = "Authentication endpoints"),
-        (name = "Profile", description = "Managing profile")
-    )
-)]
-pub struct ApiDoc;

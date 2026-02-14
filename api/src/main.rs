@@ -6,7 +6,8 @@
 use actix_cors::Cors;
 use actix_web::{App, HttpResponse, HttpServer, Responder, middleware, web};
 
-use arx_gatehouse::{ApiDoc, bootstrap, common::ApiResult, components};
+use arx_gatehouse::doc::ApiDoc;
+use arx_gatehouse::{bootstrap, common::ApiResult, components};
 use utoipa::OpenApi;
 
 mod middlewares;
