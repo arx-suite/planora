@@ -9,6 +9,13 @@ pub use bootstrap::telemetry;
 
 use components::user::handlers::{auth, oauth, profile};
 
+// openapi doc helper types
+#[derive(serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
+pub struct ApiResultEmpty {
+    pub success: bool,
+    pub message: String,
+}
+
 #[derive(utoipa::OpenApi)]
 #[openapi(
     paths(

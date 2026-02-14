@@ -4,8 +4,8 @@ use oauth2::{AuthUrl, ClientId, ClientSecret, CsrfToken, RedirectUrl, Scope, Tok
 use serde::Deserialize;
 use std::sync::{Arc, LazyLock};
 
-use crate::App;
-use crate::common::{ApiError, ApiResult, ApiResultEmpty};
+use crate::common::{ApiError, ApiResult};
+use crate::{ApiResultEmpty, App};
 
 #[utoipa::path(
     get,

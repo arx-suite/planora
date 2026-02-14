@@ -15,12 +15,6 @@ where
     pub payload: Option<T>,
 }
 
-#[derive(serde::Serialize, serde::Deserialize, utoipa::ToSchema)]
-pub struct ApiResultEmpty {
-    pub success: bool,
-    pub message: String,
-}
-
 impl<T> ApiResult<T>
 where
     T: utoipa::ToSchema,
