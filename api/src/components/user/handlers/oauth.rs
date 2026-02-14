@@ -5,19 +5,19 @@ use serde::Deserialize;
 use std::sync::{Arc, LazyLock};
 
 use crate::App;
-use crate::common::{ApiError, ApiResult};
+use crate::common::{ApiError, ApiResult, ApiResultEmpty};
 
 #[utoipa::path(
     get,
     path = "/oauth/{provider}/start",
     tag = "Auth",
     params(
-        ("provider" = OAuthProvider, description = "OAuth provider to authenticate")
+        ("provider" = OAuthProvider, Path, description = "OAuth provider to authenticate")
     ),
     responses(
-        (status = 302, description = "Redirect to OAuth provider"),
-        (status = 400, description = "Invalid provider"),
-        (status = 500, description = "Internal server error")
+        (status = 302, description = "Redirect to OAuth provider", body = ApiResultEmpty),
+        (status = 400, description = "Invalid provider", body = ApiResultEmpty),
+        (status = 500, description = "Internal server error", body = ApiResultEmpty)
     ),
 )]
 #[tracing::instrument(
@@ -77,12 +77,13 @@ pub struct AuthCallbackQuery {
     get,
     path = "/oauth/{provider}/callback",
     params(
-        ("callback" = AuthCallbackQuery, description = "OAuth provider callback")
+        ("provider" = OAuthProvider, Path, description = "OAuth provider"),
+        ("callback" = AuthCallbackQuery, Query, description = "OAuth provider callback")
     ),
     responses(
-        (status = 302, description = "Authentication successful"),
-        (status = 400, description = "Invalid provider"),
-        (status = 500, description = "Internal server error")
+        (status = 302, description = "Authentication successful", body = ApiResultEmpty),
+        (status = 400, description = "Invalid provider", body = ApiResultEmpty),
+        (status = 500, description = "Internal server error", body = ApiResultEmpty)
     ),
 )]
 #[tracing::instrument(
