@@ -9,17 +9,17 @@ create type project_priority as enum ('low', 'medium', 'high', 'critical');
 /* === tables === */
 create table projects (
     project_id uuid primary key default gen_random_id(),
-    organization_id uuid references organizations (organization_id) on delete cascade,
+    organization_id uuid not null references organizations (organization_id) on delete cascade,
 
     -- metadata
     project_name varchar(100) not null,
     description text,
-    tags varchar(50)[] default '{}',
+    tags text[] default '{}',
 
     -- status
-    status project_status default 'planned',
-    visibility project_visibility default 'team',
-    priority text project_priority default 'low',
+    status project_status not null default 'planned',
+    visibility project_visibility not null default 'team',
+    priority project_priority not null default 'low',
 
     -- timeline
     start_date timestamptz,
@@ -28,5 +28,7 @@ create table projects (
 
     created_by uuid not null references organization_members (member_id),
     created_at timestamptz default now(),
-    updated_at timestamptz default now()
+    updated_at timestamptz default now(),
+
+    unique (organization_id, project_name)
 );
