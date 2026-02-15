@@ -1,6 +1,7 @@
-use actix_web::{HttpRequest, Responder, get};
+use actix_web::{HttpRequest, Responder, get, web};
 
 use super::model::{UserPreferences, UserRow, UserStatus};
+use crate::App;
 use crate::common::{ApiError, ApiResult};
 
 #[derive(Debug, Clone, serde::Serialize, utoipa::ToSchema)]
@@ -58,8 +59,8 @@ impl From<UserRow> for UserProfile {
     )
 )]
 #[get("")]
-async fn get_profile(req: HttpRequest) -> Result<impl Responder, ApiError> {
-    let user = UserRow::extract_extension(&req)?;
+async fn get_profile(req: HttpRequest, app: web::Data<App>) -> Result<impl Responder, ApiError> {
+    let user = app.auth().extract_user_extension(&req)?;
     tracing::Span::current().record("user_id", &user.user_id.to_string());
 
     ApiResult::to_ok_response("Profile data", UserProfile::from(user))

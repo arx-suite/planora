@@ -129,7 +129,7 @@ where
 
             // adding extension
             tracing::trace!(user_id = %user.user_id, "authenticated user attached");
-            user.add_extension(&req);
+            app.auth().add_user_extension(&req, user);
 
             return service.call(req).await;
         })

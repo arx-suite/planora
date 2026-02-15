@@ -5,6 +5,7 @@ use uuid::Uuid;
 
 use crate::common::ApiError;
 use crate::common::utils;
+use crate::components::user::model::{UserRow, UserSessionRow};
 
 use super::AuthError;
 use super::types::*;
@@ -236,6 +237,45 @@ impl AuthService {
         }
 
         builder.finish()
+    }
+
+    // actix-web extension helper functions
+    #[inline]
+    pub fn add_user_extension(&self, req: &actix_web::dev::ServiceRequest, user: UserRow) {
+        <actix_web::dev::ServiceRequest as actix_web::HttpMessage>::extensions_mut(req)
+            .insert(user);
+    }
+
+    #[inline]
+    pub fn extract_user_extension(
+        &self,
+        req: &actix_web::HttpRequest,
+    ) -> Result<UserRow, ApiError> {
+        <actix_web::HttpRequest as actix_web::HttpMessage>::extensions(req)
+            .get::<UserRow>()
+            .cloned()
+            .ok_or_else(|| ApiError::unauthorized("User not authenticated"))
+    }
+
+    #[inline]
+    pub fn add_session_extension(
+        &self,
+        req: &actix_web::dev::ServiceRequest,
+        session: UserSessionRow,
+    ) {
+        <actix_web::dev::ServiceRequest as actix_web::HttpMessage>::extensions_mut(req)
+            .insert(session);
+    }
+
+    #[inline]
+    pub fn extract_session_extension(
+        &self,
+        req: &actix_web::HttpRequest,
+    ) -> Result<UserSessionRow, ApiError> {
+        <actix_web::HttpRequest as actix_web::HttpMessage>::extensions(req)
+            .get::<UserSessionRow>()
+            .cloned()
+            .ok_or_else(|| ApiError::unauthorized("User not authenticated"))
     }
 }
 

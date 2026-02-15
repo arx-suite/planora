@@ -2,7 +2,6 @@ use actix_web::{HttpRequest, HttpResponse, Responder, post, web};
 use serde::{Deserialize, Serialize};
 
 use super::UserRepo;
-use super::model::{UserRow, UserSessionRow};
 use crate::App;
 use crate::common::{ApiError, ApiResult};
 
@@ -277,8 +276,8 @@ async fn signin(
 )]
 #[post("/signout")]
 async fn signout(req: HttpRequest, app: web::Data<App>) -> Result<impl Responder, ApiError> {
-    let user = UserRow::extract_extension(&req)?;
-    let session = UserSessionRow::extract_extension(&req)?;
+    let user = app.auth().extract_user_extension(&req)?;
+    let session = app.auth().extract_session_extension(&req)?;
 
     let span = tracing::Span::current();
     span.record("user_id", &user.user_id.to_string());
