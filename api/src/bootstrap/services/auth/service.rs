@@ -1,6 +1,8 @@
 use actix_web::cookie::{Cookie, SameSite, time};
 use chrono::{Duration, Utc};
 use jsonwebtoken::*;
+use once_cell::sync::Lazy;
+use uaparser::{Parser, UserAgentParser};
 use uuid::Uuid;
 
 use crate::common::ApiError;
@@ -17,6 +19,11 @@ const ACCESS_COOKIE: &str = "access_token";
 const REFRESH_COOKIE: &str = "refresh_token";
 // TODO: only for temporary use
 const DOMAIN: &str = ".planora.sbs";
+
+static UA_PARSER: once_cell::sync::Lazy<UserAgentParser> = Lazy::new(|| {
+    UserAgentParser::from_yaml(include_str!("./ua-regexes.yaml"))
+        .expect("failed to load ua parser regexes")
+});
 
 #[derive(Debug, Clone)]
 pub struct AuthService {
@@ -277,6 +284,38 @@ impl AuthService {
             .cloned()
             .ok_or_else(|| ApiError::unauthorized("User not authenticated"))
     }
+
+    // extract user information from `User-Agent` header
+    pub fn parse_user_agent(&self, req: &actix_web::dev::ServiceRequest) -> Option<UserAgentInfo> {
+        if let Some(ua) = req.headers().get(actix_web::http::header::USER_AGENT) {
+            if let Ok(ua) = ua.to_str() {
+                let client = UA_PARSER.parse(ua);
+
+                return Some(UserAgentInfo {
+                    browser: format!(
+                        "{} {}",
+                        client.user_agent.family,
+                        client.user_agent.major.unwrap_or_default()
+                    ),
+                    os: format!(
+                        "{} {}",
+                        client.os.family,
+                        client.os.major.unwrap_or_default()
+                    ),
+                    device: client.device.family.to_string(),
+                });
+            }
+        }
+
+        None
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct UserAgentInfo {
+    pub browser: String,
+    pub os: String,
+    pub device: String,
 }
 
 #[tracing::instrument(
