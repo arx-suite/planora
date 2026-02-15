@@ -309,6 +309,14 @@ impl AuthService {
 
         None
     }
+
+    pub fn user_agent_default(&self) -> UserAgentInfo {
+        UserAgentInfo {
+            browser: "unknown".into(),
+            os: "unknown".into(),
+            device: "unknown".into(),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]

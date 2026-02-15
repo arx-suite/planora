@@ -132,6 +132,7 @@ pub struct VerifyEmail {
 )]
 #[post("/verify-email")]
 async fn verify_email(
+    req: HttpRequest,
     app: web::Data<App>,
     payload: web::Json<VerifyEmail>,
 ) -> Result<impl Responder, ApiError> {
@@ -164,17 +165,53 @@ async fn verify_email(
     let pool = app.db().primary().await?;
     tracing::debug!("database pool acquired");
 
-    pool.user_create_email(
-        cached_user.user.username,
-        cached_user.user.email,
-        cached_user.user.password,
-        // TODO: replace this code
-        "custom:tag".to_string(),
-        cached_user.created_at,
-    )
-    .await?;
+    let user = pool
+        .user_create_email(
+            cached_user.user.username,
+            cached_user.user.email,
+            cached_user.user.password,
+            // TODO: replace this code
+            "custom:tag".to_string(),
+            cached_user.created_at,
+        )
+        .await?;
 
-    ApiResult::to_created_response("Signed up successfully", ())
+    let ip = req
+        .peer_addr()
+        .and_then(|v| Some(sqlx::types::ipnetwork::IpNetwork::from(v.ip())));
+
+    // user-agent header
+    let req = actix_web::dev::ServiceRequest::from_request(req);
+    let ua = app
+        .auth()
+        .parse_user_agent(&req)
+        .unwrap_or(app.auth().user_agent_default());
+
+    let now = chrono::Utc::now();
+    let session = pool
+        .session_create(
+            user.user_id,
+            ua.browser,
+            ip,
+            None,
+            Some(ua.device),
+            Some(ua.os),
+            None,
+            now + chrono::Duration::minutes(app.auth().access_ttl_min),
+            now + chrono::Duration::days(app.auth().refresh_ttl_days),
+        )
+        .await?;
+
+    let cookies = app
+        .auth()
+        .issue_auth_cookies(user.user_id, session.session_id)?;
+
+    tracing::info!(%user.user_id, %payload.email, "user signed up successfully");
+
+    Ok(HttpResponse::Created()
+        .cookie(cookies.access)
+        .cookie(cookies.refresh)
+        .json(ApiResult::ok("Signed up successfully")))
 }
 
 #[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
