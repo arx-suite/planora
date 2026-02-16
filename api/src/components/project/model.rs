@@ -29,6 +29,7 @@ pub struct ProjectRow {
 
 #[derive(sea_query::Iden)]
 pub enum Projects {
+    Table,
     ProjectId,
     OrganizationId,
     ProjectName,
@@ -45,10 +46,11 @@ pub enum Projects {
     UpdatedAt,
 }
 
-#[derive(Debug, Clone, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(Debug, Clone, Default, Serialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "project_status", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum ProjectStatus {
+    #[default]
     Planned,
     Active,
     OnHold,
@@ -68,11 +70,12 @@ impl From<ProjectStatus> for sea_query::Value {
     }
 }
 
-#[derive(Debug, Clone, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(Debug, Clone, Default, Serialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "project_visibility", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum ProjectVisibility {
     Private,
+    #[default]
     Team,
     Public,
 }
@@ -87,10 +90,11 @@ impl From<ProjectVisibility> for sea_query::Value {
     }
 }
 
-#[derive(Debug, Clone, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(Debug, Clone, Default, Serialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "project_priority", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum ProjectPriority {
+    #[default]
     Low,
     Medium,
     High,
