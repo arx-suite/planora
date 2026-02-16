@@ -2,7 +2,7 @@ use chrono::{DateTime, Utc};
 use serde::Serialize;
 
 // organization
-#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, sqlx::FromRow, utoipa::ToSchema)]
 pub struct OrganizationRow {
     pub organization_id: uuid::Uuid,
     pub created_by: uuid::Uuid,
@@ -26,7 +26,7 @@ pub enum Organizations {
 }
 
 // resources, and features
-#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, sqlx::FromRow, utoipa::ToSchema)]
 pub struct OrganizationResourceRow {
     pub resource_key: String,
     pub unit: ResourceUnit,
@@ -35,7 +35,7 @@ pub struct OrganizationResourceRow {
     pub hard_limit: i64,
 }
 
-#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, sqlx::FromRow, utoipa::ToSchema)]
 pub struct OrganizationFeatureRow {
     pub feature_name: String,
     pub description: String,

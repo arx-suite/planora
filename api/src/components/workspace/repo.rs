@@ -10,7 +10,7 @@ use super::model::{
 use crate::services::db::DBResult;
 
 #[async_trait::async_trait]
-pub trait FeaturesRepo {
+pub trait WorkspaceRepo {
     // organizations
     async fn organization_create(
         &self,
@@ -46,7 +46,7 @@ pub trait FeaturesRepo {
 }
 
 #[async_trait::async_trait]
-impl<T> FeaturesRepo for T
+impl<T> WorkspaceRepo for T
 where
     for<'e> &'e T: PgExecutor<'e>,
 {
