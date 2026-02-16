@@ -1,4 +1,29 @@
+use chrono::{DateTime, Utc};
 use serde::Serialize;
+
+// organization
+#[derive(Debug, Clone, Serialize, sqlx::FromRow)]
+pub struct OrganizationRow {
+    pub organization_id: uuid::Uuid,
+    pub created_by: uuid::Uuid,
+    pub name: String,
+    pub subdomain: String,
+    pub plan: String,
+    pub created_at: DateTime<Utc>,
+    pub updated_at: DateTime<Utc>,
+}
+
+#[derive(sea_query::Iden)]
+pub enum Organizations {
+    Table,
+    OrganizationId,
+    CreatedBy,
+    Name,
+    Subdomain,
+    Plan,
+    CreatedAt,
+    UpdatedAt,
+}
 
 // resources, and features
 #[derive(Debug, Clone, Serialize, sqlx::FromRow)]
