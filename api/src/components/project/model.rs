@@ -1,8 +1,8 @@
 use chrono::{DateTime, Utc};
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow, utoipa::ToSchema)]
 pub struct ProjectRow {
     pub project_id: Uuid,
     pub organization_id: Uuid,
@@ -46,7 +46,7 @@ pub enum Projects {
     UpdatedAt,
 }
 
-#[derive(Debug, Clone, Default, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "project_status", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum ProjectStatus {
@@ -70,7 +70,7 @@ impl From<ProjectStatus> for sea_query::Value {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "project_visibility", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum ProjectVisibility {
@@ -90,7 +90,7 @@ impl From<ProjectVisibility> for sea_query::Value {
     }
 }
 
-#[derive(Debug, Clone, Default, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "project_priority", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum ProjectPriority {
