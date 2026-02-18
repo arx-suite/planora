@@ -19,12 +19,17 @@ pub trait WorkspaceRepo {
         name: String,
         subdomain: String,
     ) -> DBResult<OrganizationRow>;
-    async fn organization_delete(&self, org_id: Uuid) -> DBResult<()>;
+    async fn organization_find_by_subdomain(
+        &self,
+        subdomain: String,
+    ) -> DBResult<Option<OrganizationRow>>;
+    async fn organization_find_by_id(&self, org_id: Uuid) -> DBResult<Option<OrganizationRow>>;
     async fn organization_update(
         &self,
         org_id: Uuid,
         plan: Option<String>,
     ) -> DBResult<OrganizationRow>;
+    async fn organization_delete(&self, org_id: Uuid) -> DBResult<()>;
 
     // resources
     async fn resources(&self, org_id: Uuid) -> DBResult<OrganizationResourceRow>;
@@ -73,6 +78,37 @@ where
             .await?;
 
         Ok(user)
+    }
+
+    async fn organization_find_by_subdomain(
+        &self,
+        subdomain: String,
+    ) -> DBResult<Option<OrganizationRow>> {
+        let stmt = Query::select()
+            .column(Asterisk)
+            .from(Organizations::Table)
+            .and_where(Expr::col(Organizations::Subdomain).eq(subdomain))
+            .to_string(PostgresQueryBuilder);
+
+        let org = sqlx::query_as::<_, OrganizationRow>(&stmt)
+            .fetch_optional(self)
+            .await?;
+
+        Ok(org)
+    }
+
+    async fn organization_find_by_id(&self, org_id: Uuid) -> DBResult<Option<OrganizationRow>> {
+        let stmt = Query::select()
+            .column(Asterisk)
+            .from(Organizations::Table)
+            .and_where(Expr::col(Organizations::OrganizationId).eq(org_id))
+            .to_string(PostgresQueryBuilder);
+
+        let org = sqlx::query_as::<_, OrganizationRow>(&stmt)
+            .fetch_optional(self)
+            .await?;
+
+        Ok(org)
     }
 
     async fn organization_delete(&self, org_id: Uuid) -> DBResult<()> {
