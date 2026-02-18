@@ -8,6 +8,7 @@ use std::rc::Rc;
 
 use arx_gatehouse::App;
 use arx_gatehouse::common::ApiError;
+use arx_gatehouse::components::user::model::UserStatus;
 
 use crate::components::user::repo::UserRepo;
 
@@ -89,7 +90,7 @@ where
                 .session_find_by_id(claims.sid)
                 .await
                 .map_err(ApiError::from)?
-                .ok_or_else(|| ApiError::Unauthorized("Unauthorized".into()))?;
+                .ok_or_else(|| ApiError::unauthorized("Unauthorized"))?;
 
             if !session.status.is_active() || chrono::Utc::now() > session.access_expires_at {
                 return Err(ApiError::unauthorized("Unauthorized"))?;
@@ -107,24 +108,25 @@ where
             tracing::trace!(%user.user_id, ?user.status, %user.usertag, ?user.email, "user information");
 
             // user status check
-            if user.status.is_banned() {
-                return Err(ApiError::Forbidden(
-                    "Your account has been permanently banned.".into(),
-                ))?;
-            }
-
-            if user.status.is_deactivated() || user.deactivated_at.is_some() {
-                return Err(ApiError::Forbidden(
-                    "Your account has been deactivated.".into(),
-                ))?;
-            }
-
-            if user.status.is_suspended() {
-                if let Some(locked_until) = user.locked_until {
-                    if locked_until < chrono::Utc::now() {
-                        return Err(ApiError::Forbidden("Account is temporarily locked.".into()))?;
+            match user.status {
+                UserStatus::Banned => {
+                    return Err(ApiError::forbidden(
+                        "Your account has been permanently banned",
+                    ))?;
+                }
+                UserStatus::Deactivated if user.deactivated_at.is_some() => {
+                    Err(ApiError::forbidden("Your account has been deactivated"))?
+                }
+                UserStatus::Suspended => {
+                    if let Some(locked_until) = user.locked_until {
+                        if locked_until < chrono::Utc::now() {
+                            return Err(ApiError::Forbidden(
+                                "Account is temporarily locked.".into(),
+                            ))?;
+                        }
                     }
                 }
+                _ => {}
             }
 
             // adding extension

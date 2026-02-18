@@ -3,7 +3,9 @@ use serde::{Deserialize, Serialize};
 use sqlx::types::Json;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Serialize, sqlx::Type, utoipa::ToSchema)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type, utoipa::ToSchema,
+)]
 #[sqlx(type_name = "user_status", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
 pub enum UserStatus {
@@ -15,28 +17,33 @@ pub enum UserStatus {
 }
 
 impl UserStatus {
-    pub fn is_pending(&self) -> bool {
-        matches!(self, UserStatus::Pending)
+    /// Whether the account can authenticate
+    pub fn can_sign_in(self) -> bool {
+        matches!(self, Self::Active | Self::Pending)
     }
 
-    pub fn is_active(&self) -> bool {
-        matches!(self, UserStatus::Active)
+    /// Whether the account is usable inside the system
+    pub fn is_operational(self) -> bool {
+        matches!(self, Self::Active)
     }
 
-    pub fn is_suspended(&self) -> bool {
-        matches!(self, UserStatus::Suspended)
+    /// Whether the account is blocked for any reason
+    pub fn is_blocked(self) -> bool {
+        matches!(self, Self::Suspended | Self::Deactivated | Self::Banned)
     }
 
-    pub fn is_deactivated(&self) -> bool {
-        matches!(self, UserStatus::Deactivated)
+    /// Whether user still needs verification/activation
+    pub fn requires_action(self) -> bool {
+        matches!(self, Self::Pending)
     }
 
-    pub fn is_banned(&self) -> bool {
-        matches!(self, UserStatus::Banned)
-    }
-
-    pub fn is_signin_allowed(&self) -> bool {
-        matches!(self, UserStatus::Active | UserStatus::Pending)
+    pub fn can_transition_to(self, next: Self) -> bool {
+        match (self, next) {
+            (Self::Pending, Self::Active) => true,
+            (Self::Active, Self::Suspended) => true,
+            (_, Self::Banned) => true,
+            _ => false,
+        }
     }
 }
 

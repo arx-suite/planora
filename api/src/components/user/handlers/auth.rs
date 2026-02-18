@@ -260,7 +260,7 @@ async fn signin(
         _ => return Err(ApiError::Unauthorized("Authentication failed".into())),
     }
 
-    if !user.status.is_signin_allowed() {
+    if !user.status.can_sign_in() {
         return ApiResult::to_forbidden("User cannot login.");
     }
 
