@@ -42,6 +42,15 @@ pub struct OrganizationFeatureRow {
     pub is_enabled: bool,
 }
 
+#[derive(sea_query::Iden)]
+pub enum OrganizationFeatures {
+    Table,
+    OrganizationId,
+    FeatureName,
+    Enabled,
+    UpdatedAt,
+}
+
 #[derive(Debug, Clone, Serialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "resource_unit", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]

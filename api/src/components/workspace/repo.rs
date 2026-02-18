@@ -5,7 +5,8 @@ use sqlx::PgExecutor;
 use uuid::Uuid;
 
 use super::model::{
-    OrganizationFeatureRow, OrganizationResourceRow, OrganizationRow, Organizations,
+    Features, OrganizationFeatureRow, OrganizationFeatures, OrganizationResourceRow,
+    OrganizationRow, Organizations, Plans,
 };
 use crate::services::db::DBResult;
 
@@ -126,7 +127,59 @@ where
     }
 
     async fn features(&self, org_id: Uuid) -> DBResult<Vec<OrganizationFeatureRow>> {
-        todo!()
+        let enabled_alias = Alias::new("enabled");
+
+        let query = Query::select()
+            .column((Features::Table, Features::FeatureName))
+            .column((Features::Table, Features::Description))
+            .expr_as(
+                Func::coalesce([
+                    Expr::col((OrganizationFeatures::Table, OrganizationFeatures::Enabled)).into(),
+                    Expr::col((Features::Table, Features::DefaultEnabled)).into(),
+                ]),
+                enabled_alias,
+            )
+            .from(Organizations::Table)
+            .join(
+                sea_query::JoinType::Join,
+                Plans::Table,
+                Expr::col((Plans::Table, Plans::PlanName))
+                    .equals((Organizations::Table, Organizations::Plan)),
+            )
+            .join(
+                sea_query::JoinType::Join,
+                Features::Table,
+                Expr::col((Features::Table, Features::MinPlanLevel))
+                    .lte(Expr::col((Plans::Table, Plans::PlanLevel))),
+            )
+            .join(
+                sea_query::JoinType::LeftJoin,
+                OrganizationFeatures::Table,
+                Expr::col((
+                    OrganizationFeatures::Table,
+                    OrganizationFeatures::OrganizationId,
+                ))
+                .equals((Organizations::Table, Organizations::OrganizationId))
+                .and(
+                    Expr::col((
+                        OrganizationFeatures::Table,
+                        OrganizationFeatures::FeatureName,
+                    ))
+                    .equals((Features::Table, Features::FeatureName)),
+                ),
+            )
+            .and_where(Expr::col((Organizations::Table, Organizations::OrganizationId)).eq(org_id))
+            .order_by(
+                (Features::Table, Features::FeatureName),
+                sea_query::Order::Asc,
+            )
+            .to_string(PostgresQueryBuilder);
+
+        let features = sqlx::query_as::<_, OrganizationFeatureRow>(&query)
+            .fetch_all(self)
+            .await?;
+
+        Ok(features)
     }
 
     async fn feature_enable(
