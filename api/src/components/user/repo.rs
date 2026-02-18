@@ -194,8 +194,8 @@ where
                 UserSessions::DeviceName,
                 UserSessions::OsName,
                 UserSessions::Status,
-                UserSessions::AccessExpiredAt,
-                UserSessions::RefreshExpiredAt,
+                UserSessions::AccessExpiresAt,
+                UserSessions::RefreshExpiresAt,
             ])
             .values([
                 userid.into(),
