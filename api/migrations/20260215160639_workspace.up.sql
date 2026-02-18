@@ -5,7 +5,7 @@ create table organizations (
     organization_id uuid primary key default gen_random_uuid(),
 
     -- move this field to organization_members schema
-    created_by uuid not null references users (user_id) on delete cascade;
+    created_by uuid not null references users (user_id) on delete cascade,
 
     name varchar(255) not null,
     subdomain varchar(255) not null unique,
@@ -27,6 +27,6 @@ create table organization_features (
 
 
 /* === indexes === */
-create index if idx_organizations_name on organizations (name);
-create index if idx_organizations_subdomain on organizations (subdomain);
-create index if idx_organizations_plan on organizations (plan);
+create index idx_organizations_name on organizations (name);
+create index idx_organizations_subdomain on organizations (subdomain);
+create index idx_organizations_plan on organizations (plan);

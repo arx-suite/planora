@@ -1,7 +1,7 @@
 -- Add up migration script here
 
 /* === tables === */
-create table if not exists deleted_record (
+create table deleted_record (
     id uuid primary key default gen_random_uuid(),
     original_table text not null,
     original_id uuid not null,

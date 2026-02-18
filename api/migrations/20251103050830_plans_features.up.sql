@@ -71,16 +71,16 @@ values
     ('enterprise', 'max_projects', 25, 'Maximum number of projects allowed per space'),
     ('enterprise', 'max_members', 100, 'Maximum number of members allowed in the organization');
 
-insert into plan_resources (plan_id, resource_key, soft_limit, hard_limit, unit)
-select plan_id, 'db_storage', 0.1*1024, 0.2*1024, 'mb'
+insert into plan_resources (plan_name, resource_key, soft_limit, hard_limit, unit)
+select plan_name, 'db_storage', 0.1*1024, 0.2*1024, 'mb'
 from plans where plan_name = 'free';
 
-insert into plan_resources (plan_id, resource_key, soft_limit, hard_limit, unit)
-select plan_id, 'db_storage', 0.8*1024, 1*1024, 'mb'
+insert into plan_resources (plan_name, resource_key, soft_limit, hard_limit, unit)
+select plan_name, 'db_storage', 0.8*1024, 1*1024, 'mb'
 from plans where plan_name = 'pro';
 
-insert into plan_resources (plan_id, resource_key, soft_limit, hard_limit, unit)
-select plan_id, 'db_storage', 2.5*1024, 3*1024, 'mb'
+insert into plan_resources (plan_name, resource_key, soft_limit, hard_limit, unit)
+select plan_name, 'db_storage', 2.5*1024, 3*1024, 'mb'
 from plans where plan_name = 'enterprise';
 
 -- features
@@ -98,3 +98,40 @@ values
     ('sso', 'SSO login', (
         select plan_level from plans where plan_name = 'enterprise'
     ));
+
+-- TODO: check these
+/*
+create table resource_usage (
+    org_id uuid not null,
+    resource_key text not null references resources(resource_key),
+    used_amount bigint not null default 0,
+    period_start timestamptz not null,
+    period_end timestamptz not null,
+    updated_at timestamptz default now(),
+    primary key (org_id, resource_key, period_start)
+);
+
+create table if not exists resource_pricing (
+    resource_key text primary key references resources(resource_key),
+    price_per_unit numeric(12,4) not null,
+    billing_unit bigint not null default 1
+);
+
+insert into resource_pricing values
+    ('api_requests', 0.002, 1000),
+    ('file_storage_mb', 0.10, 1024);
+
+create table if not exists usage_overages (
+    id uuid primary key default gen_random_uuid(),
+    org_id uuid not null,
+    resource_key text not null,
+
+    exceeded_amount bigint not null,
+    cost numeric(12,4) not null,
+
+    period_start timestamptz not null,
+    period_end timestamptz not null,
+
+    created_at timestamptz default now()
+);
+*/

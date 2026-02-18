@@ -8,7 +8,7 @@ create type project_priority as enum ('low', 'medium', 'high', 'critical');
 
 /* === tables === */
 create table projects (
-    project_id uuid primary key default gen_random_id(),
+    project_id uuid primary key default gen_random_uuid(),
     organization_id uuid not null references organizations (organization_id) on delete cascade,
 
     -- metadata
@@ -26,7 +26,8 @@ create table projects (
     target_date timestamptz,
     actual_end_date timestamptz,
 
-    created_by uuid not null references organization_members (member_id),
+    -- TODO: uncomment after the `organization_members` was created
+    -- created_by uuid not null references organization_members (member_id),
     created_at timestamptz default now(),
     updated_at timestamptz default now(),
 
