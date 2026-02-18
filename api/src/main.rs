@@ -15,8 +15,16 @@ mod ws;
 
 pub fn v1_scope() -> actix_web::Scope {
     web::scope("/v1")
+        // profile, auth routes
         .service(components::user::handlers::auth_scope())
         .service(components::user::handlers::profile_scope())
+        // workspace routes
+        .service(components::workspace::handlers::organization_public_scope())
+        .service(
+            web::scope("")
+                .wrap(middlewares::TenantMiddleware)
+                .service(components::workspace::handlers::organization_tenant_scope()),
+        )
 }
 
 pub const fn public_paths() -> [&'static str; 3] {
