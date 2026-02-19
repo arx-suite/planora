@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use super::UserRepo;
 use crate::App;
 use crate::common::{ApiError, ApiResult};
+use crate::doc::ApiResultEmpty;
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct CreateUser {
@@ -29,11 +30,11 @@ fn email_verification_cache_key(email: &str) -> String {
     tag = "Auth",
     request_body = CreateUser,
     responses(
-        (status = 200, description = "Verification email sent"),
+        (status = 200, description = "Verification email sent", body = ApiResultEmpty),
         // TODO: common response
         // (status = 400, description = "Invalid signup data"),
-        (status = 409, description = "User already exists"),
-        (status = 500, description = "Internal server error")
+        (status = 409, description = "User already exists", body = ApiResultEmpty),
+        (status = 500, description = "Internal server error", body = ApiResultEmpty)
     )
 )]
 #[tracing::instrument(
@@ -226,8 +227,9 @@ pub struct SigninPayload {
     tag = "Auth",
     request_body = SigninPayload,
     responses(
-        (status = 401, description = "Authentication failed"),
-        (status = 500, description = "Internal server error")
+        (status = 200, description = "Signed in successfully", body = ApiResultEmpty),
+        (status = 401, description = "Authentication failed", body = ApiResultEmpty),
+        (status = 500, description = "Internal server error", body = ApiResultEmpty)
     )
 )]
 #[tracing::instrument(
@@ -297,9 +299,9 @@ async fn signin(
     path = "/auth/signout",
     tag = "Auth",
     responses(
-        (status = 200, description = "Signed out successfully"),
-        (status = 401, description = "Unauthorized"),
-        (status = 500, description = "Internal server error")
+        (status = 200, description = "Signed out successfully", body = ApiResultEmpty),
+        (status = 401, description = "Unauthorized", body = ApiResultEmpty),
+        (status = 500, description = "Internal server error", body = ApiResultEmpty)
     )
 )]
 #[tracing::instrument(

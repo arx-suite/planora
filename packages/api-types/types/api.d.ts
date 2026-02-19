@@ -4,6 +4,38 @@
  */
 
 export interface paths {
+    "/auth/signin": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["signin"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/signout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["signout"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/signup": {
         parameters: {
             query?: never;
@@ -30,22 +62,6 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["verify_email"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/oauth/{provider}/callback": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get: operations["oauth_callback"];
-        put?: never;
-        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -92,32 +108,6 @@ export interface components {
             message: string;
             success: boolean;
         };
-        ApiResult_UserProfile: {
-            message: string;
-            payload?: {
-                avatarUrl?: string | null;
-                /** Format: date-time */
-                createdAt: string;
-                email?: string | null;
-                /** Format: date-time */
-                emailVerifiedAt?: string | null;
-                preferences: components["schemas"]["UserPreferences"];
-                status: components["schemas"]["UserStatus"];
-                /** Format: date-time */
-                updatedAt: string;
-                /** Format: uuid */
-                userId: string;
-                userTag: string;
-                username: string;
-            };
-            success: boolean;
-        };
-        AuthCallbackQuery: {
-            code: string;
-            error?: string | null;
-            error_description?: string | null;
-            state?: string | null;
-        };
         CreateUser: {
             email: string;
             password: string;
@@ -129,6 +119,10 @@ export interface components {
             | {
                   Unknown: string;
               };
+        SigninPayload: {
+            email: string;
+            password: string;
+        };
         UserPreferences: {
             locale?: string | null;
             theme?: string | null;
@@ -165,6 +159,86 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    signin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SigninPayload"];
+            };
+        };
+        responses: {
+            /** @description Signed in successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
+            };
+            /** @description Authentication failed */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
+            };
+        };
+    };
+    signout: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Signed out successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
+            };
+            /** @description Unauthorized */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
+            };
+            /** @description Internal server error */
+            500: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
+            };
+        };
+    };
     signup: {
         parameters: {
             query?: never;
@@ -183,21 +257,27 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
             };
             /** @description User already exists */
             409: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
             };
             /** @description Internal server error */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
             };
         };
     };
@@ -234,50 +314,6 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
-            };
-        };
-    };
-    oauth_callback: {
-        parameters: {
-            query: {
-                /** @description OAuth provider callback */
-                callback: components["schemas"]["AuthCallbackQuery"];
-            };
-            header?: never;
-            path: {
-                /** @description OAuth provider */
-                provider: components["schemas"]["OAuthProvider"];
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Authentication successful */
-            302: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResultEmpty"];
-                };
-            };
-            /** @description Invalid provider */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResultEmpty"];
-                };
-            };
-            /** @description Internal server error */
-            500: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ApiResultEmpty"];
-                };
             };
         };
     };
@@ -337,7 +373,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["ApiResult_UserProfile"];
+                    "application/json": components["schemas"]["UserProfile"];
                 };
             };
             /** @description Internal server error */
@@ -345,9 +381,7 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content: {
-                    "application/json": components["schemas"]["ApiResultEmpty"];
-                };
+                content?: never;
             };
         };
     };

@@ -13,6 +13,8 @@ pub struct ApiResultEmpty {
 #[derive(OpenApi)]
 #[openapi(
     paths(
+        auth::signin,
+        auth::signout,
         auth::signup,
         auth::verify_email,
         oauth::oauth_start,
@@ -22,6 +24,7 @@ pub struct ApiResultEmpty {
         schemas(
             auth::CreateUser,
             auth::VerifyEmail,
+            auth::SigninPayload,
             oauth::OAuthProvider,
             profile::UserProfile
         )
