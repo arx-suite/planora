@@ -1,6 +1,8 @@
 "use client";
 
 export { Slot } from "@radix-ui/react-slot";
+export { toast } from "sonner";
+
 export * from "./components/accordian";
 export * from "./components/alert";
 export * from "./components/alert-dialog";
