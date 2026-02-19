@@ -1,145 +1,137 @@
 "use client";
 
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
     Button,
     Card,
     CardContent,
     CardFooter,
     CardHeader,
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
     Input,
-    Label,
-    Spinner,
 } from "@planora/ui";
-import { Github, Mail } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, slide } from "@planora/ui/animation";
+import { Github, Mail } from "@planora/ui/icons";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useActionState, useEffect } from "react";
-import { toast } from "sonner";
-import { signinAction } from "@/actions/signin";
-import { slideLeft } from "@/components/core/motions";
-import type { SignInFormActionResponse } from "@/types/auth";
+import type * as React from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as z from "zod";
 
-const initialState: SignInFormActionResponse = {
-    success: false,
-    message: "",
-};
+const signinSchema = z.object({
+    email: z.email("Please enter a valid email address"),
+    password: z
+        .string("Please enter a valid password")
+        .min(6, "Password must be at least 6 characters"),
+});
 
 export default function SigninPage() {
-    const [state, action, isPending] = useActionState(signinAction, initialState);
-    const router = useRouter();
+    const form = useForm<z.infer<typeof signinSchema>>({
+        resolver: zodResolver(signinSchema),
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
 
-    useEffect(() => {
-        if (!state) return;
-
-        if (!state?.success) {
-            if (state?.message.trim().length !== 0) {
-                toast.error(`Error: ${state.message}`);
-            }
-            return;
-        }
-        setTimeout(() => {
-            if (state?.message.trim().length !== 0) {
-                toast.success(`Success: ${state.message}`);
-            }
-            router.push(state.redirectTo || "/");
-            router.refresh();
-        }, 200);
-    }, [state, router]);
+    function onSubmit(data: z.infer<typeof signinSchema>) {
+        form.reset();
+    }
 
     return (
         <motion.div
-            variants={slideLeft}
+            variants={slide("left")}
             initial="hidden"
             animate="show"
             className="w-full max-w-lg"
         >
-            <Card className="shadow-xl">
+            <Card className="w-full sm:max-w-md">
                 <CardHeader>
                     <h2 className="text-2xl font-bold text-center">Welcome back</h2>
                     <p className="text-sm text-center text-muted-foreground mt-1">
                         Sign in to continue your collaboration
                     </p>
                 </CardHeader>
-
-                <CardContent className="space-y-4">
-                    <form action={action} className="flex flex-col gap-5">
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor="email" className="text-sm font-medium">
-                                Email
-                            </Label>
-                            <Input
+                <CardContent>
+                    <form id="form-signin" onSubmit={form.handleSubmit(onSubmit)}>
+                        <FieldGroup>
+                            <Controller
                                 name="email"
-                                id="email"
-                                type="text"
-                                defaultValue={state?.values?.email}
-                                placeholder="your@email.com"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="form-signin-email">Email</FieldLabel>
+                                        <Input
+                                            {...field}
+                                            id="form-signin-email"
+                                            type="email"
+                                            aria-invalid={fieldState.invalid}
+                                            placeholder="your@email.com"
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
                             />
-                            {state.errors?.email ? (
-                                <p className="text-red-400 font-semibold text-sm">
-                                    {state.errors.email}
-                                </p>
-                            ) : (
-                                ""
-                            )}
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <Label htmlFor="password" className="text-sm font-medium">
-                                Password
-                            </Label>
-                            <Input
+                            <Controller
                                 name="password"
-                                id="password"
-                                type="password"
-                                placeholder="••••••••"
-                                required
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <Field data-invalid={fieldState.invalid}>
+                                        <FieldLabel htmlFor="form-signin-password">
+                                            Password
+                                        </FieldLabel>
+                                        <Input
+                                            {...field}
+                                            id="form-signin-password"
+                                            type="password"
+                                            aria-invalid={fieldState.invalid}
+                                            autoComplete="off"
+                                            placeholder="••••••••"
+                                            required
+                                        />
+                                        {fieldState.invalid && (
+                                            <FieldError errors={[fieldState.error]} />
+                                        )}
+                                    </Field>
+                                )}
                             />
-                            {state.errors?.password ? (
-                                <p className="text-red-400 font-semibold text-sm">
-                                    {state.errors.password}
-                                </p>
-                            ) : (
-                                ""
-                            )}
-                        </div>
-                        <Button className="w-full bg-linear-to-r from-indigo-500 to-violet-500 text-white font-semibold">
-                            Sign In{" "}
-                            {isPending ? (
-                                <span className="ml-2">
-                                    <Spinner />
-                                </span>
-                            ) : (
-                                ""
-                            )}
-                        </Button>
+                        </FieldGroup>
                     </form>
-
-                    <div className="relative py-2">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-background px-2 text-muted-foreground">
-                                or continue with
-                            </span>
-                        </div>
-                    </div>
-
-                    <div className="flex justify-center gap-4">
-                        <Button variant="outline" className="flex items-center gap-2">
-                            <Github className="w-4 h-4" /> GitHub
-                        </Button>
-                        <Button variant="outline" className="flex items-center gap-2">
-                            <Mail className="w-4 h-4" /> Google
-                        </Button>
-                    </div>
                 </CardContent>
-
-                <CardFooter className="flex gap-2 text-center text-sm text-muted-foreground">
+                <CardFooter>
+                    <Field orientation="horizontal">
+                        <Button type="submit" form="form-signin" className="w-full">
+                            Sign In
+                        </Button>
+                    </Field>
+                </CardFooter>
+                <div className="relative py-2">
+                    <div className="absolute inset-0 flex items-center">
+                        <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                        <span className="bg-background px-2 text-muted-foreground">
+                            or continue with
+                        </span>
+                    </div>
+                </div>
+                <div className="flex justify-center gap-4">
+                    <Button variant="outline" className="flex items-center gap-2">
+                        <Github className="w-4 h-4" /> GitHub
+                    </Button>
+                    <Button variant="outline" className="flex items-center gap-2">
+                        <Mail className="w-4 h-4" /> Google
+                    </Button>
+                </div>
+                <CardFooter className="text-center text-sm text-muted-foreground">
                     <p>Don't have an account? </p>
-                    <Link href="/signup" className="text-indigo-500 hover:underline">
-                        Create one
-                    </Link>
+                    <Button type="button" variant="link" className="ml-2">
+                        <Link href="/signup">Create one</Link>
+                    </Button>
                 </CardFooter>
             </Card>
         </motion.div>
