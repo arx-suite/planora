@@ -10,7 +10,7 @@ use crate::doc::ApiResultEmpty;
 
 #[utoipa::path(
     get,
-    path = "/features",
+    path = "/organization/features",
     tag = "Workspace",
     responses(
         (status = 200, description = "Features List", body = ApiResult<OrganizationFeatureRow>),
