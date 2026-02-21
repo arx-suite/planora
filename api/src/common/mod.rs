@@ -5,4 +5,4 @@ mod response;
 pub mod utils;
 
 pub use error::ApiError;
-pub use response::{ApiResult, PaginatedResult, PaginationQuery};
+pub use response::{ApiResult, PaginatedResult};

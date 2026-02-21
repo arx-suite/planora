@@ -85,44 +85,29 @@ impl ApiResult<()> {
     }
 }
 
-#[cfg_attr(test, derive(serde::Deserialize))]
 #[derive(serde::Serialize)]
-pub struct PaginatedResult<T> {
+pub struct PaginatedResult<T>
+where
+    T: utoipa::ToSchema,
+{
     pub items: Vec<T>,
-    pub total: Option<u64>,
-    pub next_page: Option<String>,
-    pub prev_page: Option<String>,
-    pub page: Option<u64>,
-    pub per_page: Option<u64>,
-    pub total_pages: Option<u64>,
+    pub count: u64,
+    pub total: u64,
+    pub page: u64,
+    pub page_count: u64,
 }
 
-impl<T> PaginatedResult<T> {
-    pub fn new(
-        items: Vec<T>,
-        total: Option<u64>,
-        page: Option<u64>,
-        per_page: Option<u64>,
-        total_pages: Option<u64>,
-        next_page: Option<String>,
-        prev_page: Option<String>,
-    ) -> Self {
+impl<T> PaginatedResult<T>
+where
+    T: utoipa::ToSchema,
+{
+    pub fn new(items: Vec<T>, count: u64, total: u64, page: u64, page_count: u64) -> Self {
         Self {
             items,
+            count,
             total,
             page,
-            per_page,
-            total_pages,
-            next_page,
-            prev_page,
+            page_count,
         }
     }
-}
-
-#[cfg_attr(test, derive(serde::Serialize))]
-#[derive(serde::Deserialize)]
-pub struct PaginationQuery {
-    pub page: Option<u64>,
-    pub per_page: Option<u64>,
-    pub after: Option<String>,
 }
