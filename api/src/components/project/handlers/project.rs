@@ -7,6 +7,7 @@ use super::ProjectRepo;
 use super::model::{ProjectPriority, ProjectStatus, ProjectVisibility};
 use crate::App;
 use crate::common::{ApiError, ApiResult};
+use crate::context::tenant::TenantContext;
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct CreateProject {
@@ -48,13 +49,14 @@ async fn project_create(
     payload: web::Json<CreateProject>,
 ) -> Result<impl Responder, ApiError> {
     let user = app.auth().extract_user_extension(&req)?;
+    let organization = TenantContext::extract(&req)?;
 
     let pool = app.db().primary().await?;
 
     // TODO: user must have `project_create` permission
     let project = pool
         .project_create(
-            /* TODO: replace this */ Uuid::new_v4(),
+            organization.organization_id,
             payload.name.clone(),
             payload.description.clone(),
             payload.tags.clone(),
@@ -71,7 +73,6 @@ async fn project_create(
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
 pub struct GetProject {
-    organization_id: Uuid,
     project_id: Option<Uuid>,
     project_name: Option<String>,
 }
@@ -92,16 +93,20 @@ pub struct GetProject {
     skip_all,
     level = tracing::Level::INFO,
     fields(
-        organization_id = payload.organization_id.to_string(),
+        organization_id = tracing::field::Empty,
         project_name = tracing::field::Empty,
         project_id = tracing::field::Empty
     )
 )]
 #[get("")]
 async fn project_get(
+    req: HttpRequest,
     app: web::Data<App>,
     payload: web::Json<GetProject>,
 ) -> Result<impl Responder, ApiError> {
+    let organization = TenantContext::extract(&req)?;
+    tracing::Span::current().record("organization_id", &organization.organization_id.to_string());
+
     // TODO: permission check via middleware / RBAC
 
     let pool = app.db().read().await?;
@@ -113,7 +118,7 @@ async fn project_get(
     } else if let Some(ref name) = payload.project_name {
         tracing::Span::current().record("project_name", name);
 
-        pool.project_find_by_name(name.clone(), payload.organization_id)
+        pool.project_find_by_name(name.clone(), organization.organization_id)
             .await?
     } else {
         return Err(ApiError::bad_request(
