@@ -96,7 +96,7 @@ where
                 return Err(ApiError::unauthorized("Unauthorized"))?;
             }
 
-            app.auth().add_session_extension(&req, session);    
+            app.auth().add_session_extension(&req, session);
 
             // TODO: last_ip and current_ip check
             // TODO: last_activity checks

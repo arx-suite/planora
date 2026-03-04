@@ -31,8 +31,6 @@ fn email_verification_cache_key(email: &str) -> String {
     request_body = CreateUser,
     responses(
         (status = 200, description = "Verification email sent", body = ApiResultEmpty),
-        // TODO: common response
-        // (status = 400, description = "Invalid signup data"),
         (status = 409, description = "User already exists", body = ApiResultEmpty),
         (status = 500, description = "Internal server error", body = ApiResultEmpty)
     )
@@ -118,9 +116,9 @@ pub struct VerifyEmail {
     tag = "Auth",
     request_body = VerifyEmail,
     responses(
-        (status = 201, description = "Email verified successfully"),
-        (status = 401, description = "Invalid or expired verification code"),
-        (status = 500, description = "Internal server error")
+        (status = 201, description = "Email verified successfully", body = ApiResultEmpty),
+        (status = 401, description = "Invalid or expired verification code", body = ApiResultEmpty),
+        (status = 500, description = "Internal server error", body = ApiResultEmpty)
     )
 )]
 #[tracing::instrument(
