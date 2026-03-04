@@ -3,6 +3,7 @@ use serde::Serialize;
 
 // organization
 #[derive(Debug, Clone, Serialize, sqlx::FromRow, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct OrganizationRow {
     pub organization_id: uuid::Uuid,
     pub created_by: uuid::Uuid,
@@ -27,6 +28,7 @@ pub enum Organizations {
 
 // resources, and features
 #[derive(Debug, Clone, Serialize, sqlx::FromRow, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct OrganizationResourceRow {
     pub resource_key: String,
     pub unit: ResourceUnit,
@@ -36,6 +38,7 @@ pub struct OrganizationResourceRow {
 }
 
 #[derive(Debug, Clone, Serialize, sqlx::FromRow, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct OrganizationFeatureRow {
     pub feature_name: String,
     pub description: String,

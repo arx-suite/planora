@@ -7,6 +7,7 @@ use crate::common::{ApiError, ApiResult};
 use crate::doc::ApiResultEmpty;
 
 #[derive(Debug, Clone, Serialize, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateUser {
     pub username: String,
     pub email: String,
@@ -105,6 +106,7 @@ async fn signup(
 }
 
 #[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct VerifyEmail {
     pub email: String,
     pub verification_code: String,
@@ -214,6 +216,7 @@ async fn verify_email(
 }
 
 #[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct SigninPayload {
     pub email: String,
     pub password: String,

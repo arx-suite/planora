@@ -6,6 +6,7 @@ use crate::App;
 use crate::common::{ApiError, ApiResult};
 
 #[derive(Debug, Clone, Deserialize, utoipa::ToSchema)]
+#[serde(rename_all = "camelCase")]
 pub struct CreateOrganization {
     pub name: String,
     pub subdomain: String,

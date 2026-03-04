@@ -145,30 +145,30 @@ export interface components {
               };
         OrganizationFeatureRow: {
             description: string;
-            feature_name: string;
-            is_enabled: boolean;
+            featureName: string;
+            isEnabled: boolean;
         };
         OrganizationResourceRow: {
             description?: string | null;
             /** Format: int64 */
-            hard_limit: number;
-            resource_key: string;
+            hardLimit: number;
+            resourceKey: string;
             /** Format: int64 */
-            soft_limit: number;
+            softLimit: number;
             unit: components["schemas"]["ResourceUnit"];
         };
         OrganizationRow: {
             /** Format: date-time */
-            created_at: string;
+            createdAt: string;
             /** Format: uuid */
-            created_by: string;
+            createdBy: string;
             name: string;
             /** Format: uuid */
-            organization_id: string;
+            organizationId: string;
             plan: string;
             subdomain: string;
             /** Format: date-time */
-            updated_at: string;
+            updatedAt: string;
         };
         /** @enum {string} */
         ResourceUnit: "bytes" | "mb" | "gb" | "requests" | "minutes";
@@ -201,7 +201,7 @@ export interface components {
         UserStatus: "pending" | "active" | "suspended" | "deactivated" | "banned";
         VerifyEmail: {
             email: string;
-            verification_code: string;
+            verificationCode: string;
         };
     };
     responses: never;
