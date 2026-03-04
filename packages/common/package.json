@@ -5,10 +5,6 @@
     "type": "module",
     "exports": {
         "./types": "./src/types/index.ts",
-        "./api": {
-            "default": "./src/api/index.ts",
-            "types": "./src/api/types.ts"
-        },
         "./data": "./src/data/index.ts",
         "./utils": "./src/utils/index.ts"
     },
