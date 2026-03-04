@@ -18,11 +18,9 @@ import { CreditCard, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
 import { toast } from "sonner";
-import { useAuthenticatedProfile } from "@/context/profile-context";
-import { config } from "@/lib/config";
+import { useAuthenticatedProfile, useProfile } from "@/context/profile-context";
+import { api } from "@/lib/api";
 import type { ProfileSidebarTabProps } from ".";
-
-const API_SIGNOUT = `${config.api}/v1/auth/signout`;
 
 export function AlertDialogDemo() {
     return (
@@ -49,6 +47,7 @@ export function AlertDialogDemo() {
 
 export function ProfileSidebar({ activeTab, setActiveTab }: ProfileSidebarTabProps) {
     const { user } = useAuthenticatedProfile();
+    const { clearProfile } = useProfile();
 
     const router = useRouter();
     const [loading, setLoading] = useState(false);
@@ -58,19 +57,27 @@ export function ProfileSidebar({ activeTab, setActiveTab }: ProfileSidebarTabPro
         setLoading(true);
 
         try {
-            const res = await fetch(API_SIGNOUT, {
-                method: "POST",
-                credentials: "include",
-            });
+            const result = await api.POST("/auth/signout");
+            console.log(result);
 
-            const data: ApiResult<User> = await res.json();
-            if (!data.success) throw new Error(data.message);
+            const message = result.data?.message;
 
-            toast.info(data.message);
+            if (!result.data?.success) {
+                throw message;
+            }
 
-            router.replace("/");
-        } catch (_) {
-            toast.error("Failed to signout");
+            toast.info(message || "Signed Out Successfully");
+            clearProfile();
+            setTimeout(() => {
+                router.push("/");
+                router.refresh();
+            }, 200);
+        } catch (error: unknown) {
+            let message: string | null = null;
+
+            if (error instanceof Error) message = error.message;
+
+            toast.error(message || "Failed to signout");
         } finally {
             setLoading(false);
         }
