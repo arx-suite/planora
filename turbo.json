@@ -5,6 +5,8 @@
             "cache": false,
             "persistent": true
         },
+        "generate:file": {},
+        "generate:url": {},
         "build": {
             "dependsOn": [
                 "^build"
