@@ -20,7 +20,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
-import { api } from "@/lib/api/client";
+import { api } from "@/lib/api";
 
 const signinSchema = z.object({
     email: z.email("Please enter a valid email address"),
