@@ -13,7 +13,7 @@ export default function HomePage() {
 
         let profile: UserProfile | null;
 
-        const fetchData = async () => {
+        const fetchProfile = async () => {
             try {
                 const result = await api.GET("/profile");
                 profile = result.data?.payload ?? null;
@@ -24,8 +24,8 @@ export default function HomePage() {
             setProfile(profile);
         };
 
-        fetchData();
-    });
+        fetchProfile();
+    }, [user]);
 
     return <Home />;
 }
