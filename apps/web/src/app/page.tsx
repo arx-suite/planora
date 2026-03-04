@@ -1,20 +1,31 @@
+"use client";
+
+import { useEffect } from "react";
 import Home from "@/components/features/home/homepage";
-import { fetchUser } from "@/lib/api/auth";
+import { useProfile } from "@/context/profile-context";
+import { api } from "@/lib/api/client";
 
-export default async function HomePage() {
-    const user = await fetchUser();
+export default function HomePage() {
+    const { user, setProfile } = useProfile();
 
-    let profile: Profile | null;
+    useEffect(() => {
+        if (user !== null) return;
 
-    if (user === null) {
-        profile = null;
-    } else {
-        profile = {
-            user,
-            ownedOrgs: [],
-            joinedOrgs: [],
+        let profile: UserProfile | null;
+
+        const fetchData = async () => {
+            try {
+                const result = await api.GET("/profile");
+                profile = result.data?.payload ?? null;
+            } catch (error: any) {
+                profile = null;
+            }
+
+            setProfile(profile);
         };
-    }
 
-    return <Home profile={profile} />;
+        fetchData();
+    }, []);
+
+    return <Home />;
 }

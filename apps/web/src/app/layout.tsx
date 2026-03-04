@@ -3,7 +3,6 @@ import "./globals.css";
 import { AppProvider } from "@/context/app-provider";
 import { ThemeProvider } from "@/context/theme-provider";
 import { ToastProvider } from "@/context/toast-provider";
-import { fetchUser } from "@/lib/api/auth";
 import { inter, mono, montserrat } from "./fonts";
 
 export const metadata: Metadata = {
@@ -16,20 +15,6 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const user = await fetchUser();
-
-    let profile: Profile | null;
-
-    if (user === null) {
-        profile = null;
-    } else {
-        profile = {
-            user,
-            ownedOrgs: [],
-            joinedOrgs: [],
-        };
-    }
-
     return (
         <html
             lang="en"
@@ -38,7 +23,7 @@ export default async function RootLayout({
         >
             <body>
                 <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
-                    <AppProvider profile={profile}>{children}</AppProvider>
+                    <AppProvider profile={null}>{children}</AppProvider>
                     <ToastProvider />
                 </ThemeProvider>
             </body>
