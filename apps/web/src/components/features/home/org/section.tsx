@@ -34,27 +34,36 @@ import { useMemo, useState } from "react";
 import { useAuthenticatedProfile } from "@/context/profile-context";
 import { config } from "@/lib/config";
 
-const orgsData: Org[] = [
+const orgsData: Organization[] = [
     {
         name: "acme",
         subdomain: "acme",
         organizationId: "232-34-3131",
-        ownerId: "321411312",
+        spaceEnabled: true,
         plan: "Free",
+        createdBy: "321411312",
+        createdAt: Date.now().toString(),
+        updatedAt: Date.now().toString(),
     },
     {
         name: "organization-2",
         subdomain: "organization_2",
         organizationId: "232-34-3131d",
-        ownerId: "321411312",
         plan: "Free",
+        spaceEnabled: true,
+        createdBy: "321411312",
+        createdAt: Date.now().toString(),
+        updatedAt: Date.now().toString(),
     },
     {
         name: "organization-3",
         subdomain: "organization_3",
         organizationId: "232-34-313143",
-        ownerId: "321411312",
         plan: "Free",
+        spaceEnabled: true,
+        createdBy: "321411312",
+        createdAt: Date.now().toString(),
+        updatedAt: Date.now().toString(),
     },
 ];
 
@@ -65,7 +74,7 @@ function getSubdomain(subdomain: string) {
 
 export function OrgSection() {
     const { user } = useAuthenticatedProfile();
-    const [planFilter, setPlanFilter] = useState<"All" | Org["plan"]>("All");
+    const [planFilter, setPlanFilter] = useState<"All" | "Free" | "Pro" | "Enterprise">("All");
 
     const [query, setQuery] = useState("");
 
@@ -162,11 +171,11 @@ export function OrgSection() {
     );
 }
 
-function PlanBadge({ plan }: { plan: Org["plan"] }) {
+function PlanBadge({ plan }: { plan: Organization["plan"] }) {
     return <Badge className="capitalize text-xs px-2 py-0.5">{plan}</Badge>;
 }
 
-function OrgRow({ org, isOwned }: { org: Org; isOwned: boolean }) {
+function OrgRow({ org, isOwned }: { org: Organization; isOwned: boolean }) {
     return (
         <motion.div
             layout

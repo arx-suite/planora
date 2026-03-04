@@ -1,30 +1,20 @@
 import { components } from "@planora/api-types";
 
 declare global {
+    // user profile
     export type UserProfile = components["schemas"]["UserProfile"];
 
-    // TODO: replace these types
-    export interface Org {
-        organizationId: string;
-        ownerId: string;
-        name: string;
-        subdomain: string;
-        plan: string;
-    }
+    // workspace
+    export type Organization = components["schemas"]["OrganizationRow"];
+    export type OrganizationResource = components["schemas"]["OrganizationResourceRow"];
+    export type OrganizationFeature = components["schemas"]["OrganizationFeatureRow"];
 
+    // TODO: replace these types
     export interface Workspace {
         info: Organization;
         features: string[];
         projects?: Project[];
         spaces?: Space[];
-    }
-
-    export interface Organization {
-        orgId: string;
-        name: string;
-        subdomain: string;
-        spaceEnabled: boolean;
-        plan: string;
     }
 
     export interface Space {
@@ -41,12 +31,6 @@ declare global {
         role: string;
         labels: string[];
     }
-
-    export type ApiResult<T> = {
-        success: boolean;
-        message: string;
-        payload?: T;
-    };
 
     export type Task = {
         projectId: string;

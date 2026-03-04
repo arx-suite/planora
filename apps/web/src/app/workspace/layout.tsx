@@ -46,11 +46,14 @@ const operationGrowthProjects: Project[] = [
 // biome-ignore lint: lint/correctness/noUnusedVariables
 const projectWorkspace: Workspace = {
     info: {
-        orgId: "1123-4242-5252-1413",
+        organizationId: "1123-4242-5252-1413",
         name: "Acme Inc",
         subdomain: "acme",
         plan: "enterprise",
         spaceEnabled: false,
+        createdBy: "2313-4314-5413-6752",
+        createdAt: Date.now().toString(),
+        updatedAt: Date.now().toString(),
     },
     features: ["audit_logs"],
     projects: [...productDevelopmentProjects, ...operationGrowthProjects],
@@ -74,11 +77,14 @@ const spaces: Space[] = [
 // biome-ignore lint: lint/correctness/noUnusedVariables
 const spaceWorkspace: Workspace = {
     info: {
-        orgId: "1123-4242-5252-1413",
+        organizationId: "1123-4242-5252-1413",
         name: "Acme Inc",
         subdomain: "acme",
         plan: "enterprise",
         spaceEnabled: true,
+        createdBy: "2313-4314-5413-6752",
+        createdAt: Date.now().toString(),
+        updatedAt: Date.now().toString(),
     },
     features: ["spaces", "audit_logs"],
     spaces,
