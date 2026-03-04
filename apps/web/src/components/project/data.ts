@@ -1,5 +1,3 @@
-import { type Task, TaskPriority, TaskStatus, TaskType } from "@planora/common/types";
-
 export const TASKS: Task[] = [
     {
         projectId: "proj-001",
