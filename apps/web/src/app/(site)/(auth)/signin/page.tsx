@@ -12,13 +12,16 @@ import {
     FieldGroup,
     FieldLabel,
     Input,
+    toast,
 } from "@planora/ui";
 import { motion, slide } from "@planora/ui/animation";
 import { Github, Mail } from "@planora/ui/icons";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import type * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
+import { api } from "@/lib/api/client";
 
 const signinSchema = z.object({
     email: z.email("Please enter a valid email address"),
@@ -28,6 +31,8 @@ const signinSchema = z.object({
 });
 
 export default function SigninPage() {
+    const router = useRouter();
+
     const form = useForm<z.infer<typeof signinSchema>>({
         resolver: zodResolver(signinSchema),
         defaultValues: {
@@ -36,8 +41,29 @@ export default function SigninPage() {
         },
     });
 
-    function onSubmit(data: z.infer<typeof signinSchema>) {
-        form.reset();
+    async function onSubmit(data: z.infer<typeof signinSchema>) {
+        try {
+            const result = await api.POST("/auth/signin", {
+                body: {
+                    email: data.email,
+                    password: data.password,
+                },
+            });
+
+            const message = result.data?.message;
+
+            if (!result.data?.success) {
+                throw message;
+            }
+
+            toast.success(message || "Signed In Successfully");
+            setTimeout(() => {
+                router.push("/");
+                router.refresh();
+            }, 200);
+        } catch (error: any) {
+            toast.error(error?.message || "Failed to Signin");
+        }
     }
 
     return (
