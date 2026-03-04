@@ -16,7 +16,6 @@ import {
 import { motion, slide } from "@planora/ui/animation";
 import { Github, Mail } from "@planora/ui/icons";
 import Link from "next/link";
-import type * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -45,7 +44,7 @@ export default function SignupPage() {
         },
     });
 
-    function onSubmit(data: z.infer<typeof signupSchema>) {
+    function onSubmit(_data: z.infer<typeof signupSchema>) {
         form.reset();
     }
 

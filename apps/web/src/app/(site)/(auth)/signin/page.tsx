@@ -18,7 +18,6 @@ import { motion, slide } from "@planora/ui/animation";
 import { Github, Mail } from "@planora/ui/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import type * as React from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as z from "zod";
 import { api } from "@/lib/api/client";
@@ -61,8 +60,12 @@ export default function SigninPage() {
                 router.push("/");
                 router.refresh();
             }, 200);
-        } catch (error: any) {
-            toast.error(error?.message || "Failed to Signin");
+        } catch (error: unknown) {
+            let message: string | null = null;
+
+            if (error instanceof Error) message = error.message;
+
+            toast.error(message || "Failed to Signin");
         }
     }
 

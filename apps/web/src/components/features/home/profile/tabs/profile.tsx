@@ -15,10 +15,7 @@ import type React from "react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuthenticatedProfile } from "@/context/profile-context";
-import { config } from "@/lib/config";
 import { cn } from "@/lib/utils";
-
-const API_UPDATE_PROFILE = `${config.api}/v1/auth/profile`;
 
 const MAX_FILE_SIZE = 2 * 1024 * 1024;
 const MIN_IMAGE_SIZE = 128;

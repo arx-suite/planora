@@ -2,6 +2,6 @@
 
 import { ProjectSection } from "@/components/project";
 
-export default function ProjectPage({}) {
+export default function ProjectPage() {
     return <ProjectSection />;
 }

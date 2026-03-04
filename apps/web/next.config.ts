@@ -1,6 +1,6 @@
+import path from "node:path";
 import { loadEnvConfig } from "@next/env";
 import type { NextConfig } from "next";
-import path from "path";
 
 loadEnvConfig(path.resolve(__dirname, "../../"));
 

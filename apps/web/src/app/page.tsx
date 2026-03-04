@@ -17,7 +17,7 @@ export default function HomePage() {
             try {
                 const result = await api.GET("/profile");
                 profile = result.data?.payload ?? null;
-            } catch (error: any) {
+            } catch (_) {
                 profile = null;
             }
 
@@ -25,7 +25,7 @@ export default function HomePage() {
         };
 
         fetchData();
-    }, []);
+    });
 
     return <Home />;
 }
