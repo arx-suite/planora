@@ -2,52 +2,40 @@
 
 import { createContext, type ReactNode, useContext, useState } from "react";
 
-interface OrgProfile {
-    owned: Org[];
-    joined: Org[];
-}
-
 type AnonymousProfile = {
     status: "anonymous";
     user: null;
-    orgs: null;
 };
 
 type AuthenticatedProfile = {
     status: "authenticated";
-    user: User;
-    orgs: OrgProfile;
+    user: UserProfile;
 };
 
 export type ProfileState = AnonymousProfile | AuthenticatedProfile;
 
-function mapProfile(profile: Profile | null): ProfileState {
-    if (!profile)
+function mapProfile(user: UserProfile | null): ProfileState {
+    if (!user)
         return {
             status: "anonymous",
             user: null,
-            orgs: null,
         };
 
     return {
         status: "authenticated",
-        user: profile.user,
-        orgs: {
-            owned: profile.ownedOrgs,
-            joined: profile.joinedOrgs,
-        },
+        user: user,
     };
 }
 
 interface ProfileActions {
-    setProfile(profile: Profile | null): void;
+    setProfile(profile: UserProfile | null): void;
     clearProfile(): void;
 }
 
 export type ProfileContextValue = ProfileState & ProfileActions;
 
 type ProfileProviderProps = {
-    profile: Profile | null;
+    profile: UserProfile | null;
     children: ReactNode;
 };
 
@@ -67,7 +55,6 @@ export function ProfileProvider({ profile, children }: ProfileProviderProps) {
             setState({
                 status: "anonymous",
                 user: null,
-                orgs: null,
             });
         },
     };

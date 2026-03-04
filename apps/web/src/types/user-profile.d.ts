@@ -1,12 +1,7 @@
+import { components } from "@planora/api-types";
+
 declare global {
-    export interface User {
-        userId: string;
-        userTag: string;
-        username: string;
-        email: string;
-        timezone?: string;
-        avatarUrl?: string;
-    }
+    export type UserProfile = components["schemas"]["UserProfile"];
 
     export interface Org {
         organizationId: string;
@@ -15,12 +10,4 @@ declare global {
         subdomain: string;
         plan: string;
     }
-
-    export interface Profile {
-        user: User;
-        ownedOrgs: Org[];
-        joinedOrgs: Org[];
-    }
 }
-
-export {};

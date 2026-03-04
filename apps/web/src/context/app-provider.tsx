@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { ProfileProvider } from "./profile-context";
 
 type AppProviderProps = {
-    profile: Profile | null;
+    profile: UserProfile | null;
     children: ReactNode;
 };
 
