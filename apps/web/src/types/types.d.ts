@@ -1,4 +1,17 @@
+import { components } from "@planora/api-types";
+
 declare global {
+    export type UserProfile = components["schemas"]["UserProfile"];
+
+    // TODO: replace these types
+    export interface Org {
+        organizationId: string;
+        ownerId: string;
+        name: string;
+        subdomain: string;
+        plan: string;
+    }
+
     export interface Workspace {
         info: Organization;
         features: string[];
@@ -28,6 +41,10 @@ declare global {
         role: string;
         labels: string[];
     }
-}
 
-export {};
+    export type ApiResult<T> = {
+        success: boolean;
+        message: string;
+        payload?: T;
+    };
+}
