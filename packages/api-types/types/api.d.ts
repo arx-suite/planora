@@ -128,6 +128,10 @@ export interface components {
             };
             success: boolean;
         };
+        CreateOrganization: {
+            name: string;
+            subdomain: string;
+        };
         CreateUser: {
             email: string;
             password: string;
@@ -139,6 +143,35 @@ export interface components {
             | {
                   Unknown: string;
               };
+        OrganizationFeatureRow: {
+            description: string;
+            feature_name: string;
+            is_enabled: boolean;
+        };
+        OrganizationResourceRow: {
+            description?: string | null;
+            /** Format: int64 */
+            hard_limit: number;
+            resource_key: string;
+            /** Format: int64 */
+            soft_limit: number;
+            unit: components["schemas"]["ResourceUnit"];
+        };
+        OrganizationRow: {
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            created_by: string;
+            name: string;
+            /** Format: uuid */
+            organization_id: string;
+            plan: string;
+            subdomain: string;
+            /** Format: date-time */
+            updated_at: string;
+        };
+        /** @enum {string} */
+        ResourceUnit: "bytes" | "mb" | "gb" | "requests" | "minutes";
         SigninPayload: {
             email: string;
             password: string;
@@ -319,21 +352,27 @@ export interface operations {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
             };
             /** @description Invalid or expired verification code */
             401: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
             };
             /** @description Internal server error */
             500: {
                 headers: {
                     [name: string]: unknown;
                 };
-                content?: never;
+                content: {
+                    "application/json": components["schemas"]["ApiResultEmpty"];
+                };
             };
         };
     };
