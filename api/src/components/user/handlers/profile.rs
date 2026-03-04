@@ -44,7 +44,7 @@ impl From<UserRow> for UserProfile {
     path = "/profile",
     tag = "Profile",
     responses(
-        (status = 200, description = "Profile data", body = UserProfile),
+        (status = 200, description = "Profile data", body = ApiResult<UserProfile>),
         // TODO: common response handled by Auth middleware
         // (status = 403, description = "Account has been deactivated"),
         (status = 500, description = "Internal server error")

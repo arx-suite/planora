@@ -108,6 +108,26 @@ export interface components {
             message: string;
             success: boolean;
         };
+        ApiResult_UserProfile: {
+            message: string;
+            payload?: {
+                avatarUrl?: string | null;
+                /** Format: date-time */
+                createdAt: string;
+                email?: string | null;
+                /** Format: date-time */
+                emailVerifiedAt?: string | null;
+                preferences: components["schemas"]["UserPreferences"];
+                status: components["schemas"]["UserStatus"];
+                /** Format: date-time */
+                updatedAt: string;
+                /** Format: uuid */
+                userId: string;
+                userTag: string;
+                username: string;
+            };
+            success: boolean;
+        };
         CreateUser: {
             email: string;
             password: string;
@@ -373,7 +393,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserProfile"];
+                    "application/json": components["schemas"]["ApiResult_UserProfile"];
                 };
             };
             /** @description Internal server error */
