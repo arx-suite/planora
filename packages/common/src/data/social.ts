@@ -9,5 +9,5 @@ export const social = {
 
 export const maintainer = {
     name: "sajeevan",
-    github: "https://github.com/sajeevanjspy",
+    github: "https://github.com/sajvn0x",
 };

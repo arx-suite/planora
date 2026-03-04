@@ -1,3 +1,4 @@
+import { maintainer, social } from "@planora/common/data";
 import { Github } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
@@ -26,7 +27,7 @@ export function Footer() {
 
                     <div className="flex items-center space-x-3">
                         <Link
-                            href="https://github.com/planora-proj/planora"
+                            href={social.github.org}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors"
@@ -45,12 +46,12 @@ export function Footer() {
                 >
                     <p>© {new Date().getFullYear()} Planora.</p>
                     <Link
-                        href="https://github.com/sajeevanjspy"
+                        href={maintainer.github}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-linear-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent font-semibold hover:blur-[0.3px]"
                     >
-                        Maintained by @sajeevan
+                        Maintained by @{maintainer.name}
                     </Link>
                     .
                 </motion.div>
