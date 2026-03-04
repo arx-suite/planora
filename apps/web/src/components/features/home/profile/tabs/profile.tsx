@@ -9,11 +9,11 @@ import {
     CardTitle,
     Input,
     Label,
+    toast,
 } from "@planora/ui";
 import { Camera, Loader2 } from "lucide-react";
 import type React from "react";
 import { useRef, useState } from "react";
-import { toast } from "sonner";
 import { useAuthenticatedProfile } from "@/context/profile-context";
 import { cn } from "@/lib/utils";
 

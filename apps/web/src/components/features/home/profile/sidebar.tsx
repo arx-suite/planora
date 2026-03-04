@@ -13,11 +13,11 @@ import {
     AvatarImage,
     Button,
     Separator,
+    toast,
 } from "@planora/ui";
 import { CreditCard, LogOut, Settings, ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type ReactNode, useState } from "react";
-import { toast } from "sonner";
 import { useAuthenticatedProfile, useProfile } from "@/context/profile-context";
 import { api } from "@/lib/api";
 import type { ProfileSidebarTabProps } from ".";
