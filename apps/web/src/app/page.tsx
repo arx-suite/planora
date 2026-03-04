@@ -25,7 +25,7 @@ export default function HomePage() {
         };
 
         fetchProfile();
-    }, [user]);
+    }, [user, setProfile]);
 
     return <Home />;
 }
