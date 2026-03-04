@@ -10,6 +10,7 @@ pub struct OrganizationRow {
     pub name: String,
     pub subdomain: String,
     pub plan: String,
+    pub space_enabled: bool,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

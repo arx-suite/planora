@@ -166,6 +166,7 @@ export interface components {
             /** Format: uuid */
             organizationId: string;
             plan: string;
+            spaceEnabled: boolean;
             subdomain: string;
             /** Format: date-time */
             updatedAt: string;
