@@ -69,6 +69,22 @@ pub enum TaskStatus {
     Archived,
 }
 
+impl std::fmt::Display for TaskStatus {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use TaskStatus::*;
+
+        match self {
+            Backlog => write!(f, "backlog"),
+            Planned => write!(f, "planned"),
+            InProgress => write!(f, "in_progress"),
+            InReview => write!(f, "in_review"),
+            Blocked => write!(f, "blocked"),
+            Done => write!(f, "done"),
+            Archived => write!(f, "archived"),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Default, Serialize, Deserialize, sqlx::Type, utoipa::ToSchema)]
 #[sqlx(type_name = "task_priority", rename_all = "snake_case")]
 #[serde(rename_all = "camelCase")]
@@ -78,4 +94,17 @@ pub enum TaskPriority {
     Medium,
     High,
     Critical,
+}
+
+impl std::fmt::Display for TaskPriority {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        use TaskPriority::*;
+
+        match self {
+            Low => write!(f, "low"),
+            Medium => write!(f, "medium"),
+            High => write!(f, "high"),
+            Critical => write!(f, "critical"),
+        }
+    }
 }
