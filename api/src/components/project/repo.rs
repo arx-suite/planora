@@ -4,6 +4,7 @@ use sqlx::PgExecutor;
 use uuid::Uuid;
 
 use super::model::{ProjectPriority, ProjectRow, ProjectStatus, ProjectVisibility, Projects};
+use super::model::{TaskPriority, TaskRow, TaskStatus, Tasks};
 use crate::services::db::DBResult;
 
 #[async_trait::async_trait]
@@ -46,6 +47,27 @@ pub trait ProjectRepo {
         status: Option<ProjectStatus>,
         visibility: Option<ProjectVisibility>,
     ) -> DBResult<ProjectRow>;
+}
+
+#[async_trait::async_trait]
+pub trait TaskRepo {
+    async fn task_create(
+        &self,
+        project_id: Uuid,
+        name: String,
+        description: Option<String>,
+        status: Option<TaskStatus>,
+        priority: Option<TaskPriority>,
+        start_date: Option<DateTime<Utc>>,
+        due_date: Option<DateTime<Utc>>,
+    ) -> DBResult<TaskRow>;
+    async fn task_find_by_id(&self, id: Uuid) -> DBResult<Option<TaskRow>>;
+    async fn task_find_by_name(&self, name: String) -> DBResult<Option<TaskRow>>;
+    async fn task_find_by_key(&self, key: String) -> DBResult<Option<TaskRow>>;
+    async fn tasks_for_project(&self, project_id: Uuid) -> DBResult<Vec<TaskRow>>;
+    async fn task_update(&self) -> DBResult<TaskRow>;
+    async fn task_delete_by_key(&self, key: String) -> DBResult<u64>;
+    async fn task_delete_by_name(&self, name: String) -> DBResult<u64>;
 }
 
 #[async_trait::async_trait]
@@ -208,5 +230,143 @@ where
             .await?;
 
         Ok(project)
+    }
+}
+
+#[async_trait::async_trait]
+impl<T> TaskRepo for T
+where
+    for<'e> &'e T: PgExecutor<'e>,
+{
+    async fn task_create(
+        &self,
+        project_id: Uuid,
+        name: String,
+        description: Option<String>,
+        status: Option<TaskStatus>,
+        priority: Option<TaskPriority>,
+        start_date: Option<DateTime<Utc>>,
+        due_date: Option<DateTime<Utc>>,
+    ) -> DBResult<TaskRow> {
+        let query = Query::insert()
+            .into_table(Tasks::Table)
+            .columns([
+                Tasks::ProjectId,
+                Tasks::TaskName,
+                Tasks::Description,
+                Tasks::Status,
+                Tasks::Priority,
+                Tasks::StartDate,
+                Tasks::DueDate,
+            ])
+            .values([
+                project_id.into(),
+                name.into(),
+                description.into(),
+                status.unwrap_or_default().to_string().into(),
+                priority.unwrap_or_default().to_string().into(),
+                start_date.into(),
+                due_date.into(),
+            ])?
+            .returning_all()
+            .to_string(PostgresQueryBuilder);
+
+        let created_task = sqlx::query_as::<_, TaskRow>(&query).fetch_one(self).await?;
+
+        Ok(created_task)
+    }
+
+    async fn task_find_by_id(&self, id: Uuid) -> DBResult<Option<TaskRow>> {
+        let query = Query::select()
+            .column(Asterisk)
+            .from(Tasks::Table)
+            .and_where(Expr::col(Tasks::TaskId).eq(id))
+            .to_string(PostgresQueryBuilder);
+
+        let task = sqlx::query_as::<_, TaskRow>(&query)
+            .fetch_optional(self)
+            .await?;
+
+        Ok(task)
+    }
+
+    async fn task_find_by_name(&self, name: String) -> DBResult<Option<TaskRow>> {
+        let query = Query::select()
+            .column(Asterisk)
+            .from(Tasks::Table)
+            .and_where(Expr::col(Tasks::TaskName).eq(name))
+            .to_string(PostgresQueryBuilder);
+
+        let task = sqlx::query_as::<_, TaskRow>(&query)
+            .fetch_optional(self)
+            .await?;
+
+        Ok(task)
+    }
+
+    async fn task_find_by_key(&self, key: String) -> DBResult<Option<TaskRow>> {
+        let query = Query::select()
+            .column(Asterisk)
+            .from(Tasks::Table)
+            .and_where(Expr::col(Tasks::TaskKey).eq(key))
+            .to_string(PostgresQueryBuilder);
+
+        let task = sqlx::query_as::<_, TaskRow>(&query)
+            .fetch_optional(self)
+            .await?;
+
+        Ok(task)
+    }
+
+    async fn tasks_for_project(&self, project_id: Uuid) -> DBResult<Vec<TaskRow>> {
+        let query = Query::select()
+            .column(Asterisk)
+            .from(Tasks::Table)
+            .and_where(Expr::col(Tasks::ProjectId).eq(project_id))
+            .to_string(PostgresQueryBuilder);
+
+        let tasks = sqlx::query_as::<_, TaskRow>(&query).fetch_all(self).await?;
+
+        Ok(tasks)
+    }
+
+    async fn task_update(&self) -> DBResult<TaskRow> {
+        let query = {
+            let mut query = Query::update();
+
+            query
+                .value(Tasks::UpdatedAt, Expr::current_timestamp())
+                .returning_all();
+
+            query.to_string(PostgresQueryBuilder)
+        };
+
+        let task = sqlx::query_as::<_, TaskRow>(&query).fetch_one(self).await?;
+
+        Ok(task)
+    }
+
+    async fn task_delete_by_key(&self, key: String) -> DBResult<u64> {
+        let query = Query::delete()
+            .from_table(Tasks::Table)
+            .and_where(Expr::col(Tasks::TaskKey).eq(key))
+            .returning_all()
+            .to_string(PostgresQueryBuilder);
+
+        let result = sqlx::query(&query).execute(self).await?;
+
+        Ok(result.rows_affected())
+    }
+
+    async fn task_delete_by_name(&self, name: String) -> DBResult<u64> {
+        let query = Query::delete()
+            .from_table(Tasks::Table)
+            .and_where(Expr::col(Tasks::TaskName).eq(name))
+            .returning_all()
+            .to_string(PostgresQueryBuilder);
+
+        let result = sqlx::query(&query).execute(self).await?;
+
+        Ok(result.rows_affected())
     }
 }
