@@ -1,16 +1,15 @@
 import { maintainer, social } from "@planora/common/data";
+import { slide } from "@planora/ui/animation";
 import { Github } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
-
-import { slideLeft } from "@/components/core/motions";
 
 export function Footer() {
     return (
         <footer className="border-t bg-background/50 backdrop-blur-sm">
             <div className="max-w-5xl mx-auto px-6 py-12 md:py-16">
                 <motion.div
-                    variants={slideLeft}
+                    variants={slide("left")}
                     initial="hidden"
                     whileInView="show"
                     className="flex flex-col md:flex-row justify-between items-center gap-6"
@@ -39,7 +38,7 @@ export function Footer() {
                 </motion.div>
 
                 <motion.div
-                    variants={slideLeft}
+                    variants={slide("left")}
                     initial="hidden"
                     whileInView="show"
                     className="mt-8 pt-6 border-t text-center text-sm text-muted-foreground"

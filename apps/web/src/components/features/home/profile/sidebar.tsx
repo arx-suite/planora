@@ -1,3 +1,4 @@
+import { toNameCase } from "@planora/common/utils";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -88,12 +89,12 @@ export function ProfileSidebar({ activeTab, setActiveTab }: ProfileSidebarTabPro
             <div className="w-full rounded-2xl border border-white/6 bg-white/4 backdrop-blur p-4 shadow-md">
                 <div className="flex items-center gap-4">
                     <Avatar className="h-14 w-14">
-                        <AvatarImage src={user.avatarUrl} />
+                        <AvatarImage src={user.avatarUrl ?? undefined} />
                         <AvatarFallback>{user.username.slice(0, 2).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <div className="text-sm font-semibold">{user.username}</div>
-                        <div className="text-xs text-muted-foreground">{user.email}</div>
+                        <div className="text-sm font-semibold">{toNameCase(user.username)}</div>
+                        <div className="text-xs text-muted-foreground">@{user.userTag}</div>
                     </div>
                 </div>
 
