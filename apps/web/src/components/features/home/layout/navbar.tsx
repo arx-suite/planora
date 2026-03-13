@@ -6,10 +6,13 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { ThemeToggle } from "@/components/core/theme-toggle";
+import { useProfile } from "@/context/profile-context";
 
 export function Navbar() {
     const [scrolled, setScrolled] = useState(false);
     const { scrollY } = useScroll();
+
+    const { status } = useProfile();
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         setScrolled(latest > 10);
@@ -39,12 +42,16 @@ export function Navbar() {
                 </Link>
 
                 <div className="flex items-center gap-3">
-                    <Link href="/signup">
-                        {/* <Button className="bg-linear-to-r from-indigo-500 to-violet-500 text-white px-4"> */}
-                        <Button className="bg-[linear-gradient(135deg,var(--color-primary)_0%,var(--color-secondary)_40%,var(--color-accent-purple)_100%)] text-white px-4">
-                            Get Started
-                        </Button>
-                    </Link>
+                    {status === "anonymous" ? (
+                        <Link href="/signup">
+                            {/* <Button className="bg-linear-to-r from-indigo-500 to-violet-500 text-white px-4"> */}
+                            <Button className="bg-[linear-gradient(135deg,var(--color-primary)_0%,var(--color-secondary)_40%,var(--color-accent-purple)_100%)] text-white px-4">
+                                Get Started
+                            </Button>
+                        </Link>
+                    ) : (
+                        ""
+                    )}
                     <ThemeToggle />
                 </div>
             </div>
